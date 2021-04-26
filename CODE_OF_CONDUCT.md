@@ -25,7 +25,7 @@ Examples of behavior that contributes to creating a positive environment include
 -	I will not submit production code without thorough in-memory unit tests.
 -	I will not submit code that causes any tool to emit a warning.
 
-# Examples of unacceptable behaviour:
+### Examples of unacceptable behaviour:
 -	Trolling, insulting/derogatory comments, and personal or political attacks
 -	Public or private harassment
 -	Publishing others' private information, such as a physical or electronic address, without explicit permission
