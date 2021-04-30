@@ -4,7 +4,7 @@
 
 The following is a set of guidelines for contributing to **Privacy evaluator for Machine Learning models**, which is an open-source project hosted on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
 
-You can also find [README](https://github.com/privML/privacy-evaluator) and [CODE OF CONDUCT](https://github.com/privML/privacy-evaluator).
+You can also find [README](https://github.com/privML/privacy-evaluator/README.md) and [CODE OF CONDUCT](https://github.com/privML/privacy-evaluator/CODE_OF_CONDUCT.md).
 
 # How Can I Contribute
 
@@ -13,18 +13,22 @@ In order to achieve an efficient workflow, there should be an easily accessible 
 
 ## Branches
 
-### Special branches
+### Main project branches
 
-- `main`: the current state of development
+- `main`: the current state of the project.
 
-### Regular branches
+### Work branches
 
-Branches that are being worked on should be named according to the following schema:  
-`[TYPE]/[ISSUENUMBER]-[SHORT-SLUG]`, e.g. `feat/22-membership-inference-attack`  
+If you want to contribute to the codebase, please fork the project first. To keep things clean, in your forked project
+you should create separate branches for each task you work on. These branches should be named according to the following 
+schema:  
+
+`[TYPE]/[ISSUE]-[SHORT SLUG]`, e.g. `feat/22-membership-inference-attack`  
 
 ## Commits
 
-Regular commit messages should adhere to the following format:  
+Regular commit messages should adhere to the following format:
+
 `[COMMIT MESSAGE]. #[ISSUE]`, e.g. `Improve contribution guidelines. #44`
 
 `[COMMIT MESSAGE]` should be formulated, such that this statement makes sense:
@@ -50,7 +54,7 @@ For the title of the PR, use the short description you would use for the [merge 
 **Please review pull requests assigned to you.**  
 Take some time to look at pull requests.
 Other people want to get their features done as well.
-This way we help each other, and keep the proccess moving.
+This way we help each other, and keep the process moving.
 When reviewing, apply common sense.
 
 ### Merging
