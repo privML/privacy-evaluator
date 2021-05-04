@@ -40,10 +40,8 @@ Gitter: https://gitter.im/privML/community
 You can join our [Gitter](https://gitter.im/privML/community) communication channel.
 
 ### Who is behind the project?
-- write the list of our supporting companies here
-See a list of our [Supporters]().
-- Zalando 
-- ...
+See a list of our [Supporters](./SUPPORTER_LIST.md).
+
 
 ## License
 This library is available under the [MIT License](https://github.com/git/git-scm.com/blob/master/MIT-LICENSE.txt).
