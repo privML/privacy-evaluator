@@ -1,4 +1,4 @@
-# Support
+# Supporters
 
 The companies supporting our project are:
 - [Fraunhofer AISEC](https://www.aisec.fraunhofer.de/)
