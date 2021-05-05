@@ -1,5 +1,8 @@
 # Privacy Evaluator
-<!--[![Gitter](https://badges.gitter.im/fairlearn/community.svg)](https://gitter.im/fairlearn/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)-->
+[![Python 3.7](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-370/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Gitter](https://badges.gitter.im/fairlearn/community.svg)](https://gitter.im/fairlearn/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 - space for the description of our project (core idea)
 
@@ -7,12 +10,11 @@
 The privML Privacy Evaluator is a tool that assesses ML model's levels of privacy by running different attacks on it. .....
 
 ## Dependencies
-- like necessary packages
-- version of packages
-- we have to keep this section up-to-date during development
-[![Python 3.7](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-370/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+- [Python 3.7](https://www.python.org/)
 - [Adversarial Robustness Toolbox (ART) 1.6.1](https://github.com/Trusted-AI/adversarial-robustness-toolbox)
+- [PyTorch 1.8.1](https://pytorch.org/)
+- for detailed list see [requirements.txt](requirements.txt) 
 
 ## Installation
 - if we need this section
