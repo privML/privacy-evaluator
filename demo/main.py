@@ -21,8 +21,11 @@ train_dataset, test_dataset = dataset_downloader('CIFAR10')
 # put your designed sample distribution here
 # each line corresponds to an experiment
 size_dicts = [
-    {0: 5000, 1: 5000}, 
-    {2: 5000, 3: 5000}
+    {0: 5000, 1: 4000}, 
+    {0: 5000, 1: 3000},
+    {0: 5000, 1: 2000}, 
+    {0: 5000, 1: 1000},
+    {0: 5000, 1: 500}
 ]
 
 for size_dict in size_dicts:

@@ -11,10 +11,10 @@ class ResNet(nn.Module):
             param.requires_grad = False
         
         self.resnet.fc = nn.Sequential(
-            nn.Linear(512,128),
+            nn.Linear(512, 128),
             nn.ReLU(),
             nn.Dropout(dropout),
-            nn.Linear(128,64),
+            nn.Linear(128, 64),
             nn.ReLU(), 
             nn.Linear(64, num_classes))
 
