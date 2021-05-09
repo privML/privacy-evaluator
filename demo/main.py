@@ -2,7 +2,7 @@ import torch
 import torchvision
 from torchvision import datasets, transforms
 import os
-from utils import dataset_downloader, new_dataset
+from data import dataset_downloader, new_dataset_from_size_dict
 from train import trainer
 
 # hyper-parameters
@@ -13,30 +13,35 @@ weight_decay = 0.002
 dropout = 0.3
 
 # set device
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-# choose dataset
-train_dataset, test_dataset = dataset_downloader('CIFAR10')
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # put your designed sample distribution here
 # each line corresponds to an experiment
 size_dicts = [
-    {0: 5000, 1: 4000}, 
-    {0: 5000, 1: 3000},
-    {0: 5000, 1: 2000}, 
-    {0: 5000, 1: 1000},
-    {0: 5000, 1: 500}
+    {0: 5000, 1: 4000},
+    # {0: 5000, 1: 3000},
+    # {0: 5000, 1: 2000},
+    # {0: 5000, 1: 1000},
+    {0: 500, 1: 500},
 ]
 
-for size_dict in size_dicts:
-    train_set, test_set = new_dataset(train_dataset, test_dataset, size_dict)
-    num_classes = len(size_dict)
-    class_encoding = {class_id: i 
-        for i, (class_id, _) in enumerate(size_dict.items())}
+if __name__ == "__main__":
+    train_dataset, test_dataset = dataset_downloader("CIFAR10")
 
-    test_acc = trainer(
-        train_set, test_set, 'ResNet', 
-        batch_size, num_epochs, num_classes, 
-        learning_rate, weight_decay, dropout, 
-        device, class_encoding)
-    print(size_dict, test_acc)
+    for size_dict in size_dicts:
+        train_set, test_set = new_dataset_from_size_dict(
+            train_dataset, test_dataset, size_dict
+        )
+        test_acc = trainer(
+            train_set=train_set,
+            test_set=test_set,
+            size_dict=size_dict,
+            model="ResNet",
+            device=device,
+            batch_size=batch_size,
+            num_epochs=num_epochs,
+            learning_rate=learning_rate,
+            weight_decay=weight_decay,
+            dropout=dropout,
+        )
+        print(size_dict, test_acc)

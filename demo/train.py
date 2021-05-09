@@ -1,38 +1,55 @@
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
-from utils import accuracy
+from metric import accuracy
 from model import ResNet
+from typing import Dict
 
-def trainer(train_set, test_set, model='ResNet', 
-            batch_size=100, num_epochs=10, num_classes=2, 
-            learning_rate=0.001, weight_decay=0.002, dropout=0, 
-            device='cuda', class_encoding=None):
+
+def trainer(
+    train_set: torch.utils.data.Dataset,
+    test_set: torch.utils.data.Dataset,
+    size_dict: Dict[int, int],
+    model: str = "ResNet",
+    device: torch.device = torch.device("cpu"),
+    batch_size: int = 500,
+    num_epochs: int = 10,
+    learning_rate: float = 0.001,
+    weight_decay: float = 0,
+    dropout: float = 0,
+) -> float:
+    """
+    Get the best test accuracy after training for `num_epochs` epochs.
+    """
     # create data-loaders
-    train_loader = DataLoader(dataset=train_set,
-                              batch_size=batch_size,
-                              drop_last=True,
-                              shuffle=True,
-                              pin_memory=True)
-    test_loader = DataLoader(dataset=test_set,
-                             batch_size=batch_size, 
-                             shuffle=False,
-                             pin_memory=True)
-    
+    train_loader = DataLoader(
+        dataset=train_set,
+        batch_size=batch_size,
+        drop_last=True,
+        shuffle=True,
+        pin_memory=True,
+    )
+    test_loader = DataLoader(
+        dataset=test_set, batch_size=batch_size, shuffle=False, pin_memory=True
+    )
+
     # set model, loss function and optimizer
+    num_classes = len(size_dict)
     model = ResNet(num_classes, dropout).to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(params=model.parameters(),
-                                 lr=learning_rate,
-                                 weight_decay=weight_decay)
+    optimizer = torch.optim.Adam(
+        params=model.parameters(), lr=learning_rate, weight_decay=weight_decay
+    )
+
+    # here class encoding is necessary since we need the dimension
+    # of one-hot encoding identical to the number of classes
+    class_encoding = {class_id: i for i, (class_id, _) in enumerate(size_dict.items())}
 
     # start training
     best_acc = 0
     for epoch in range(num_epochs):
         model.train()
         for images, labels in train_loader:
-            # here class encoding is necessary since we need the dimension
-            # of one-hot encoding identical to the number of classes
             labels = labels.apply_(lambda id: class_encoding[id])
             images, labels = images.to(device), labels.to(device)
 
@@ -49,7 +66,7 @@ def trainer(train_set, test_set, model='ResNet',
         model.eval()
         accuracies = []
         with torch.no_grad():
-            for images, labels in test_loader: 
+            for images, labels in test_loader:
                 labels = labels.apply_(lambda id: class_encoding[id])
                 images, labels = images.to(device), labels.to(device)
 
@@ -58,8 +75,6 @@ def trainer(train_set, test_set, model='ResNet',
                 batch_acc = accuracy(pred, labels)
                 accuracies.append(batch_acc)
 
-        acc = sum(accuracies) / len(accuracies)
-        best_acc = max(best_acc, acc)
-
-    best_acc = best_acc.item()
+        epoch_acc = sum(accuracies) / len(accuracies)
+        best_acc = max(best_acc, epoch_acc)
     return float(round(best_acc, 4))
