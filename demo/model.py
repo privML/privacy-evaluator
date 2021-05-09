@@ -26,7 +26,7 @@ class ResNet(nn.Module):
             nn.Dropout(dropout),
             nn.Linear(128, 64),
             nn.ReLU(),
-            nn.Linear(64, num_classes),
+            nn.Linear(128, num_classes),
         )
 
     def forward(self, x):

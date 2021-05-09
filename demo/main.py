@@ -12,22 +12,21 @@ learning_rate = 0.001
 weight_decay = 0.002
 dropout = 0.3
 
-# set device
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 # put your designed sample distribution here
 # each line corresponds to an experiment
 size_dicts = [
     {0: 5000, 1: 4000},
-    # {0: 5000, 1: 3000},
-    # {0: 5000, 1: 2000},
-    # {0: 5000, 1: 1000},
+    {0: 5000, 1: 3000},
+    {0: 5000, 1: 2000},
+    {0: 5000, 1: 1000},
     {0: 500, 1: 500},
 ]
 
 if __name__ == "__main__":
-    train_dataset, test_dataset = dataset_downloader("CIFAR10")
+    # set device
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    train_dataset, test_dataset = dataset_downloader("CIFAR10")
     for size_dict in size_dicts:
         train_set, test_set = new_dataset_from_size_dict(
             train_dataset, test_dataset, size_dict

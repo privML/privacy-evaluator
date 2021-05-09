@@ -3,7 +3,7 @@ This is an implemention of doing classification on CIFAR10 dataset which support
 
 ## How it works
 ### Data Preparation
-CIFAR10 consists of 60000 (50000 training + 10000 testing) images of shape $32\times 32$. The original dataset is perfectly balanced, in other words, eachof the 10 classes has 5000 training samples and 1000 test samples. 
+CIFAR10 consists of 60000 (50000 training + 10000 testing) images of shape 32*32. The original dataset is perfectly balanced, in other words, eachof the 10 classes has 5000 training samples and 1000 test samples. 
 
 To make the dataset unbalanced we first partition the dataset into 10 disjoint subsets, each representing a class. Then we randomly select from the training subset for a  certain class if we want this class to be under-represented. Notice that test set stays unchanged all the time.
 
@@ -46,13 +46,15 @@ python main.py
 |Dataset|Test Accuracy|
 |:-:|-:|
 |{0: 5000, 1: 5000}|85.90%|
+|{0: 5000, 1: 4000}|85.85%|
+|{0: 5000, 1: 3000}|84.95%|
+|{0: 5000, 1: 2000}|83.90%|
+|{0: 5000, 1: 1000}|79.80%|
+|{0: 5000, 1: 500} |76.10%|
 |{0: 2500, 1: 2500}|84.85%|
 |{0: 4000, 1: 1000}|81.25%|
 |{0: 4500, 1: 500} |75.55%|
-|{2: 5000, 3: 5000} |77.6%|
-|{2: 2500, 3: 2500} |77.2%|
-|{2: 4000, 3: 1000} |71.4%|
-|{2: 4500, 3: 500}| 60.7%|
+
 |{4: 1250, 5: 1250, 6: 1250, 7: 1250}| 60.3%|
 |{4: 2000, 5: 1500, 6: 1000, 7: 500}| 57.53%|
 |{4: 3000, 5: 1500, 6: 400, 7: 100}| 42.75%|
