@@ -4,7 +4,7 @@ import torchvision
 
 class ResNet50(nn.Module):
     """An adapted residual network for multi-classification.
-    
+
     The backbone is the pretrained `resne50` model. We freeze all the convolutional
     layers and only change the last fully connected layer to do classification.
 
@@ -14,7 +14,7 @@ class ResNet50(nn.Module):
     """
 
     def __init__(self, num_classes: int = 2, dropout: float = 0):
-        super(ResNet, self).__init__()
+        super(ResNet50, self).__init__()
 
         self.resnet = torchvision.models.resnet50(pretrained=True)
         for param in self.resnet.parameters():
@@ -37,7 +37,7 @@ class ResNet50(nn.Module):
 
 class ResNet18(nn.Module):
     """An adapted residual network for multi-classification.
-    
+
     The backbone is the pretrained `resne18` model. We freeze all the convolutional
     layers and only change the last fully connected layer to do classification.
 
@@ -47,7 +47,7 @@ class ResNet18(nn.Module):
     """
 
     def __init__(self, num_classes: int = 2, dropout: float = 0):
-        super(ResNet, self).__init__()
+        super(ResNet18, self).__init__()
 
         self.resnet = torchvision.models.resnet18(pretrained=True)
         for param in self.resnet.parameters():

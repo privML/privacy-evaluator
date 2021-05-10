@@ -74,26 +74,26 @@ def new_dataset_from_size_dict(
     size_dict: Dict[int, int],
 ) -> Tuple[torch.utils.data.Dataset, torch.utils.data.Dataset]:
     """
-    Build new dataset from original, using the `size_dict` to set the size of 
+    Build new dataset from original, using the `size_dict` to set the size of
     each wanted class.
 
-    To create new (unbalanced) training set, we subset the original training 
-    set according to  `size_dict` which gives an unbalanced distribution. The 
-    new training set then only covers the classes appeared in `size_dict` and 
+    To create new (unbalanced) training set, we subset the original training
+    set according to  `size_dict` which gives an unbalanced distribution. The
+    new training set then only covers the classes appeared in `size_dict` and
     its size shrinks to the sum of values in `size_dict`.\n
-    To create new test set, we only filter the classes mentioned and keep the 
-    original size. Therefore, if a class is mentioned, all its test samples 
+    To create new test set, we only filter the classes mentioned and keep the
+    original size. Therefore, if a class is mentioned, all its test samples
     will stay.
-    
-    Args: 
+
+    Args:
         train_dataset: The original train set.
         test_dataset: The original test set.
-        size_dict: A list `(class_1: size_1, class_2: size_2, ..., class_n: 
-        size_n)` where `class_i` denotes the class id and `size_i` denotes 
+        size_dict: A list `(class_1: size_1, class_2: size_2, ..., class_n:
+        size_n)` where `class_i` denotes the class id and `size_i` denotes
         the sample size of `class_i`.
 
-    Returns: 
-        The new training and test set consisting of mentioned classes, both of 
+    Returns:
+        The new training and test set consisting of mentioned classes, both of
         type `torch.utils.data.Dataset`.
     """
     # prepare train set
