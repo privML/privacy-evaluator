@@ -5,6 +5,9 @@ import os
 from data import dataset_downloader, new_dataset_from_size_dict
 from train import trainer
 
+# alternative: "ResNet18"
+model_name = "ResNet50"
+
 # hyper-parameters
 num_epochs = 10
 batch_size = 500
@@ -16,12 +19,12 @@ dropout = 0.3
 # each line corresponds to an experiment
 size_dicts = [
     {0: 5000, 1: 5000},
-    # {0: 5000, 1: 4000},
-    # {0: 5000, 1: 3000},
-    # {0: 5000, 1: 2000},
-    # {0: 5000, 1: 1000},
-    # {0: 5000, 1: 500}, 
-    # {0: 3000, 1: 1000, 2: 500}
+    {0: 5000, 1: 4000},
+    {0: 5000, 1: 3000},
+    {0: 5000, 1: 2000},
+    {0: 5000, 1: 1000},
+    {0: 5000, 1: 500}, 
+    {0: 3000, 1: 1000, 2: 500}
 ]
 
 if __name__ == "__main__":
@@ -37,7 +40,7 @@ if __name__ == "__main__":
             train_set=train_set,
             test_set=test_set,
             size_dict=size_dict,
-            model="ResNet",
+            model=model_name,
             device=device,
             batch_size=batch_size,
             num_epochs=num_epochs,
