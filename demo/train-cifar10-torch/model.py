@@ -5,12 +5,12 @@ import torchvision
 class ResNet50(nn.Module):
     """An adapted residual network for multi-classification.
     
-    The backbone is the pretrained `resne18` model. We freeze all the convolutional
+    The backbone is the pretrained `resne50` model. We freeze all the convolutional
     layers and only change the last fully connected layer to do classification.
 
     Args:
         num_classes: The number of classes involved in the classification.
-        dropout: Drop-out rate in the last fully-connected layer.
+        dropout: Drop-out rate in the fully-connected layer.
     """
 
     def __init__(self, num_classes: int = 2, dropout: float = 0):
@@ -43,7 +43,7 @@ class ResNet18(nn.Module):
 
     Args:
         num_classes: The number of classes involved in the classification.
-        dropout: Drop-out rate in the last fully-connected layer.
+        dropout: Drop-out rate in the fully-connected layer.
     """
 
     def __init__(self, num_classes: int = 2, dropout: float = 0):
