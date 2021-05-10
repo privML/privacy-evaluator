@@ -1,7 +1,4 @@
-import abc
-
-
-class Attack_Interface():
+class Attack():
 
     """Initilizes the Attack Class.
     :param model: the model to be attacked.
@@ -24,7 +21,7 @@ class Attack_Interface():
     rtype: TODO: what Type?
     """
 
-    def perform_attack(params):
+    def perform_attack(self, params):
         raise NotImplementedError
 
 
