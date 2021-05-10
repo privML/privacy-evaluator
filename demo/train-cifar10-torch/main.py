@@ -1,7 +1,5 @@
 import torch
 import torchvision
-from torchvision import datasets, transforms
-import os
 from data import dataset_downloader, new_dataset_from_size_dict
 from train import trainer
 
@@ -23,7 +21,7 @@ size_dicts = [
     {0: 5000, 1: 3000},
     {0: 5000, 1: 2000},
     {0: 5000, 1: 1000},
-    {0: 5000, 1: 500}, 
+    {0: 5000, 1: 500},
     {0: 3000, 1: 1000, 2: 500},
 ]
 

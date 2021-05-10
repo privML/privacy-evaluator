@@ -1,17 +1,17 @@
-# Image Classification on CIFAR10
-This is an implemention of doing classification on CIFAR10 dataset which supports manually making the dataset unbalanced. Now you can easily control the sample size of each class!
+## Demo 1: Image Classification on CIFAR10
+This is an implemention of doing classification on CIFAR10 dataset which supports manually making the dataset unbalanced. Now you can easily control the sample size of each class! Implementations using PyTorch and Tensorflow are provided, with source code in sub-folder `./train-cifar-10-torch` and `./train-cifar-10-tf` respectively.
 
-## How it works
-### Data Preparation
-CIFAR10 consists of 60000 (50000 training + 10000 testing) images of shape 32*32. The original dataset is perfectly balanced, in other words, eachof the 10 classes has 5000 training samples and 1000 test samples. 
+### How it works
+#### Data Preparation
+CIFAR10 consists of 60000 (50000 train + 10000 test) images of shape 32*32. The original dataset is perfectly balanced, in other words, eachof the 10 classes has 5000 training samples and 1000 test samples. 
 
-To make the dataset unbalanced we first partition the dataset into 10 disjoint subsets, each representing a class. Then we randomly select from the training subset for a  certain class if we want this class to be under-represented. Notice that test set stays unchanged all the time.
+To make the dataset unbalanced we first partition the dataset into disjoint subsets, each subset representing a class. Then if we want a specific class to be under-represented, we take a random sample from this class. Notice such sampling only applies in the training set.
 
-### Model
-Here we apply the pre-trained `ResNet50`(default, `ResNet18` optional) model provided by `torchvision`/`keras` (for PyTorch/TensorFlow, respectively). To adapt this model to our dataset, we freeze all but the last layer, and modify the last layer so that the output size is identical with the numbers of classes we want.
+#### Model
+Here we apply the pre-trained `ResNet50`(default, `ResNet18` optional) model provided by `torchvision`/`keras` (for PyTorch/TensorFlow, respectively). To adapt this model to our dataset, we freeze all but the last layers, and customize the last layer so that the output size is compatible with the numbers of classes we want.
 
 
-## Install
+### Install
 ```bash
 git clone git@github.com:yzchyx/privacy-evaluator.git
 git checkout feat/28-cifar-train
@@ -19,7 +19,7 @@ cd ./privacy-evaluator/demo
 ```
 All related files for the implementation are organized in the directory `privacy-evaluator/demo/`  and are totally independent from other files in `privacy-evaluator`. Therefore, this directory is portable and you can only unzip this `demo` directory and play with it without much trouble.
 
-## Example
+### Example
 To set sample sizes for each class, you just need to modify the `size_dicts`in `main.py`, which looks like 
 ```python
 # put your designed sample distribution here
@@ -36,7 +36,7 @@ size_dicts = [
 - The second experiment is about training on a balanced two-class dataset (2500 samples for both `class 0` and `class 1`) , while the third trains model on unbalanced classes (4500 for `class 0` and 500 for `class 1`)
 - We can also do 3-class or more-class training in a highly-customizable fashion, as the fourth experiment shows.
 
-Finally, run under the `demo/train-cifar10-torch` directory
+Finally, run under the `demo/train-cifar10-torch` directory:
 
 ```bash
 python main.py
@@ -48,8 +48,8 @@ cd ../train-cifar10-tf
 python main.py
 ```
 
-## Expriments
-### Experiment Settings
+### Expriments
+#### Experiment Settings
 For both PyTorch and TensorFlow, the following hyperparamters are applied: 
 ```python
 num_epochs = 10
@@ -59,7 +59,7 @@ weight_decay = 0.002
 dropout = 0.3
 ```
 
-### Results
+#### Results
 |Dataset|Torch+ResNet50|TF+Resnet50|
 |:-:|-:|-:|
 |{0: 5000, 1: 5000}|88.30%|92.40%|

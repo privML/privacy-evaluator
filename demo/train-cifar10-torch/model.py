@@ -5,7 +5,7 @@ import torchvision
 class ResNet50(nn.Module):
     """An adapted residual network for multi-classification.
 
-    The backbone is the pretrained `resne50` model. We freeze all the convolutional
+    The backbone is the pretrained `resnet50` model. We freeze all the convolutional
     layers and only change the last fully connected layer to do classification.
 
     Args:
@@ -38,7 +38,7 @@ class ResNet50(nn.Module):
 class ResNet18(nn.Module):
     """An adapted residual network for multi-classification.
 
-    The backbone is the pretrained `resne18` model. We freeze all the convolutional
+    The backbone is the pretrained `resnet18` model. We freeze all the convolutional
     layers and only change the last fully connected layer to do classification.
 
     Args:

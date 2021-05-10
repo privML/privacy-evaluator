@@ -63,6 +63,7 @@ def subset(
     )
 
     if num_samples:
+        assert num_samples <= len(subset)
         idx = np.random.choice(len(subset), num_samples, replace=False)
         subset = torch.utils.data.dataset.Subset(dataset=subset, indices=idx)
     return subset
