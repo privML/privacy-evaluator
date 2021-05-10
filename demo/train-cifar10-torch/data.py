@@ -51,11 +51,12 @@ def subset(
     Args:
         dataset: The dataset, usually containing multiple classes.
         class_id: The id for the target class we want to filter.
-        num_samples: Size of the result dataset.
+        num_samples: Sampling size of the class `class_id`.
 
     Returns:
-        A subset from `dataset` with samples all in class `class_id` and
-        of size `num_samples`.
+        A subset from `dataset` with samples all in class `class_id` and of 
+        size `num_samples`. If `num_samples` is not specified, then keep all 
+        the samples in this class, which is the usual practice for test set.
     """
     idx = torch.tensor(dataset.targets) == class_id
     subset = torch.utils.data.dataset.Subset(

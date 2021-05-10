@@ -8,7 +8,7 @@ def dataset_downloader(dataset_name: str = "CIFAR10") -> Tuple[np.ndarray, np.nd
     Download the corresponding dataset.
 
     Args:
-        dataset_name: Name of the dataset.\n
+        dataset_name: Name of the dataset.
     Returns:
         Train and test dataset, both of type `np.ndarray`.
     """
@@ -29,13 +29,14 @@ def subset(
     then randomly select `num_samples` many points from this class.
 
     Args:
-        dataset: The dataset, usually containing multiple classes.
+        dataset: The training and test dataset in a tuple.
         class_id: The id for the target class we want to filter.
-        num_samples: Size of the result dataset.
+        num_samples: Sampling size of the specified class.
 
     Returns:
         A subset from `dataset` with samples all in class `class_id` and
-        of size `num_samples`.
+        of size `num_samples`. If `num_samples` is not specified, keep all 
+        samples in this class, which is the usual practice for test set.
     """
     data_x, data_y = dataset[0], dataset[1]
     idx = (data_y == class_id).reshape(data_x.shape[0])
