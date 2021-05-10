@@ -59,7 +59,7 @@ def new_dataset_from_size_dict(
     each wanted class.
 
     To create new (unbalanced) training set, we subset the original training
-    set according to  `size_dict` which gives an unbalanced distribution. The
+    set according to `size_dict` which gives an unbalanced distribution. The
     new training set then only covers the classes appeared in `size_dict` and
     its size shrinks to the sum of values in `size_dict`.\n
     To create new test set, we only filter the classes mentioned and keep the
@@ -69,9 +69,9 @@ def new_dataset_from_size_dict(
     Args:
         train_dataset: The original train set.
         test_dataset: The original test set.
-        size_dict: A list `(class_1: size_1, class_2: size_2, ..., class_n:
-        size_n)` where `class_i` denotes the class id and `size_i` denotes
-        the sample size of `class_i`.
+        size_dict: A dictionary `{class_1: size_1, class_2: size_2, ..., class_n:
+        size_n}` where `class_i` denotes the class id and `size_i` denotes
+        the sample size of `class_i`. `n` is the number of classes involved.
 
     Returns:
         The new training and test set consisting of mentioned classes, both of
