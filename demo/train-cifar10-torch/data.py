@@ -20,7 +20,7 @@ def dataset_downloader(
 
     if dataset_name == "CIFAR10":
         # check if already downloaded
-        data_path = os.path.join(dir_path, "../../", dataset_name)
+        data_path = os.path.join(dir_path, "../../../", dataset_name)
         downloaded = os.path.exists(os.path.join(data_path, "cifar-10-python.tar.gz"))
         train_dataset = torchvision.datasets.CIFAR10(
             root=data_path,
@@ -98,13 +98,13 @@ def new_dataset_from_size_dict(
     """
     # prepare train set
     subsets = []
-    for i, (class_id, size) in enumerate(size_dict.items()):
+    for _, (class_id, size) in enumerate(size_dict.items()):
         subsets.append(subset(train_dataset, class_id, size))
     new_train_dataset = torch.utils.data.ConcatDataset(subsets)
 
     # prepare test set
     subsets = []
-    for i, (class_id, _) in enumerate(size_dict.items()):
+    for _, (class_id, _) in enumerate(size_dict.items()):
         subsets.append(subset(test_dataset, class_id))
     new_test_dataset = torch.utils.data.ConcatDataset(subsets)
     return new_train_dataset, new_test_dataset

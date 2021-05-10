@@ -2,7 +2,7 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 from metric import accuracy
-from model import ResNet
+from model import ResNet18, ResNet50
 from typing import Dict
 
 
@@ -10,7 +10,7 @@ def trainer(
     train_set: torch.utils.data.Dataset,
     test_set: torch.utils.data.Dataset,
     size_dict: Dict[int, int],
-    model: str = "ResNet",
+    model: str = "ResNet50",
     device: torch.device = torch.device("cpu"),
     batch_size: int = 500,
     num_epochs: int = 10,
@@ -35,7 +35,10 @@ def trainer(
 
     # set model, loss function and optimizer
     num_classes = len(size_dict)
-    model = ResNet(num_classes, dropout).to(device)
+    if model == "ResNet50":
+        model = ResNet50(num_classes, dropout).to(device)
+    elif model == "ResNet18":
+        model = ResNet18(num_classes, dropout).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(
         params=model.parameters(), lr=learning_rate, weight_decay=weight_decay

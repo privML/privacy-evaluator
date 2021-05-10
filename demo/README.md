@@ -8,7 +8,7 @@ CIFAR10 consists of 60000 (50000 training + 10000 testing) images of shape 32*32
 To make the dataset unbalanced we first partition the dataset into 10 disjoint subsets, each representing a class. Then we randomly select from the training subset for a  certain class if we want this class to be under-represented. Notice that test set stays unchanged all the time.
 
 ### Model
-Here we apply the pre-trained `ResNet` model provided by `torchvision`. To adapt this model to our dataset, we freeze all but the last layer, and modify the last layer so that the output size is identical with the numbers of classes we want.
+Here we apply the pre-trained `ResNet50`(default, `ResNet18` optional) model provided by `torchvision`. To adapt this model to our dataset, we freeze all but the last layer, and modify the last layer so that the output size is identical with the numbers of classes we want.
 
 
 ## Install
@@ -45,13 +45,10 @@ python main.py
 ## Some results
 |Dataset|Test Accuracy|
 |:-:|-:|
-|{0: 5000, 1: 5000}|85.90%|
-|{0: 5000, 1: 4000}|85.85%|
-|{0: 5000, 1: 3000}|84.95%|
-|{0: 5000, 1: 2000}|83.90%|
-|{0: 5000, 1: 1000}|79.80%|
-|{0: 5000, 1: 500} |76.10%|
-|{0: 2500, 1: 2500}|84.85%|
-|{4: 1250, 5: 1250, 6: 1250, 7: 1250}| 60.3%|
-|{4: 2000, 5: 1500, 6: 1000, 7: 500}| 57.53%|
-|{4: 3000, 5: 1500, 6: 400, 7: 100}| 42.75%|
+|{0: 5000, 1: 5000}|88.30%|
+|{0: 5000, 1: 4000}|87.65%|
+|{0: 5000, 1: 3000}|87.70%|
+|{0: 5000, 1: 2000}|87.85%|
+|{0: 5000, 1: 1000}|85.15%|
+|{0: 5000, 1: 500} |83.65%|
+|{0: 3000, 1: 1000, 2: 500}|72.83%|
