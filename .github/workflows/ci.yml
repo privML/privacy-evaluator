@@ -12,22 +12,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      -uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      -name: Set up Python 3.7
+      - name: Set up Python 3.7
       uses: actions/setup-python@v1
       with:
         python-version:3.7
 
-      -name: Install Black
+      - name: Install Black
       run: pip install black
 
-      -name: Check styling with black
+      - name: Check styling with black
       run: black --check
 
-      -name: Install pytest plugin
+      - name: Install pytest plugin
       run: pip install pytest-github-actions-annotate-failures
 
-      -name: Test with pytest
+      - name: Test with pytest
       run: pytest
 
