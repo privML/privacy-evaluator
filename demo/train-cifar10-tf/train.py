@@ -17,7 +17,7 @@ def trainer(
     dropout: float = 0,
 ) -> float:
     """
-    Get the best test accuracy after training for `num_epochs` epochs.
+    Get the best test accuracy during training for `num_epochs` epochs.
     """
     # create dataloader
     train_loader = tf.data.Dataset.from_tensor_slices(train_set)
