@@ -1,4 +1,4 @@
-from privacy_evaluator.attacks.propertyinferenceattack import PropertyInferenceAttack
+from privacy_evaluator.attacks.property_inference_attack import PropertyInferenceAttack
 
 
 class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
@@ -70,10 +70,10 @@ class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
         """
         raise NotImplementedError
 
-    def infer(self, x):
+    def perform_attack(self, params):
         """
         Perform Property Inference attack.
-        :param x: Example data to run through target model for feature extraction
+        :param params: Example data to run through target model for feature extraction
         :return: prediction about property of target data set
         """
         shadow_classifier = self.train_shadow_classifier(self.shadow_training_set)
