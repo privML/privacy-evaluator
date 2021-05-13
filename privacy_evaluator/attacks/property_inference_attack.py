@@ -7,7 +7,12 @@ class PropertyInferenceAttack(Attack_Interface):
     Abstract class for property inference classes.
     """
 
-    def __init__(self, model, property_shadow_training_sets, negation_property_shadow_training_set):
+    def __init__(
+        self,
+        model,
+        property_shadow_training_sets,
+        negation_property_shadow_training_set,
+    ):
         """
         Initialize the Property Inference Attack Class.
         :param model: the target model to be attacked

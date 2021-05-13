@@ -2,7 +2,6 @@ from privacy_evaluator.attacks.property_inference_attack import PropertyInferenc
 
 
 class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
-
     def __init__(self, model):
         """
         Initialize the Property Inference Attack Class.
@@ -12,12 +11,16 @@ class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
         property_shadow_training_sets = None
         negation_property_shadow_training_set = None
 
-        super().__init__(model, property_shadow_training_sets, negation_property_shadow_training_set)
+        super().__init__(
+            model, property_shadow_training_sets, negation_property_shadow_training_set
+        )
 
         shadow_training_set = None
         self.shadow_training_set = shadow_training_set
 
-    def create_shadow_training_set(self, dataset, property_p, negation_property_p, follows_property):
+    def create_shadow_training_set(
+        self, dataset, property_p, negation_property_p, follows_property
+    ):
         """
         Create shadow training set that either follows the property or the negation of the property.
         :param dataset: path to dataset, dataset similar to target dataset
@@ -83,5 +86,7 @@ class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
         meta_classifier = self.train_meta_classifier(meta_training_set)
         # TODO: create feature extraction for target model, using x
         feature_extraction_target_model = None
-        prediction = self.perform_prediction(meta_classifier, feature_extraction_target_model)
+        prediction = self.perform_prediction(
+            meta_classifier, feature_extraction_target_model
+        )
         return prediction
