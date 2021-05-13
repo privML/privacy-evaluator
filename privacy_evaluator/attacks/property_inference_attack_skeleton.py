@@ -2,40 +2,26 @@ from privacy_evaluator.attacks.property_inference_attack import PropertyInferenc
 
 
 class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
-    def __init__(self, model):
+    def __init__(self, model, property_shadow_training_sets, negation_property_shadow_training_set):
         """
         Initialize the Property Inference Attack Class.
         :param model: the target model to be attacked
+        :param property_shadow_training_sets: the shadow training sets that fulfill property
+        :param negation_property_shadow_training_set: the shadow training sets that fulfill negation of property
         """
-        # TODO: create shadow training sets with method below
-        property_shadow_training_sets = None
-        negation_property_shadow_training_set = None
 
         super().__init__(
             model, property_shadow_training_sets, negation_property_shadow_training_set
         )
-
+        # TODO: create shadow_training_set
         shadow_training_set = None
         self.shadow_training_set = shadow_training_set
 
-    def create_shadow_training_set(
-        self, dataset, property_p, negation_property_p, follows_property
-    ):
+    def train_shadow_classifiers(self, shadow_training_set):
         """
-        Create shadow training set that either follows the property or the negation of the property.
-        :param dataset: path to dataset, dataset similar to target dataset
-        :param property_p: property p that is analysed in attack
-        :param negation_property_p: negation of property p that is analysed in attack
-        :param follows_property: whether property is followed or not (negation of property is followed in this case)
-        :return: A shadow training set
-        """
-        raise NotImplementedError
-
-    def train_shadow_classifier(self, shadow_training_set):
-        """
-        Train shadow classifier with a shadow training set (follows property or negation of property).
-        :param shadow_training_set: dataset used for shadow_classifier
-        :return: A shadow classifier
+        Train shadow classifiers with each shadow training set (follows property or negation of property).
+        :param shadow_training_set: datasets used for shadow_classifiers
+        :return: shadow classifiers
         """
         raise NotImplementedError
 
@@ -79,7 +65,7 @@ class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
         :param params: Example data to run through target model for feature extraction
         :return: prediction about property of target data set
         """
-        shadow_classifier = self.train_shadow_classifier(self.shadow_training_set)
+        shadow_classifier = self.train_shadow_classifiers(self.shadow_training_set)
         # TODO: create feature extraction for all shadow classifiers
         feature_extraction_list = None
         meta_training_set = self.create_meta_training_set(feature_extraction_list)
