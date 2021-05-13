@@ -7,8 +7,7 @@ from privacy_evaluator.metrics.basics import *
 
 
 # todo: add AttackInterface as soon as other PR merged
-# todo: make sure that pytorch and tensorflow models are trained with one hot encoded labels
-# todo: make sure that train and test data of pytorch and tensorflow models are easily available as np.ndarray
+# todo: test why test and train accuracies are so bad
 class MembershipInferenceAttack:
 
     def __init__(self, target_model: Union[Callable, torch.nn.Module], x_train: np.ndarray, y_train: np.ndarray,

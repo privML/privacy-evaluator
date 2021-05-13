@@ -1,11 +1,10 @@
 import os
-import sys
 
 import torch
 import torch.nn as nn
 
 
-__all__ = ["DCTI", "dcti"]
+__all__ = ["DCTI", "load_dcti"]
 
 
 class Block(nn.Module):
@@ -18,7 +17,7 @@ class Block(nn.Module):
             nn.ReLU(inplace=True),
         )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, **kwargs) -> torch.Tensor:
         return self.model(x)
 
 
@@ -52,11 +51,11 @@ class DCTI(nn.Module):
             nn.Softmax(dim=1),
         )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, **kwargs) -> torch.Tensor:
         return self.model(x)
 
 
-def dcti(pretrained: bool = True) -> DCTI:
+def load_dcti(pretrained: bool = True) -> DCTI:
     """
     DCTI model from
     `"Lightweight Deep Convolutional Network for Tiny Object Recognition"
