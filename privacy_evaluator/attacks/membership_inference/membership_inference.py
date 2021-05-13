@@ -1,37 +1,22 @@
-from art.estimators.classification import TensorFlowV2Classifier, PyTorchClassifier
-from typing import Union, Callable, Tuple, Dict
+from typing import Tuple, Dict
 import numpy as np
-import torch
 
-from privacy_evaluator.metrics.basics import *
+from privacy_evaluator.metrics.basics import accuracy
+from privacy_evaluator.attacks.attack import Attack
+from privacy_evaluator.classifiers.classifier import Classifier
 
 
-# todo: add AttackInterface as soon as other PR merged
-# todo: test why test and train accuracies are so bad
-class MembershipInferenceAttack:
+# todo: doc/test/examples
+class MembershipInferenceAttack(Attack):
 
-    def __init__(self, target_model: Union[Callable, torch.nn.Module], x_train: np.ndarray, y_train: np.ndarray,
+    def __init__(self, target_model: Classifier, x_train: np.ndarray, y_train: np.ndarray,
                  x_test: np.ndarray, y_test: np.ndarray):
-        if isinstance(target_model, torch.nn.Module):
-            self.target_model = PyTorchClassifier(
-                model=target_model,
-                loss=None,
-                nb_classes=y_train.shape[1],
-                input_shape=x_train.shape[1:],
-            )
-        else:
-            self.target_model = TensorFlowV2Classifier(
-                model=target_model,
-                nb_classes=y_train.shape[1],
-                input_shape=x_train.shape[1:],
-            )
+        super().__init__(target_model, x_train, y_train, x_test, y_test)
 
-        self.x_train = x_train
-        self.y_train = y_train
-        self.x_test = x_test
-        self.y_test = y_test
+    def attack(self, *args, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
+        return self.infer(*args, **kwargs)
 
-    def infer(self, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
+    def infer(self, *args, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
         raise NotImplementedError("Method 'infer()' needs to be implemented in subclass")
 
     def target_model_train_accuracy(self) -> np.float32:
@@ -79,6 +64,6 @@ class MembershipInferenceAttack:
     def model_card_info(self, **kwargs) -> Dict:
         return {
             'attack_model_overall_accuracy': self.attack_model_overall_accuracy(**kwargs),
-            'target_model_train_test_accuracy_gap': self.target_model_train_test_accuracy_gap(),
-            'target_model_train_test_accuracy_ratio': self.target_model_train_test_accuracy_ratio()
+            'target_model_train_test_accuracy_gap': self.target_model_train_to_test_accuracy_gap(),
+            'target_model_train_test_accuracy_ratio': self.target_model_train_to_test_accuracy_ratio()
         }

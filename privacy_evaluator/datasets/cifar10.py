@@ -1,7 +1,6 @@
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
-import torch
 
 import numpy as np
 from typing import Tuple
@@ -13,6 +12,7 @@ class CIFAR10(Dataset):
 
     TRAIN_SET_SIZE = 50000
     TEST_SET_SIZE = 10000
+    INPUT_SHAPE = (3, 32, 32)
     N_CLASSES = 10
 
     @classmethod
