@@ -48,7 +48,7 @@ class MembershipInferenceAttack:
 
         return accuracy(self.y_test, y_prediction)
 
-    def target_model_train_test_accuracy_gap(self) -> np.float32:
+    def target_model_train_to_test_accuracy_gap(self) -> np.float32:
         """Calculates the gap between the train and test accuracy.
 
         The gap is calculated by subtracting the test accuracy from the train accuracy.
@@ -58,7 +58,7 @@ class MembershipInferenceAttack:
         """
         return self.target_model_train_accuracy() - self.target_model_test_accuracy()
 
-    def target_model_train_test_accuracy_ratio(self) -> np.float32:
+    def target_model_train_to_test_accuracy_ratio(self) -> np.float32:
         """Calculates the ratio between the train and test accuracy.
 
         The ratio is calculated by dividing the test accuracy by the train accuracy.
