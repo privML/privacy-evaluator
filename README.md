@@ -1,10 +1,11 @@
 # Privacy Evaluator
 <!--[![Gitter](https://badges.gitter.im/fairlearn/community.svg)](https://gitter.im/fairlearn/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)-->
 
-- space for the description of our project (core idea)
 
-- For example:
-The privML Privacy Evaluator is a tool that assesses ML model's levels of privacy by running different attacks on it. .....
+The *privML Privacy Evaluator* is a tool that assesses a ML model's levels of privacy by running different privacy attacks on it. The tool builds upon the [Adversarial Robustness Toolbox (ART)](https://github.com/Trusted-AI/adversarial-robustness-toolbox) and aims at extending it by implementing additional privacy attacks as well as providing easy-to-use Jupyter Notebooks which offer understandable output metrics even for non-ML experts.
+
+Developers and anyone else with a PyTorch or TensorFlow neural network model at hand can use `privacy-evaluator` to evaluate their model's susceptibility to *model inversion attacks*, *membership inference attacks* and *property inference attacks*. Details on how to use this tool can be found in this README. 
+ 
 
 ## Dependencies
 - like necessary packages
