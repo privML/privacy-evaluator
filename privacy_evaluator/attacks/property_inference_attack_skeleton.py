@@ -2,16 +2,21 @@ from privacy_evaluator.attacks.property_inference_attack import PropertyInferenc
 
 
 class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
-    def __init__(self, model, property_shadow_training_sets, negation_property_shadow_training_set):
+    def __init__(
+        self,
+        model,
+        property_shadow_training_sets,
+        negation_property_shadow_training_sets,
+    ):
         """
         Initialize the Property Inference Attack Class.
         :param model: the target model to be attacked
         :param property_shadow_training_sets: the shadow training sets that fulfill property
-        :param negation_property_shadow_training_set: the shadow training sets that fulfill negation of property
+        :param negation_property_shadow_training_sets: the shadow training sets that fulfill negation of property
         """
 
         super().__init__(
-            model, property_shadow_training_sets, negation_property_shadow_training_set
+            model, property_shadow_training_sets, negation_property_shadow_training_sets
         )
         # TODO: create shadow_training_set
         shadow_training_set = None

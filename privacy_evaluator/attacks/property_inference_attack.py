@@ -11,18 +11,18 @@ class PropertyInferenceAttack(Attack_Interface):
         self,
         model,
         property_shadow_training_sets,
-        negation_property_shadow_training_set,
+        negation_property_shadow_training_sets,
     ):
         """
         Initialize the Property Inference Attack Class.
         :param model: the target model to be attacked
         :param property_shadow_training_sets: the shadow training sets that fulfill property
-        :param negation_property_shadow_training_set: the shadow training sets that fulfill negation of property
+        :param negation_property_shadow_training_sets: the shadow training sets that fulfill negation of property
         """
 
         super().__init__(model, None, None)
         self.property_shadow_training_sets = property_shadow_training_sets
-        self.negation_shadow_training_sets = negation_property_shadow_training_set
+        self.negation_shadow_training_sets = negation_property_shadow_training_sets
 
     @abc.abstractmethod
     def perform_attack(self, params):
