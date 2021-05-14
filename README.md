@@ -33,6 +33,25 @@ Developers and anyone else with a PyTorch or TensorFlow neural network model at 
 ## Attacks
 
 ### Property Inference Attack
+![plot](docs/Property_Interference_Attacks.png)
+
+The Property Inference Attack aims to detect patterns in the parameters of the target model including properties 
+which the model producer has not intended to reveal. Therefore, the adversary requires a 
+meta-classifier which predicts one of these properties he is interested in. 
+
+The first step of the attack is to generate a set containing k datasets for k shadow classifiers which then, are trained 
+to build the training set for the meta classifier. These datasets could be created by sampling from a larger dataset or
+by integrating more data. Furthermore, it is crucial that one half of the shadow classifiers 
+is trained with a dataset including the property P and one half including not P (¬P). In addition, 
+each shadow classifier comprises the same architecture as the target model where each is only fitted by its 
+corresponding dataset. They do not need to perform as good as the target model, but demonstrate passably acceptable 
+performance.
+Because the parameters in neural networks are usually randomly initialized and even after training, the order of 
+parameters is arbitrary. Thus, the meta classifier must be trained on this so that it is able to recognize pattern between 
+the parameters of the shadow classifiers. As a result, all the parameters of each shadow classifier represent the 
+feature representation F<sub>k</sub>. The feature representation form together the training set for the meta classifer 
+where each is labeled correspondingly as either P or ¬P. The training algorithm for the meta-classifier can 
+be arbitrarily chosen.
 
 ### Membership Inference Attack
 
