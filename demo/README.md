@@ -20,7 +20,7 @@ cd ./privacy-evaluator/demo
 All related files for the implementation are organized in the directory `privacy-evaluator/demo/`  and are totally independent from other files in `privacy-evaluator`. Therefore, this directory is portable and you can only unzip this `demo` directory and play with it without much trouble.
 
 ### Example
-To set sample sizes for each class, you just need to modify the `size_dicts`in `main.py`, which looks like 
+To set sample sizes for each class, just modify the `size_dicts`in `main.py`, which looks like 
 ```python
 # put your designed sample distribution here
 # each line corresponds to an experiment
