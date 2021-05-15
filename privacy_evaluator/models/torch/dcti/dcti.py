@@ -4,9 +4,6 @@ import torch
 import torch.nn as nn
 
 
-__all__ = ["DCTI", "load_dcti"]
-
-
 class Block(nn.Module):
     def __init__(self, in_channels: int, out_channels: int):
         super().__init__()
@@ -22,6 +19,10 @@ class Block(nn.Module):
 
 
 class DCTI(nn.Module):
+    """DCTI model from `"Lightweight Deep Convolutional Network for Tiny Object Recognition"
+    <https://www.scitepress.org/Papers/2018/67520/67520.pdf>`.
+    """
+
     def __init__(self):
         super().__init__()
 
@@ -55,22 +56,22 @@ class DCTI(nn.Module):
         return self.model(x)
 
 
-def load_dcti(pretrained: bool = True) -> DCTI:
-    """
-    DCTI model from
-    `"Lightweight Deep Convolutional Network for Tiny Object Recognition"
-    <https://www.scitepress.org/Papers/2018/67520/67520.pdf>`_.
+def load_dcti(
+    pretrained: bool = True,
+    device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+) -> DCTI:
+    """Loads a DCTI model.
 
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on CIFAR-10
+    :param pretrained: If True, returns a model pre-trained on CIFAR-10.
+    :param device: Device on which the model is loaded. Either cpu or gpu.
+    :return: Loaded DCTI model.
     """
     model = DCTI()
     if pretrained:
-        here = os.path.dirname(os.path.abspath(__file__))
-        path = os.path.join(here, "dcti", "model.pth")
-
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        state = torch.load(path, map_location=device)
-        model.load_state_dict(state)
-
+        model.load_state_dict(
+            torch.load(
+                os.path.join(os.path.dirname(os.path.abspath(__file__)), "model.pth"),
+                map_location=device,
+            )
+        )
     return model

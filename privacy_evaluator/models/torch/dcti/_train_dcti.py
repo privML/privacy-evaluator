@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from privacy_evaluator.models.torch.dcti import DCTI
+from privacy_evaluator.models.torch.dcti.dcti import DCTI
 from privacy_evaluator.datasets.cifar10 import CIFAR10
 from privacy_evaluator.metrics.basics import accuracy
 
@@ -37,7 +37,7 @@ def test(net, loader):
         for i, (data, _) in enumerate(loader):
             data = data.to(device)
             output = net(data).argmax(dim=1).cpu()
-            prediction[i * batch_size: i * batch_size + len(output):] = output
+            prediction[i * batch_size : i * batch_size + len(output) :] = output
 
     return prediction
 
@@ -52,9 +52,11 @@ def main():
     for epoch in range(1, 101):
         loss = train(net, train_loader, optimizer, criterion)
         y_prediction = test(net, test_loader).detach().cpu().numpy()
-        print(f"Train epoch: {epoch:>3}\t Loss: {loss:.4f}\t Accuracy: {accuracy(y_test, y_prediction):.2f}")
+        print(
+            f"Train epoch: {epoch:>3}\t Loss: {loss:.4f}\t Accuracy: {accuracy(y_test, y_prediction):.2f}"
+        )
 
-    torch.save(net.state_dict(), "./dcti/model.pth")
+    torch.save(net.state_dict(), "./model.pth")
 
 
 if __name__ == "__main__":

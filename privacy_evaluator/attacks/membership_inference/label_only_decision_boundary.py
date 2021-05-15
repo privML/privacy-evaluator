@@ -1,6 +1,4 @@
-from art.attacks.inference.membership_inference import (
-    MembershipInferenceBlackBoxRuleBased,
-)
+from art.attacks.inference.membership_inference import LabelOnlyDecisionBoundary
 from typing import Tuple
 import numpy as np
 
@@ -10,8 +8,8 @@ from privacy_evaluator.attacks.membership_inference.membership_inference import 
 from privacy_evaluator.classifiers.classifier import Classifier
 
 
-class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
-    """MembershipInferenceBlackBoxRuleBasedAttack class."""
+class MembershipInferenceLabelOnlyDecisionBoundaryAttack(MembershipInferenceAttack):
+    """MembershipInferenceLabelOnlyDecisionBoundaryAttack class."""
 
     def __init__(
         self,
@@ -21,7 +19,7 @@ class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
         x_test: np.ndarray,
         y_test: np.ndarray,
     ):
-        """Initializes a MembershipInferenceBlackBoxRuleBasedAttack class.
+        """Initializes a MembershipInferenceLabelOnlyDecisionBoundaryAttack class.
 
         :param target_model: The target model to be attacked.
         :param x_train: Data that was used to train the target model.
@@ -38,9 +36,12 @@ class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
         :param kwargs: The keyword arguments of the attack.
         :return: Result of the attack.
         """
-        attack = MembershipInferenceBlackBoxRuleBased(self.target_model.art_classifier)
+        attack = LabelOnlyDecisionBoundary(self.target_model.art_classifier)
+
+        attack.calibrate_distance_threshold(
+            self.x_train, self.y_train, self.x_test, self.y_test, **kwargs
+        )
 
         inferred_train_data = attack.infer(self.x_train, self.y_train)
         inferred_test_data = attack.infer(self.x_test, self.y_test)
-
         return inferred_train_data, inferred_test_data
