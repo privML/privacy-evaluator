@@ -1,4 +1,4 @@
-name: Privacy evaluator
+name: Styling with black
 
 on:
   pull_request:
@@ -24,10 +24,3 @@ jobs:
 
       - name: Check styling with black
         run: black --check .
-
-      - name: Install pytest plugin
-        run: pip install pytest-github-actions-annotate-failures
-
-      - name: Test with pytest
-        run: pytest
-
