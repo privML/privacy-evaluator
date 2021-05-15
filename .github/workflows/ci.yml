@@ -23,7 +23,7 @@ jobs:
         run: pip install black
 
       - name: Check styling with black
-        run: black --check
+        run: black --check .
 
       - name: Install pytest plugin
         run: pip install pytest-github-actions-annotate-failures
