@@ -35,7 +35,7 @@ def subset(
 
     Returns:
         A subset from `dataset` with samples all in class `class_id` and
-        of size `num_samples`. If `num_samples` is not specified, keep all 
+        of size `num_samples`. If `num_samples` is not specified, keep all
         samples in this class, which is the usual practice for test set.
     """
     data_x, data_y = dataset[0], dataset[1]
