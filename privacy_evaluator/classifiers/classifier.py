@@ -42,6 +42,8 @@ class Classifier:
         :param classifier: Classifier to be converted. Either a Pytorch or Tensorflow classifier.
         :param nb_classes: Number of classes that were used to train the classifier.
         :param input_shape: Input shape of a data point of the classifier.
+        :return: The model converted to a Classifier
+        :rtype: ART Classifier
         """
         if isinstance(classifier, torch.nn.Module):
             return PyTorchClassifier(
