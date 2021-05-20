@@ -23,7 +23,7 @@ class MembershipInferenceAttack(Attack):
     ):
         """Initializes a MembershipInferenceAttack class.
 
-        :param target_model: The target model to be attacked.
+        :param target_model: Target model to be attacked.
         :param x_train: Data that was used to train the target model.
         :param y_train: Labels for the data that was used to train the target model.
         :param x_test: Data that was not used to train the target model.
@@ -34,8 +34,8 @@ class MembershipInferenceAttack(Attack):
     def attack(self, *args, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
         """Performs the attack on the target model.
 
-        :param args: The arguments of the attack.
-        :param kwargs: The keyword arguments of the attack.
+        :param args: Arguments of the attack.
+        :param kwargs: Keyword arguments of the attack.
         :return: Two arrays holding the inferred membership status. The first array includes the results for the
         inferred membership status of the train data and the second includes the results for the test data, where 1
         indicates a member and 0 indicates non-member. The optimal attack would return only ones for the first array and
@@ -46,8 +46,8 @@ class MembershipInferenceAttack(Attack):
     def infer(self, *args, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
         """Alias method for attack().
 
-        :param args: The arguments of the attack.
-        :param kwargs: The keyword arguments of the attack.
+        :param args: Arguments of the attack.
+        :param kwargs: Keyword arguments of the attack.
         :return: Two arrays holding the inferred membership status. The first array includes the results for the
         inferred membership status of the train data and the second includes the results for the test data, where 1
         indicates a member and 0 indicates non-member. The optimal attack would return only ones for the first array and
@@ -60,8 +60,8 @@ class MembershipInferenceAttack(Attack):
     def attack_output(self, **kwargs) -> Dict:
         """Creates attack output metrics in an extractable format.
 
-        :return: Model card info with the target model train and test accuracy, target model train to test accuracy
-        gap and ratio and the attack model accuracy.
+        :return: Attack output metrics including the target model train and test accuracy, target model train to test
+        accuracy gap and ratio and the attack model accuracy.
         """
 
         train_accuracy = accuracy(self.y_train, self.target_model.predict(self.x_train))
