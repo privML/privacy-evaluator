@@ -36,7 +36,10 @@ class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
 
         :param args: The arguments of the attack.
         :param kwargs: The keyword arguments of the attack.
-        :return: Result of the attack.
+        :return: Two arrays holding the inferred membership status. The first array includes the results for the
+        inferred membership status of the train data and the second includes the results for the test data, where 1
+        indicates a member and 0 indicates non-member. The optimal attack would return only ones for the first array and
+        only zeros for the second.
         """
         attack = MembershipInferenceBlackBoxRuleBased(self.target_model.art_classifier)
 

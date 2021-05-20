@@ -31,6 +31,7 @@ class SampleAttack(Attack):
 
         :param args: The arguments of the attack.
         :param kwargs: The keyword arguments of the attack.
-        :return: Result of the attack.
+        :return: Two arrays holding the results of the attack. The first array includes the results for the train data
+        and the second includes the results for the test data.
         """
         return np.ones(10), np.zeros(10)
