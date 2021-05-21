@@ -44,7 +44,17 @@ class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
         :return: feature extraction
         :rtype: np.ndarray
         """
-        raise NotImplementedError
+
+        # Filter out all trainable parameters (from every layer)
+        if isinstance(model.model, torch.nn.Module): 
+            model_parameters = list(filter(lambda p: p.requires_grad, model.model.parameters()))
+            # Store the remaining parameters in a concatenated 1D numPy-array
+            model_parameters = np.concatenate([el.detach().numpy().flatten() for el in model_parameters]).flatten()
+        # If model is a TensorFlow instance:
+        else:
+            model_parameters = np.concatenate([el.numpy().flatten() for el in model.model.trainable_variables]).flatten()
+        # return model_parameters as features of model
+        return model_parameters
 
     def create_meta_training_set(self, feature_extraction_list):
         """
