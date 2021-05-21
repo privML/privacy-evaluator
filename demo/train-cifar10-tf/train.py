@@ -1,8 +1,8 @@
 import tensorflow as tf
 import numpy as np
 from typing import Tuple, Dict
-from model import ResNet50
-from metric import cross_entropy_loss, accuracy
+from .model import ResNet50
+from .metric import cross_entropy_loss, accuracy
 
 
 def trainer(

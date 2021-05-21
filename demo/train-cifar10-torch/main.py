@@ -4,7 +4,7 @@ from data import dataset_downloader, new_dataset_from_size_dict
 from train import trainer
 
 # alternative: "ResNet18"
-model_name = "ResNet50"
+model_name = "FCNeuralNet"  # "ResNet50"
 
 # hyper-parameters
 num_epochs = 10

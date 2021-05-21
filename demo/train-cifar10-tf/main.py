@@ -1,10 +1,10 @@
 import tensorflow as tf
 import numpy as np
-from data import dataset_downloader, new_dataset_from_size_dict
-from train import trainer
+from .data import dataset_downloader, new_dataset_from_size_dict
+from .train import trainer
 
 
-model_name = "ResNet50"
+model_name = "FCNeuralNet"  # "ResNet50"
 
 # hyper-parameters
 num_epochs = 10

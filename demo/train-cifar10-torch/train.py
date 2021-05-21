@@ -2,7 +2,8 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 from metric import accuracy
-from model import ResNet18, ResNet50
+from model import ResNet18, ResNet50, FCNeuralNet
+import os
 from typing import Dict
 
 
@@ -39,6 +40,8 @@ def trainer(
         model = ResNet50(num_classes, dropout).to(device)
     elif model == "ResNet18":
         model = ResNet18(num_classes, dropout).to(device)
+    elif model == "FCNeuralNet":
+        model = FCNeuralNet(num_classes, dropout).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(
         params=model.parameters(), lr=learning_rate, weight_decay=weight_decay
@@ -79,5 +82,6 @@ def trainer(
                 accuracies.append(batch_acc)
 
         epoch_acc = sum(accuracies) / len(accuracies)
-        best_acc = max(best_acc, epoch_acc)
+        if epoch_acc > best_acc:
+            best_acc = epoch_acc
     return float(round(best_acc, 4))
