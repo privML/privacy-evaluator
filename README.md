@@ -19,15 +19,14 @@ Developers and anyone else with a PyTorch or TensorFlow neural network model at 
 - for detailed list see [requirements.txt](requirements.txt) 
 
 ## Installation
-- if we need this section
-- could be a command line code
+- tbd
 
 ## How to use the Privacy Evaluator?
-- description how our project works
+- tbd
 
 
 ### Example
-- some examples would be good
+- tbd
 
 
 ## Attacks
@@ -73,5 +72,5 @@ This library is available under the [MIT License](https://github.com/git/git-scm
 -which is the correct link?
 
 ## References
-- are there related projects?
-- relevant books, papers etc.
+Ganju, Karan, Qi Wang, Wei Yang, Carl A. Gunter, und Nikita Borisov. „Property Inference Attacks on Fully Connected Neural Networks Using Permutation Invariant Representations“. In Proceedings of the 2018 ACM SIGSAC Conference on Computer and Communications Security, 619–33. Toronto Canada: ACM, 2018. https://doi.org/10.1145/3243734.3243834.
+
