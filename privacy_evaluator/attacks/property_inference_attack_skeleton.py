@@ -1,5 +1,6 @@
 from privacy_evaluator.attacks.property_inference_attack import PropertyInferenceAttack
 import numpy as np
+import torch
 
 
 class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
@@ -56,15 +57,21 @@ class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
         # return model_parameters as features of model
         return model_parameters
 
-    def create_meta_training_set(self, feature_extraction_list):
+    def create_meta_training_set(self, classifier_list_with_property, classifier_list_without_property):
         """
-        Create meta training set out of the feature extraction of the shadow classifiers.
-        :param feature_extraction_list: list of all feature extractions of all shadow classifiers
-        :type feature_extraction_list: np.ndarray
-        :return: Meta-training set
-        :rtype: np.ndarray
+        Create meta training set out of shadow classifiers.
+        :param classifier_list_with_property: list of all shadow classifiers that were trained on a dataset which fulfills the property
+        :type classifier_list_with_property: np.ndarray of :class:`.art.estimators.estimator.BaseEstimator`
+        :param classifier_list_without_property: list of all shadow classifiers that were trained on a dataset which does NOT fulfill the property
+        :type classifier_list_without_property: np.ndarray of :class:`.art.estimators.estimator.BaseEstimator`
+        :return: tupel (Meta-training set, label set)
+        :rtype: tupel (np.ndarray, np.ndarray)
         """
-        raise NotImplementedError
+        feature_list_with_property = np.array([self.feature_extraction(classifier) for classifier in classifier_list_with_property])
+        feature_list_without_property = np.array([self.feature_extraction(classifier) for classifier in classifier_list_without_property])
+        meta_labels = np.concatenate(np.ones(len(feature_list_with_property)), np.zeros(len(feature_list_without_property)))
+        meta_features = np.concatenate(feature_list_with_property, feature_list_without_property)
+        return meta_features, meta_labels
 
     def train_meta_classifier(self, meta_training_set):
         """

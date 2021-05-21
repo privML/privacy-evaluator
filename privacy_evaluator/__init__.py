@@ -1,1 +1,1 @@
-pass
+from privacy_evaluator import attacks
