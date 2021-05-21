@@ -7,11 +7,11 @@ from train import trainer
 model_name = "FCNeuralNet"  # "ResNet50"
 
 # hyper-parameters
-num_epochs = 10
+num_epochs = 12
 batch_size = 500
-learning_rate = 0.001
-weight_decay = 0.002
-dropout = 0.3
+learning_rate = 0.002
+weight_decay = 0
+dropout = 0
 
 # put your designed sample distribution here
 # each line corresponds to an experiment

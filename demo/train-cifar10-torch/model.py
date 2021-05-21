@@ -90,6 +90,6 @@ class FCNeuralNet(nn.Module):
         )
 
     def forward(self, x):
-        x = self.flatten(x)
-        out = self.fc(x)
+        out = self.flatten(x)
+        out = self.fc(out)
         return out

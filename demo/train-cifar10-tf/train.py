@@ -74,5 +74,5 @@ def trainer(
             model_name = "tf_fc_class_0_{}_class_1_{}".format(
                 size_dict[0], size_dict[1]
             )
-            model.save(os.path.join("../../", model_name))
+            model.save(os.path.join("../", model_name))
     return float(round(best_acc, 4))

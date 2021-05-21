@@ -84,4 +84,8 @@ def trainer(
         epoch_acc = sum(accuracies) / len(accuracies)
         if epoch_acc > best_acc:
             best_acc = epoch_acc
+            model_name = "torch_fc_class_0_{}_class_1_{}.pth".format(
+                size_dict[0], size_dict[1]
+            )
+            torch.save(model, os.path.join("../../", model_name))
     return float(round(best_acc, 4))

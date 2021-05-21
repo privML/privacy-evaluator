@@ -16,7 +16,7 @@ class ResNet50(keras.Model):
         dropout: Drop-out rate in the fully-connected layer.
     """
 
-    def __init__(self, num_classes=2, dropout=0):
+    def __init__(self, num_classes: int = 2, dropout: float = 0):
         super(ResNet50, self).__init__()
 
         self.resnet = tf.keras.applications.ResNet50(
@@ -64,7 +64,7 @@ class FCNeuralNet(keras.Model):
             ]
         )
 
-    def forward(self, x):
-        x = self.flatten(x)
-        out = self.fc(x)
+    def call(self, x):
+        out = self.flatten(x)
+        out = self.fc(out)
         return out
