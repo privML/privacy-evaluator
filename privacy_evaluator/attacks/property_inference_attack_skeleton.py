@@ -47,7 +47,8 @@ class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
         """
 
         # Filter out all trainable parameters (from every layer)
-        if isinstance(model.model, torch.nn.Module): 
+        if isinstance(model.model, torch.nn.Module):
+            print("Handling PyTorch model.") 
             model_parameters = list(filter(lambda p: p.requires_grad, model.model.parameters()))
             # Store the remaining parameters in a concatenated 1D numPy-array
             model_parameters = np.concatenate([el.detach().numpy().flatten() for el in model_parameters]).flatten()
@@ -67,10 +68,13 @@ class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
         :return: tupel (Meta-training set, label set)
         :rtype: tupel (np.ndarray, np.ndarray)
         """
+        print(classifier_list_with_property)
+        print([self.feature_extraction(classifier) for classifier in classifier_list_with_property])
         feature_list_with_property = np.array([self.feature_extraction(classifier) for classifier in classifier_list_with_property])
         feature_list_without_property = np.array([self.feature_extraction(classifier) for classifier in classifier_list_without_property])
-        meta_labels = np.concatenate(np.ones(len(feature_list_with_property)), np.zeros(len(feature_list_without_property)))
-        meta_features = np.concatenate(feature_list_with_property, feature_list_without_property)
+        print(feature_list_with_property)
+        meta_labels = np.concatenate([np.ones(len(feature_list_with_property)), np.zeros(len(feature_list_without_property))])
+        meta_features = np.concatenate([feature_list_with_property, feature_list_without_property])
         return meta_features, meta_labels
 
     def train_meta_classifier(self, meta_training_set):
