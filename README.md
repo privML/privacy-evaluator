@@ -15,7 +15,7 @@ Developers and anyone else with a PyTorch or TensorFlow neural network model at 
 - [Python 3.7](https://www.python.org/)
 - [Adversarial Robustness Toolbox (ART) 1.6.1](https://github.com/Trusted-AI/adversarial-robustness-toolbox)
 - [PyTorch](https://pytorch.org/)
-- [Tensorflow](https://www.tensorflow.org/)
+- [Tensorflow v2](https://www.tensorflow.org/)
 - for detailed list see [requirements.txt](requirements.txt) 
 
 ## Installation
