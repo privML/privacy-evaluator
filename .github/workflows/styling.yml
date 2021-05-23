@@ -2,7 +2,7 @@ name: Styling with black
 
 on:
   pull_request:
-    branches: [ main, team1sprint2 ]
+    branches: [ team2sprint2 ]
     types:
       - opened
       - edited
