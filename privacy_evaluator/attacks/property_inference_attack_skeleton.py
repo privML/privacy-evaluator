@@ -2,13 +2,18 @@ from privacy_evaluator.attacks.property_inference_attack import PropertyInferenc
 import numpy as np
 import torch
 
+from sklearn.svm import SVC
+
+from art.attacks.evasion import FastGradientMethod
+from art.estimators.classification import SklearnClassifier
+
 
 class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
     def __init__(
-            self,
-            model,
-            property_shadow_training_sets,
-            negation_property_shadow_training_sets,
+        self,
+        model,
+        property_shadow_training_sets,
+        negation_property_shadow_training_sets,
     ):
         """
         Initialize the Property Inference Attack Class.
@@ -48,17 +53,24 @@ class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
 
         # Filter out all trainable parameters (from every layer)
         if isinstance(model.model, torch.nn.Module):
-            print("Handling PyTorch model.") 
-            model_parameters = list(filter(lambda p: p.requires_grad, model.model.parameters()))
+            model_parameters = list(
+                filter(lambda p: p.requires_grad, model.model.parameters())
+            )
             # Store the remaining parameters in a concatenated 1D numPy-array
-            model_parameters = np.concatenate([el.detach().numpy().flatten() for el in model_parameters]).flatten()
+            model_parameters = np.concatenate(
+                [el.detach().numpy().flatten() for el in model_parameters]
+            ).flatten()
         # If model is a TensorFlow instance:
         else:
-            model_parameters = np.concatenate([el.numpy().flatten() for el in model.model.trainable_variables]).flatten()
+            model_parameters = np.concatenate(
+                [el.numpy().flatten() for el in model.model.trainable_variables]
+            ).flatten()
         # return model_parameters as features of model
         return model_parameters
 
-    def create_meta_training_set(self, classifier_list_with_property, classifier_list_without_property):
+    def create_meta_training_set(
+        self, classifier_list_with_property, classifier_list_without_property
+    ):
         """
         Create meta training set out of shadow classifiers.
         :param classifier_list_with_property: list of all shadow classifiers that were trained on a dataset which fulfills the property
@@ -68,25 +80,52 @@ class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
         :return: tupel (Meta-training set, label set)
         :rtype: tupel (np.ndarray, np.ndarray)
         """
-        print(classifier_list_with_property)
-        print([self.feature_extraction(classifier) for classifier in classifier_list_with_property])
-        feature_list_with_property = np.array([self.feature_extraction(classifier) for classifier in classifier_list_with_property])
-        feature_list_without_property = np.array([self.feature_extraction(classifier) for classifier in classifier_list_without_property])
-        print(feature_list_with_property)
-        meta_labels = np.concatenate([np.ones(len(feature_list_with_property)), np.zeros(len(feature_list_without_property))])
-        meta_features = np.concatenate([feature_list_with_property, feature_list_without_property])
+        # Apply self.feature_extraction on each shadow classifier and concatenate all features into one array
+        feature_list_with_property = np.array(
+            [
+                self.feature_extraction(classifier)
+                for classifier in classifier_list_with_property
+            ]
+        )
+        feature_list_without_property = np.array(
+            [
+                self.feature_extraction(classifier)
+                for classifier in classifier_list_without_property
+            ]
+        )
+        meta_features = np.concatenate(
+            [feature_list_with_property, feature_list_without_property]
+        )
+        # Create corresponding labels
+        # meta_labels = np.concatenate([np.ones(len(feature_list_with_property)), np.zeros(len(feature_list_without_property))])
+        # For scikit-learn SVM classifier we need one hot encoded labels, therefore:
+        meta_labels = np.concatenate(
+            [
+                np.array([[1, 0]] * len(feature_list_with_property)),
+                np.array([[0, 1]] * len(feature_list_without_property)),
+            ]
+        )
         return meta_features, meta_labels
 
-    def train_meta_classifier(self, meta_training_set):
+    def train_meta_classifier(self, meta_training_X, meta_training_y):
         """
         Train meta-classifier with the meta-training set.
-        :param meta_training_set: Set of feature representation of each shadow classifier,
-        labeled according to whether property or negotiation of property is fulfilled.
-        :type meta_training_set: np.ndarray
+        :param meta_training_X: Set of feature representation of each shadow classifier.
+        :type meta_training_X: np.ndarray
+        :param meta_training_y: Set of labels for each shadow classifier, according to whether property is fullfilled (1) or not (0).
+        :type meta_training_y: np.ndarray
         :return: Meta classifier
         :rtype: "CLASSIFIER_TYPE" (to be found in `.art.utils`) # TODO only binary classifiers - special classifier?
         """
-        raise NotImplementedError
+        # Create a scikit SVM model, which will be trained on meta_training
+        model = SVC(C=1.0, kernel="rbf")
+
+        # Turn into ART classifier
+        classifier = SklearnClassifier(model=model)
+
+        # Train the ART classifier as meta_classifier and return
+        classifier.fit(meta_training_X, meta_training_y)
+        return classifier
 
     def perform_prediction(self, meta_classifier, feature_extraction_target_model):
         """

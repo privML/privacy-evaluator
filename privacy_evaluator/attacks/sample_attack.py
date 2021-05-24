@@ -7,5 +7,3 @@ class Sample_Attack(Attack_Interface):
 
     def perform_attack(params):
         pass
-
-
