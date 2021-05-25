@@ -1,11 +1,10 @@
 from privacy_evaluator.attacks.property_inference_attack import PropertyInferenceAttack
 import numpy as np
 import torch
-
 from sklearn.svm import SVC
-
 from art.attacks.evasion import FastGradientMethod
 from art.estimators.classification import SklearnClassifier
+from typing import Tuple, Any
 
 
 class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
