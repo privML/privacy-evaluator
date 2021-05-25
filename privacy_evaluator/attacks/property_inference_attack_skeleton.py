@@ -45,7 +45,7 @@ class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
         """
         Extract the features of a given model.
         :param model: a model from which the features should be extracted
-        :type model: :class:`.art.estimators.estimator.BaseEstimator`
+        :type model: :class:`.art.estimators.estimator.BaseEstimator` # BaseEstimator is very general and could be specified to art.classifier
         :return: feature extraction
         :rtype: np.ndarray
         """
@@ -73,9 +73,9 @@ class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
         """
         Create meta training set out of shadow classifiers.
         :param classifier_list_with_property: list of all shadow classifiers that were trained on a dataset which fulfills the property
-        :type classifier_list_with_property: np.ndarray of :class:`.art.estimators.estimator.BaseEstimator`
+        :type classifier_list_with_property: iterable object of :class:`.art.estimators.estimator.BaseEstimator`
         :param classifier_list_without_property: list of all shadow classifiers that were trained on a dataset which does NOT fulfill the property
-        :type classifier_list_without_property: np.ndarray of :class:`.art.estimators.estimator.BaseEstimator`
+        :type classifier_list_without_property: iterable object of :class:`.art.estimators.estimator.BaseEstimator`
         :return: tupel (Meta-training set, label set)
         :rtype: tupel (np.ndarray, np.ndarray)
         """
@@ -111,10 +111,10 @@ class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
         Train meta-classifier with the meta-training set.
         :param meta_training_X: Set of feature representation of each shadow classifier.
         :type meta_training_X: np.ndarray
-        :param meta_training_y: Set of labels for each shadow classifier, according to whether property is fullfilled (1) or not (0).
+        :param meta_training_y: Set of (one-hot-encoded) labels for each shadow classifier, according to whether property is fullfilled ([1, 0]) or not ([0, 1]).
         :type meta_training_y: np.ndarray
         :return: Meta classifier
-        :rtype: "CLASSIFIER_TYPE" (to be found in `.art.utils`) # TODO only binary classifiers - special classifier?
+        :rtype: "CLASSIFIER_TYPE" (to be found in `.art.utils`) # classifier.predict is an one-hot-encoded label vector: [1, 0] means target model has the property, [0, 1] means it does not.
         """
         # Create a scikit SVM model, which will be trained on meta_training
         model = SVC(C=1.0, kernel="rbf")
