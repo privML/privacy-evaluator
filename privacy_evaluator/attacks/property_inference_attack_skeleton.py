@@ -1,45 +1,140 @@
-from privacy_evaluator.attacks.property_inference_attack import PropertyInferenceAttack
+from privacy_evaluator.attacks.attack import Attack
+from privacy_evaluator.classifiers.classifier import Classifier
+import demo.train-cifar10-torch.data as data
+import train #slightly changed from demo.train-cifar10-torch.train
+
+import math
 import numpy as np
 import torch
 from sklearn.svm import SVC
 from art.attacks.evasion import FastGradientMethod
 from art.estimators.classification import SklearnClassifier
-from typing import Tuple, Any
+from typing import Tuple, Any, Dict, List
 
 
-class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
+class PropertyInferenceAttack(Attack):
     def __init__(
-        self,
-        model,
-        property_shadow_training_sets,
-        negation_property_shadow_training_sets,
+            self,
+            target_model: Classifier
     ):
         """
         Initialize the Property Inference Attack Class.
-        :param model: the target model to be attacked
-        :type model: :class:`.art.estimators.estimator.BaseEstimator`
-        :param property_shadow_training_sets: the shadow training sets that fulfill property
-        :type property_shadow_training_sets: np.ndarray # TODO
-        :param negation_property_shadow_training_sets: the shadow training sets that fulfill negation of property
-        :type negation_property_shadow_training_sets: np.ndarray # TODO
+        :param target_model: the target model to be attacked
         """
 
-        super().__init__(
-            model, property_shadow_training_sets, negation_property_shadow_training_sets
-        )
-        # TODO: create shadow_training_set
-        shadow_training_set = None
-        self.shadow_training_set = shadow_training_set
+        super().__init__(target_model, None, None, None, None)
 
-    def train_shadow_classifiers(self, shadow_training_set):
+
+    def create_shadow_training_set(self, dataset: torch.utils.data.Dataset,
+                                   amount_sets: int,
+                                   size_set: int,
+                                   property_num_elements_per_classes: Dict[int, int]
+        ) -> Tuple[List[torch.utils.data.Dataset], List[torch.utils.data.Dataset], Dict[int, int], Dict[int, int]]:
+        """
+        Create the shadow training sets, half fulfill the property, half fulfill the negation of the property.
+        The function works for the specific binary case that the property is a fixed distribution specified in the input
+        and the negation of the property is a balanced distribution.
+        :param dataset: Dataset out of which shadow training sets should be created
+        :param amount_sets: how many shadow training sets should be created
+        :param size_set: size of one shadow training set for one shadow classifier
+        :param property_num_elements_per_classes: number of elements per class, this is the property
+        :return: shadow training sets for property,
+                 shadow training sets for negation,
+                 dictionary holding the unbalanced class distribution (=property),
+                 dictionary holding the balanced class distribution (=negation of property)
+        """
+
+        amount_property = int(round(amount_sets / 2))
+
+        property_training_sets = []
+        neg_property_training_sets = []
+
+        #PROPERTY
+        #according to property_num_elements_per_classes we select the classes and take random elements out of the dataset
+        #and create the shadow training sets with these elements"""
+        for i in range(amount_property):
+            shadow_training_set = []
+            for class_id, num_elements in property_num_elements_per_classes.items():
+                subset = data.subset(dataset, class_id, num_elements)
+                shadow_training_set.append(subset)
+            shadow_training_set = torch.utils.data.ConcatDataset(shadow_training_set)
+            property_training_sets.append(shadow_training_set)
+
+
+        #NEG_PROPERTY (BALANCED)
+        #create balanced shadow training sets with the classes specified in property_num_elements_per_classes
+        num_elements = int(round(size_set / len(property_num_elements_per_classes)))
+        for i in range(amount_property):
+            shadow_training_set = []
+            for class_id, _ in property_num_elements_per_classes.items():
+                subset = data.subset(dataset, class_id, num_elements)
+                shadow_training_set.append(subset)
+            shadow_training_set = torch.utils.data.ConcatDataset(shadow_training_set)
+            neg_property_training_sets.append(shadow_training_set)
+
+
+        #create neg_property_num_elements_per_classes, later needed in train_shadow_classifier
+        neg_property_num_elements_per_classes = {class_id: num_elements for class_id in property_num_elements_per_classes.keys()}
+
+        return property_training_sets, neg_property_training_sets, property_num_elements_per_classes, neg_property_num_elements_per_classes
+
+    def train_shadow_classifiers(self, property_training_sets: List[torch.utils.data.Dataset],
+                                 neg_property_training_sets: List[torch.utils.data.Dataset],
+                                 property_num_elements_per_classes: Dict[int, int],
+                                 neg_property_num_elements_per_classes: Dict[int, int],
+                                 input_shape: Tuple[int, ...]):
         """
         Train shadow classifiers with each shadow training set (follows property or negation of property).
-        :param shadow_training_set: datasets used for shadow_classifiers
-        :type shadow_training_set: np.ndarray # TODO
-        :return: shadow classifiers
-        :rtype: "CLASSIFIER_TYPE" (to be found in `.art.utils`)
+        :param shadow_training_sets_property: datasets fulfilling the property to train 50 % of shadow_classifiers
+        :param shadow_training_sets_neg_property: datasets not fulfilling the property to train 50 % of shadow_classifiers
+        :param property_num_elements_per_classes: unbalanced class distribution (= property)
+        :param neg_property_num_elements_per_classes: balanced class distribution (= negation of property)
+        :param input_shape: Input shape of a data point for the classifier. Needed in _to_art_classifier.
+        :return: list of shadow classifiers for the property,
+                 list of shadow classifiers for the negation of the property,
+                 accuracies for the property shadow classifiers,
+                 accuracies for the negation of the property classifiers
+        :rtype: Tuple[  List[:class:`.art.estimators.estimator.BaseEstimator`],
+                        List[:class:`.art.estimators.estimator.BaseEstimator`],
+                        List[float],
+                        List[float]]
         """
-        raise NotImplementedError
+
+        shadow_classifiers_property = []
+        shadow_classifiers_neg_property = []
+        accuracy_prop = []
+        accuracy_neg = []
+
+        num_classes = len(property_num_elements_per_classes)
+
+        for shadow_training_set in property_training_sets:
+            len_train_set = math.ceil(len(shadow_training_set) * 0.7)
+            len_test_set = math.floor(len(shadow_training_set) * 0.3)
+
+            train_set, test_set = torch.utils.data.random_split(shadow_training_set, [len_train_set,len_test_set])
+            accuracy, model_property = train.trainer(train_set, test_set, property_num_elements_per_classes, "FCNeuralNet")
+
+            # change pytorch classifier to art classifier
+            art_model_property = Classifier._to_art_classifier(model_property, num_classes, input_shape)
+
+            shadow_classifiers_property.append(art_model_property)
+            accuracy_prop.append(accuracy)
+
+        for shadow_training_set in neg_property_training_sets:
+            len_train_set = math.ceil(len(shadow_training_set) * 0.7)
+            len_test_set = math.floor(len(shadow_training_set) * 0.3)
+
+            train_set, test_set = torch.utils.data.random_split(shadow_training_set, [len_train_set,len_test_set])
+            accuracy, model_neg_property = train.trainer(train_set, test_set, neg_property_num_elements_per_classes, "FCNeuralNet")
+
+            # change pytorch classifier to art classifier
+            art_model_neg_property = Classifier._to_art_classifier(model_neg_property, num_classes, input_shape)
+
+            shadow_classifiers_neg_property.append(art_model_neg_property)
+            accuracy_neg.append(accuracy)
+
+        return shadow_classifiers_property, shadow_classifiers_neg_property, accuracy_prop, accuracy_neg
+
 
     def feature_extraction(self, model):
         """
@@ -139,7 +234,8 @@ class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
         """
         raise NotImplementedError
 
-    def perform_attack(self, params):
+    def attack(self, params):
+        # TODO or infer, look at MembershipInference from Team 1
         """
         Perform Property Inference attack.
         :param params: Example data to run through target model for feature extraction
