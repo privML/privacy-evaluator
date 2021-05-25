@@ -3,12 +3,13 @@ import numpy as np
 from typing import Tuple, Any
 
 
+
 class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
     def __init__(
-        self,
-        model,
-        property_shadow_training_sets,
-        negation_property_shadow_training_sets,
+            self,
+            model,
+            property_shadow_training_sets,
+            negation_property_shadow_training_sets,
     ):
         """
         Initialize the Property Inference Attack Class.
@@ -68,9 +69,7 @@ class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
         """
         raise NotImplementedError
 
-    def perform_prediction(
-        self, meta_classifier, feature_extraction_target_model
-    ) -> Any:
+    def perform_prediction(self, meta_classifier, feature_extraction_target_model):
         """
         "Actual" attack: Meta classifier gets feature extraction of target model as input, outputs property prediction.
         :param meta_classifier: A classifier
@@ -81,11 +80,7 @@ class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
         :return: Prediction whether property or negation of property is fulfilled for target data set
         :rtype: # TODO
         """
-        assert meta_classifier.input_shape() == tuple(
-            feature_extraction_target_model.shape
-        )
-        predictions = meta_classifier.predict(x=feature_extraction_target_model)
-        return predictions
+        raise NotImplementedError
 
     def perform_attack(self, params):
         """
