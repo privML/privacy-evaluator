@@ -33,6 +33,10 @@ class CIFAR10(Dataset):
         transform_train = transforms.Compose(
             [
                 transforms.ToTensor(),
+                # The first tuple contains the mean for every RGB channel
+                # computed over the training set.
+                # The second tuple contains the standard deviation for every
+                # RGB channel computed over the training set.
                 transforms.Normalize(
                     (0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)
                 ),
