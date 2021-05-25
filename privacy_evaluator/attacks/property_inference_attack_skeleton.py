@@ -1,5 +1,7 @@
 from privacy_evaluator.attacks.property_inference_attack import PropertyInferenceAttack
 import numpy as np
+from typing import Tuple, Any
+
 
 
 class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
