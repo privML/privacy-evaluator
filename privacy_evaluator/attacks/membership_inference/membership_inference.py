@@ -38,12 +38,11 @@ class MembershipInferenceAttack(Attack):
         self._art_attack = self._init_art_attack(target_model, **kwargs)
         self._art_attack_model_fitted = False
 
-    def attack(self, x: np.ndarray, y: np.ndarray, *args, **kwargs) -> np.ndarray:
+    def attack(self, x: np.ndarray, y: np.ndarray, **kwargs) -> np.ndarray:
         """Performs the membership inference attack on the target model.
 
         :param x: Input data to attack.
         :param y: True labels for `x`.
-        :param args: Arguments of the attack.
         :param kwargs: Keyword arguments of the attack.
         :return: An array holding the inferred membership status, 1 indicates a member and 0 indicates non-member.
         :raises Exception: If attack model is not fitted.
@@ -54,9 +53,7 @@ class MembershipInferenceAttack(Attack):
             )
         return self._art_attack.infer(x, y)
 
-    def attack_output(
-        self, x: np.ndarray, y: np.ndarray, y_attack: np.ndarray
-    ) -> Dict:
+    def attack_output(self, x: np.ndarray, y: np.ndarray, y_attack: np.ndarray) -> Dict:
         """Creates attack output metrics in an extractable format.
 
         :param x: Input data to attack.
@@ -104,13 +101,13 @@ class MembershipInferenceAttack(Attack):
         """Returns the matching ART class for this class.
 
         :return: Matching ART class.
-        :raises ValueError: If `_ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS` is not defined.
+        :raises AttributeError: If `_ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS` is not defined.
 
         """
         try:
             return cls._ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS
         except AttributeError:
-            raise ValueError(
+            raise AttributeError(
                 "Attribute `_ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS` needs to be defined in subclass."
             )
 
@@ -130,8 +127,10 @@ class MembershipInferenceAttack(Attack):
     def _fit_decorator(fit_function):
         """Decorator for the `fit()` methods of the subclasses.
 
-        Checks weather attack model was already fitted. If not, attack model is fitted and
+        Defines a decorator method which checks weather attack model was already fitted. If not, attack model is fitted and
         `_art_attack_model_fitted` is set to `True`.
+
+        :return: Decorator method.
         """
         def __fit_decorator(self, **kwargs):
             if self._art_attack_model_fitted is False:

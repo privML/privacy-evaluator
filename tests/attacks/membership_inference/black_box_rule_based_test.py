@@ -12,6 +12,6 @@ def test_membership_inference_black_box_rule_based_attack():
         load_dcti(), nb_classes=CIFAR10.N_CLASSES, input_shape=CIFAR10.INPUT_SHAPE
     )
     attack = MembershipInferenceBlackBoxRuleBasedAttack(
-        target_model, x_train[:100], y_train[:100], x_test[:100], y_test[:100]
+        target_model, x_train, y_train, x_test, y_test
     )
-    attack.attack()
+    attack.attack(x_train, y_train)
