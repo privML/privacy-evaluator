@@ -1,18 +1,29 @@
 import pytest
 
-from privacy_evaluator.attacks.property_inference_attack_skeleton import (
-    PropertyInferenceAttackSkeleton,
-)
-from privacy_evaluator.models.torch.dcti import load_dcti
-from privacy_evaluator.datasets.cifar10 import CIFAR10
+from privacy_evaluator.attacks.property_inference_attack import PropertyInferenceAttack
 from privacy_evaluator.classifiers.classifier import Classifier
+from privacy_evaluator.models.train_cifar10_torch.data import dataset_downloader, new_dataset_from_size_dict
+from privacy_evaluator.models.train_cifar10_torch.train import trainer_out_model
 
 
-def test_membership_inference_attack():
-    x_train, y_train, x_test, y_test = CIFAR10.numpy()
-    target_model = Classifier(
-        load_dcti(), nb_classes=CIFAR10.N_CLASSES, input_shape=CIFAR10.INPUT_SHAPE
+def test_property_inference_attack():
+    train_dataset, test_dataset = dataset_downloader()
+    input_shape = [32, 32, 3]
+    num_classes = 2
+    num_elements_per_classes = {0: 5000, 1: 5000}
+
+    train_set, test_set = new_dataset_from_size_dict(
+            train_dataset, test_dataset, num_elements_per_classes
+        )
+
+    accuracy, model = trainer_out_model(
+        train_set, test_set, num_elements_per_classes, "FCNeuralNet"
     )
-    attack = PropertyInferenceAttackSkeleton(target_model) #TODO inputs correct?
-    with pytest.raises(NotImplementedError):
-        attack.perform_attack() #TODO no parameter?
+
+    # change pytorch classifier to art classifier
+    target_model = Classifier._to_art_classifier(
+        model, num_classes, input_shape
+    )
+
+    attack = PropertyInferenceAttack(target_model)
+    attack.attack()

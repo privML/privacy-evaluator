@@ -2,7 +2,11 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 from privacy_evaluator.models.train_cifar10_torch.metric import accuracy
-from privacy_evaluator.models.train_cifar10_torch.model import ResNet18, ResNet50, FCNeuralNet
+from privacy_evaluator.models.train_cifar10_torch.model import (
+    ResNet18,
+    ResNet50,
+    FCNeuralNet,
+)
 
 import os
 from typing import Dict

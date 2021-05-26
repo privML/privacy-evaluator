@@ -1,7 +1,10 @@
 import torch
 import torchvision
-from data import dataset_downloader, new_dataset_from_size_dict
-from train import trainer
+from privacy_evaluator.models.train_cifar10_torch.data import (
+    dataset_downloader,
+    new_dataset_from_size_dict,
+)
+from privacy_evaluator.models.train_cifar10_torch.train import trainer
 
 # alternative: "ResNet18"
 model_name = "FCNeuralNet"  # "ResNet50"
