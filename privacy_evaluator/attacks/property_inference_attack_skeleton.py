@@ -126,18 +126,20 @@ class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
         classifier.fit(meta_training_X, meta_training_y)
         return classifier
 
-    def perform_prediction(self, meta_classifier, feature_extraction_target_model):
+    def perform_prediction(self, meta_classifier, feature_extraction_target_model) -> np.ndarray:
         """
         "Actual" attack: Meta classifier gets feature extraction of target model as input, outputs property prediction.
         :param meta_classifier: A classifier
-        :type meta_classifier: "CLASSIFIER_TYPE" (to be found in `.art.utils`)
-        # TODO only binary classifiers-special classifier?
+        :type meta_classifier: "CLASSIFIER_TYPE" (to be found in .art.estimators)
         :param feature_extraction_target_model: extracted features of target model
         :type feature_extraction_target_model: np.ndarray
-        :return: Prediction whether property or negation of property is fulfilled for target data set
-        :rtype: # TODO
+        :return: Prediction given as probability distribution vector whether property or negation of property is
+        fulfilled for target data set
+        :rtype: np.ndarray with shape (1, 2)
         """
-        raise NotImplementedError
+        assert meta_classifier.input_shape() == tuple(feature_extraction_target_model.shape)
+        predictions = meta_classifier.predict(x=feature_extraction_target_model)
+        return predictions
 
     def perform_attack(self, params):
         """
