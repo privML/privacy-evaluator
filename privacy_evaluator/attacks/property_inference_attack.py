@@ -275,8 +275,8 @@ class PropertyInferenceAttack(Attack):
         Perform Property Inference attack.
         :param params: Example data to run through target model for feature extraction
         :type params: np.ndarray
-        :return: prediction about property of target data set
-        :rtype: # TODO
+        :return: prediction about property of target data set [[1, 0]]-> property; [[0, 1]]-> negation property
+        :rtype: np.ndarray with shape (1, 2)
         """
         # load data (CIFAR10)
         train_dataset, test_dataset = data.dataset_downloader()
