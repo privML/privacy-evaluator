@@ -1,7 +1,7 @@
 from privacy_evaluator.attacks.attack import Attack
 from privacy_evaluator.classifiers.classifier import Classifier
 import demo.train-cifar10-torch.data as data
-import train #slightly changed from demo.train-cifar10-torch.train
+import demo.train-cifar10-torch.train as train
 
 import math
 import numpy as np
@@ -112,7 +112,7 @@ class PropertyInferenceAttack(Attack):
             len_test_set = math.floor(len(shadow_training_set) * 0.3)
 
             train_set, test_set = torch.utils.data.random_split(shadow_training_set, [len_train_set,len_test_set])
-            accuracy, model_property = train.trainer(train_set, test_set, property_num_elements_per_classes, "FCNeuralNet")
+            accuracy, model_property = train.trainer_out_model(train_set, test_set, property_num_elements_per_classes, "FCNeuralNet")
 
             # change pytorch classifier to art classifier
             art_model_property = Classifier._to_art_classifier(model_property, num_classes, input_shape)
@@ -125,7 +125,7 @@ class PropertyInferenceAttack(Attack):
             len_test_set = math.floor(len(shadow_training_set) * 0.3)
 
             train_set, test_set = torch.utils.data.random_split(shadow_training_set, [len_train_set,len_test_set])
-            accuracy, model_neg_property = train.trainer(train_set, test_set, neg_property_num_elements_per_classes, "FCNeuralNet")
+            accuracy, model_neg_property = train.trainer_out_model(train_set, test_set, neg_property_num_elements_per_classes, "FCNeuralNet")
 
             # change pytorch classifier to art classifier
             art_model_neg_property = Classifier._to_art_classifier(model_neg_property, num_classes, input_shape)
