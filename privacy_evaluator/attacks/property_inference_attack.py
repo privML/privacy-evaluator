@@ -243,6 +243,7 @@ class PropertyInferenceAttack(Attack):
         :return: prediction about property of target data set
         :rtype: # TODO
         """
+        
         shadow_classifier = self.train_shadow_classifiers(self.shadow_training_set)
         # TODO: create feature extraction for all shadow classifiers
         feature_extraction_list = None
