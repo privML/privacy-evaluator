@@ -1,7 +1,6 @@
 from privacy_evaluator.attacks.attack import Attack
 from privacy_evaluator.classifiers.classifier import Classifier
-import demo.train-cifar10-torch.data as data
-import demo.train-cifar10-torch.train as train
+from privacy_evaluator.models.train_cifar10_torch import data, train
 
 import math
 import numpy as np
@@ -13,10 +12,7 @@ from typing import Tuple, Any, Dict, List
 
 
 class PropertyInferenceAttack(Attack):
-    def __init__(
-            self,
-            target_model: Classifier
-    ):
+    def __init__(self, target_model: Classifier):
         """
         Initialize the Property Inference Attack Class.
         :param target_model: the target model to be attacked
@@ -24,12 +20,18 @@ class PropertyInferenceAttack(Attack):
 
         super().__init__(target_model, None, None, None, None)
 
-
-    def create_shadow_training_set(self, dataset: torch.utils.data.Dataset,
-                                   amount_sets: int,
-                                   size_set: int,
-                                   property_num_elements_per_classes: Dict[int, int]
-        ) -> Tuple[List[torch.utils.data.Dataset], List[torch.utils.data.Dataset], Dict[int, int], Dict[int, int]]:
+    def create_shadow_training_set(
+        self,
+        dataset: torch.utils.data.Dataset,
+        amount_sets: int,
+        size_set: int,
+        property_num_elements_per_classes: Dict[int, int],
+    ) -> Tuple[
+        List[torch.utils.data.Dataset],
+        List[torch.utils.data.Dataset],
+        Dict[int, int],
+        Dict[int, int],
+    ]:
         """
         Create the shadow training sets, half fulfill the property, half fulfill the negation of the property.
         The function works for the specific binary case that the property is a fixed distribution specified in the input
@@ -49,9 +51,9 @@ class PropertyInferenceAttack(Attack):
         property_training_sets = []
         neg_property_training_sets = []
 
-        #PROPERTY
-        #according to property_num_elements_per_classes we select the classes and take random elements out of the dataset
-        #and create the shadow training sets with these elements"""
+        # PROPERTY
+        # according to property_num_elements_per_classes we select the classes and take random elements out of the dataset
+        # and create the shadow training sets with these elements"""
         for i in range(amount_property):
             shadow_training_set = []
             for class_id, num_elements in property_num_elements_per_classes.items():
@@ -60,9 +62,8 @@ class PropertyInferenceAttack(Attack):
             shadow_training_set = torch.utils.data.ConcatDataset(shadow_training_set)
             property_training_sets.append(shadow_training_set)
 
-
-        #NEG_PROPERTY (BALANCED)
-        #create balanced shadow training sets with the classes specified in property_num_elements_per_classes
+        # NEG_PROPERTY (BALANCED)
+        # create balanced shadow training sets with the classes specified in property_num_elements_per_classes
         num_elements = int(round(size_set / len(property_num_elements_per_classes)))
         for i in range(amount_property):
             shadow_training_set = []
@@ -72,17 +73,27 @@ class PropertyInferenceAttack(Attack):
             shadow_training_set = torch.utils.data.ConcatDataset(shadow_training_set)
             neg_property_training_sets.append(shadow_training_set)
 
+        # create neg_property_num_elements_per_classes, later needed in train_shadow_classifier
+        neg_property_num_elements_per_classes = {
+            class_id: num_elements
+            for class_id in property_num_elements_per_classes.keys()
+        }
 
-        #create neg_property_num_elements_per_classes, later needed in train_shadow_classifier
-        neg_property_num_elements_per_classes = {class_id: num_elements for class_id in property_num_elements_per_classes.keys()}
+        return (
+            property_training_sets,
+            neg_property_training_sets,
+            property_num_elements_per_classes,
+            neg_property_num_elements_per_classes,
+        )
 
-        return property_training_sets, neg_property_training_sets, property_num_elements_per_classes, neg_property_num_elements_per_classes
-
-    def train_shadow_classifiers(self, property_training_sets: List[torch.utils.data.Dataset],
-                                 neg_property_training_sets: List[torch.utils.data.Dataset],
-                                 property_num_elements_per_classes: Dict[int, int],
-                                 neg_property_num_elements_per_classes: Dict[int, int],
-                                 input_shape: Tuple[int, ...]):
+    def train_shadow_classifiers(
+        self,
+        property_training_sets: List[torch.utils.data.Dataset],
+        neg_property_training_sets: List[torch.utils.data.Dataset],
+        property_num_elements_per_classes: Dict[int, int],
+        neg_property_num_elements_per_classes: Dict[int, int],
+        input_shape: Tuple[int, ...],
+    ):
         """
         Train shadow classifiers with each shadow training set (follows property or negation of property).
         :param shadow_training_sets_property: datasets fulfilling the property to train 50 % of shadow_classifiers
@@ -111,11 +122,17 @@ class PropertyInferenceAttack(Attack):
             len_train_set = math.ceil(len(shadow_training_set) * 0.7)
             len_test_set = math.floor(len(shadow_training_set) * 0.3)
 
-            train_set, test_set = torch.utils.data.random_split(shadow_training_set, [len_train_set,len_test_set])
-            accuracy, model_property = train.trainer_out_model(train_set, test_set, property_num_elements_per_classes, "FCNeuralNet")
+            train_set, test_set = torch.utils.data.random_split(
+                shadow_training_set, [len_train_set, len_test_set]
+            )
+            accuracy, model_property = train.trainer_out_model(
+                train_set, test_set, property_num_elements_per_classes, "FCNeuralNet"
+            )
 
             # change pytorch classifier to art classifier
-            art_model_property = Classifier._to_art_classifier(model_property, num_classes, input_shape)
+            art_model_property = Classifier._to_art_classifier(
+                model_property, num_classes, input_shape
+            )
 
             shadow_classifiers_property.append(art_model_property)
             accuracy_prop.append(accuracy)
@@ -124,17 +141,30 @@ class PropertyInferenceAttack(Attack):
             len_train_set = math.ceil(len(shadow_training_set) * 0.7)
             len_test_set = math.floor(len(shadow_training_set) * 0.3)
 
-            train_set, test_set = torch.utils.data.random_split(shadow_training_set, [len_train_set,len_test_set])
-            accuracy, model_neg_property = train.trainer_out_model(train_set, test_set, neg_property_num_elements_per_classes, "FCNeuralNet")
+            train_set, test_set = torch.utils.data.random_split(
+                shadow_training_set, [len_train_set, len_test_set]
+            )
+            accuracy, model_neg_property = train.trainer_out_model(
+                train_set,
+                test_set,
+                neg_property_num_elements_per_classes,
+                "FCNeuralNet",
+            )
 
             # change pytorch classifier to art classifier
-            art_model_neg_property = Classifier._to_art_classifier(model_neg_property, num_classes, input_shape)
+            art_model_neg_property = Classifier._to_art_classifier(
+                model_neg_property, num_classes, input_shape
+            )
 
             shadow_classifiers_neg_property.append(art_model_neg_property)
             accuracy_neg.append(accuracy)
 
-        return shadow_classifiers_property, shadow_classifiers_neg_property, accuracy_prop, accuracy_neg
-
+        return (
+            shadow_classifiers_property,
+            shadow_classifiers_neg_property,
+            accuracy_prop,
+            accuracy_neg,
+        )
 
     def feature_extraction(self, model):
         """
@@ -221,21 +251,26 @@ class PropertyInferenceAttack(Attack):
         classifier.fit(meta_training_X, meta_training_y)
         return classifier
 
-    def perform_prediction(self, meta_classifier, feature_extraction_target_model):
+    def perform_prediction(
+        self, meta_classifier, feature_extraction_target_model
+    ) -> np.ndarray:
         """
         "Actual" attack: Meta classifier gets feature extraction of target model as input, outputs property prediction.
         :param meta_classifier: A classifier
-        :type meta_classifier: "CLASSIFIER_TYPE" (to be found in `.art.utils`)
-        # TODO only binary classifiers-special classifier?
+        :type meta_classifier: "CLASSIFIER_TYPE" (to be found in .art.estimators)
         :param feature_extraction_target_model: extracted features of target model
         :type feature_extraction_target_model: np.ndarray
-        :return: Prediction whether property or negation of property is fulfilled for target data set
-        :rtype: # TODO
+        :return: Prediction given as probability distribution vector whether property or negation of property is
+        fulfilled for target data set
+        :rtype: np.ndarray with shape (1, 2)
         """
-        raise NotImplementedError
+        assert meta_classifier.input_shape == tuple(feature_extraction_target_model.shape)
 
-    def attack(self, params):
-        # TODO or infer, look at MembershipInference from Team 1
+        predictions = meta_classifier.predict(
+            x=[feature_extraction_target_model])
+        return predictions
+
+    def attack(self):
         """
         Perform Property Inference attack.
         :param params: Example data to run through target model for feature extraction
@@ -243,13 +278,53 @@ class PropertyInferenceAttack(Attack):
         :return: prediction about property of target data set
         :rtype: # TODO
         """
-        shadow_classifier = self.train_shadow_classifiers(self.shadow_training_set)
-        # TODO: create feature extraction for all shadow classifiers
-        feature_extraction_list = None
-        meta_training_set = self.create_meta_training_set(feature_extraction_list)
-        meta_classifier = self.train_meta_classifier(meta_training_set)
-        # TODO: create feature extraction for target model, using x
-        feature_extraction_target_model = None
+        # load data (CIFAR10)
+        train_dataset, test_dataset = data.dataset_downloader()
+        input_shape = [32, 32, 3]
+
+        # count of shadow training sets
+        amount_sets = 6
+
+        # set ratio and size for unbalanced data sets
+        size_set = 1500
+        property_num_elements_per_classes = {0: 500, 1: 1000}
+
+        # create shadow training sets. Half unbalanced (property_num_elements_per_classes), half balanced
+        (
+            property_training_sets,
+            neg_property_training_sets,
+            property_num_elements_per_classes,
+            neg_property_num_elements_per_classes,
+        ) = self.create_shadow_training_set(
+            test_dataset, amount_sets, size_set, property_num_elements_per_classes
+        )
+
+        # create shadow classifiers with trained models, half on unbalanced data set, half with balanced data set
+        (
+            shadow_classifiers_property,
+            shadow_classifiers_neg_property,
+            accuracy_prop,
+            accuracy_neg,
+        ) = self.train_shadow_classifiers(
+            property_training_sets,
+            neg_property_training_sets,
+            property_num_elements_per_classes,
+            neg_property_num_elements_per_classes,
+            input_shape,
+        )
+
+        # create meta training set
+        meta_features, meta_labels = self.create_meta_training_set(
+            shadow_classifiers_property, shadow_classifiers_neg_property
+        )
+
+        # create meta classifier
+        meta_classifier = self.train_meta_classifier(meta_features, meta_labels)
+
+        # extract features of target model
+        feature_extraction_target_model = self.feature_extraction(self.target_model)
+
+        # get prediction
         prediction = self.perform_prediction(
             meta_classifier, feature_extraction_target_model
         )

@@ -5,10 +5,6 @@ from privacy_evaluator.attacks.attack import Attack
 from privacy_evaluator.classifiers.classifier import Classifier
 
 
-<<<<<<< HEAD
-    def perform_attack(params):
-        pass
-=======
 class SampleAttack(Attack):
     """SampleAttack class."""
 
@@ -39,4 +35,3 @@ class SampleAttack(Attack):
         and the second includes the results for the test data.
         """
         return np.ones(10), np.zeros(10)
->>>>>>> a2c92363fa47ad8e5e5a52176753621a11ebe57b
