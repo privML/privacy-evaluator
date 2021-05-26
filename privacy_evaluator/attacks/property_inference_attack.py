@@ -1,7 +1,6 @@
 from privacy_evaluator.attacks.attack import Attack
 from privacy_evaluator.classifiers.classifier import Classifier
-import demo.train-cifar10-torch.data as data
-import demo.train-cifar10-torch.train as train
+from privacy_evaluator.models.train_cifar10_torch import data, train
 
 import math
 import numpy as np
@@ -235,7 +234,6 @@ class PropertyInferenceAttack(Attack):
         raise NotImplementedError
 
     def attack(self, params):
-        # TODO or infer, look at MembershipInference from Team 1
         """
         Perform Property Inference attack.
         :param params: Example data to run through target model for feature extraction
@@ -244,13 +242,36 @@ class PropertyInferenceAttack(Attack):
         :rtype: # TODO
         """
         
-        shadow_classifier = self.train_shadow_classifiers(self.shadow_training_set)
-        # TODO: create feature extraction for all shadow classifiers
-        feature_extraction_list = None
-        meta_training_set = self.create_meta_training_set(feature_extraction_list)
-        meta_classifier = self.train_meta_classifier(meta_training_set)
-        # TODO: create feature extraction for target model, using x
-        feature_extraction_target_model = None
+        #load data (CIFAR10)
+        train_dataset, test_dataset = data.dataset_downloader()
+        input_shape = [32,32,3]
+
+        #count of shadow training sets 
+        amount_sets = 6
+        
+        #set ratio and size for unbalanced data sets
+        size_set = 1500
+        property_num_elements_per_classes = {0: 500, 1: 1000}
+
+
+        #create shadow training sets. Half unbalanced (property_num_elements_per_classes), half balanced
+        property_training_sets, neg_property_training_sets, property_num_elements_per_classes, neg_property_num_elements_per_classes =\
+             self.create_shadow_training_set(test_dataset, amount_sets, size_set, property_num_elements_per_classes)
+
+        #create shadow classifiers with trained models, half on unbalanced data set, half with balanced data set
+        shadow_classifiers_property, shadow_classifiers_neg_property, accuracy_prop, accuracy_neg = \
+            self.train_shadow_classifiers(property_training_sets, neg_property_training_sets,property_num_elements_per_classes, neg_property_num_elements_per_classes, input_shape)
+
+        #create meta training set
+        meta_features, meta_labels = self.create_meta_training_set(shadow_classifiers_property, shadow_classifiers_neg_property)
+
+        #create meta classifier
+        meta_classifier = self.train_meta_classifier(meta_features, meta_labels)
+        
+        #extract features of target model
+        feature_extraction_target_model = self.feature_extraction(self.target_model)
+
+        #get prediction
         prediction = self.perform_prediction(
             meta_classifier, feature_extraction_target_model
         )

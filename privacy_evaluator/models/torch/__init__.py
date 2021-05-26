@@ -1,4 +1,4 @@
 """
 Module providing torch models.
 """
-from privacy_evaluator.models.torch.dcti import dcti
+from privacy_evaluator.models.torch import dcti
