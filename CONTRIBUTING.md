@@ -85,5 +85,18 @@ Use the [`BREAKING CHANGE:` notation](https://www.conventionalcommits.org/en/v1.
 
 ## Code Style
 
+### Styling
+
 Please always run `black` before submitting a pull request. You can install
-`black` with `pip install black`.
+`black` with `pip install black`. The GitHub's Actions which serve as CI/CD will, alongside running pytest, also check this before enabling a Pull request to be merged.
+
+### Documentation
+
+Do not forget to comment your code and document its functions and classes, using docstrings, since our tool will be used as a library in other projects, and such documentation is very useful to programmers. For functions always be sure to state parameters, return value and short description of the funcionality itself (even though that should be already clear from the name itself, see below). For classes, please include descriptions of attributes, methods, and the class itself.
+
+### Variable naming
+
+Names of variables, classes and function should be self-explanatory in a way that it is clear to a user what this part of the python code is used for, what is its purpose and result. The naming conventions should follow those of python with respect to which names should be avoided, when to use all capital letters, etc. Please see this link for detailed instructions on naming conventions in python: https://www.python.org/dev/peps/pep-0008/#function-and-variable-names
+
+
+

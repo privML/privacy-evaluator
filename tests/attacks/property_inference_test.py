@@ -1,42 +1,29 @@
-# import privacy_evaluator.attacks.property_inference_attack_skeleton as pia
-from privacy_evaluator.attacks.property_inference_attack_skeleton import (
-    PropertyInferenceAttackSkeleton,
-)
+import pytest
 
-# import torch
-from art.estimators.classification import PyTorchClassifier
-import torch.nn as nn
-import torch
-from privacy_evaluator.models.torch import dcti
-
-# import privacy_evaluator.models.torch.dcti
+from privacy_evaluator.attacks.property_inference_attack import PropertyInferenceAttack
+from privacy_evaluator.classifiers.classifier import Classifier
+from privacy_evaluator.models.train_cifar10_torch.data import dataset_downloader, new_dataset_from_size_dict
+from privacy_evaluator.models.train_cifar10_torch.train import trainer_out_model
 
 
-model = dcti()
-# model = torch.load("/home/florian/university/SS2021/PrivacyPreservingML/privacy-evaluator/privacy_evaluator/models/torch/torch_fc_class_0_5000_class_1_2000.pth")
-# model.eval()
+def test_property_inference_attack():
+    train_dataset, test_dataset = dataset_downloader()
+    input_shape = [32, 32, 3]
+    num_classes = 2
+    num_elements_per_classes = {0: 5000, 1: 5000}
 
-criterion = nn.CrossEntropyLoss()
-classifier = PyTorchClassifier(
-    model=model,
-    loss=criterion,
-    input_shape=(1, 28, 28),
-    nb_classes=10,
-)
+    train_set, test_set = new_dataset_from_size_dict(
+            train_dataset, test_dataset, num_elements_per_classes
+        )
 
-pia_instance = PropertyInferenceAttackSkeleton(0, 0, 0)
+    accuracy, model = trainer_out_model(
+        train_set, test_set, num_elements_per_classes, "FCNeuralNet"
+    )
 
-features, labels = pia_instance.create_meta_training_set(
-    [classifier, classifier, classifier], [classifier]
-)
+    # change pytorch classifier to art classifier
+    target_model = Classifier._to_art_classifier(
+        model, num_classes, input_shape
+    )
 
-meta_classifier = pia_instance.train_meta_classifier(features, labels)
-
-print(meta_classifier.predict(features[0].reshape(1, -1)))
-
-"""
-import os
-os.chdir('/home/florian/university/SS2021/PrivacyPreservingML/privacy-evaluator')
-
-model1 = torch.load("/home/florian/university/SS2021/PrivacyPreservingML/privacy-evaluator/privacy_evaluator/models/torch/torch_fc_class_0_5000_class_1_2000.pth")
-"""
+    attack = PropertyInferenceAttack(target_model)
+    attack.attack()
