@@ -1,0 +1,32 @@
+name: Testing with pytest 
+
+on:
+  pull_request:
+    branches: [ main, team1sprint2 ]
+    types:
+      - opened
+      - edited
+      - synchronize
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+          
+      - name: Install dependencies
+        run: |
+            python -m pip install --upgrade pip
+            if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Install pytest plugin
+        run: pip install pytest-github-actions-annotate-failures
+
+      - name: Test with pytest
+        run: pytest
+
