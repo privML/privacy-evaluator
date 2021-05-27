@@ -137,7 +137,7 @@ class PropertyInferenceAttackSkeleton(PropertyInferenceAttack):
         fulfilled for target data set
         :rtype: np.ndarray with shape (1, 2)
         """
-        assert meta_classifier.input_shape() == tuple(feature_extraction_target_model.shape)
+        assert meta_classifier.input_shape == tuple(feature_extraction_target_model.shape)
         predictions = meta_classifier.predict(x=feature_extraction_target_model)
         return predictions
 
