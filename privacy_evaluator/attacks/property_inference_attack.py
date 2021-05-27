@@ -5,6 +5,7 @@ from privacy_evaluator.models.train_cifar10_torch import data, train
 import math
 import numpy as np
 import torch
+import tensorflow as tf
 from sklearn.svm import SVC
 from art.attacks.evasion import FastGradientMethod
 from art.estimators.classification import SklearnClassifier
@@ -176,6 +177,7 @@ class PropertyInferenceAttack(Attack):
         """
 
         # Filter out all trainable parameters (from every layer)
+        # This works differently for PyTorch and TensorFlow. Raise TypeError if model is neither of both.
         if isinstance(model.model, torch.nn.Module):
             model_parameters = list(
                 filter(lambda p: p.requires_grad, model.model.parameters())
@@ -184,13 +186,17 @@ class PropertyInferenceAttack(Attack):
             model_parameters = np.concatenate(
                 [el.detach().numpy().flatten() for el in model_parameters]
             ).flatten()
-        # If model is a TensorFlow instance:
-        else:
+            return model_parameters
+
+        elif isinstance(model.model, tf.keras.Model):
             model_parameters = np.concatenate(
                 [el.numpy().flatten() for el in model.model.trainable_variables]
             ).flatten()
-        # return model_parameters as features of model
-        return model_parameters
+            return model_parameters
+        else:
+            raise TypeError(
+                f"Expected model to be an instance of {str(torch.nn.Module)} or {str(tf.keras.Model)}, received {str(type(model.model))} instead."
+            )
 
     def create_meta_training_set(
         self, classifier_list_with_property, classifier_list_without_property
@@ -236,10 +242,12 @@ class PropertyInferenceAttack(Attack):
         Train meta-classifier with the meta-training set.
         :param meta_training_X: Set of feature representation of each shadow classifier.
         :type meta_training_X: np.ndarray
-        :param meta_training_y: Set of (one-hot-encoded) labels for each shadow classifier, according to whether property is fullfilled ([1, 0]) or not ([0, 1]).
+        :param meta_training_y: Set of (one-hot-encoded) labels for each shadow classifier,
+                                according to whether property is fullfilled ([1, 0]) or not ([0, 1]).
         :type meta_training_y: np.ndarray
         :return: Meta classifier
-        :rtype: "CLASSIFIER_TYPE" (to be found in `.art.utils`) # classifier.predict is an one-hot-encoded label vector: [1, 0] means target model has the property, [0, 1] means it does not.
+        :rtype: "CLASSIFIER_TYPE" (to be found in `.art.utils`) # classifier.predict is an one-hot-encoded label vector:
+                                                    [1, 0] means target model has the property, [0, 1] means it does not.
         """
         # Create a scikit SVM model, which will be trained on meta_training
         model = SVC(C=1.0, kernel="rbf")
@@ -264,10 +272,11 @@ class PropertyInferenceAttack(Attack):
         fulfilled for target data set
         :rtype: np.ndarray with shape (1, 2)
         """
-        assert meta_classifier.input_shape == tuple(feature_extraction_target_model.shape)
+        assert meta_classifier.input_shape == tuple(
+            feature_extraction_target_model.shape
+        )
 
-        predictions = meta_classifier.predict(
-            x=[feature_extraction_target_model])
+        predictions = meta_classifier.predict(x=[feature_extraction_target_model])
         return predictions
 
     def attack(self):

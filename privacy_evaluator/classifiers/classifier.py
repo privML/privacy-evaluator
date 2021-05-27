@@ -55,7 +55,9 @@ class Classifier:
             )
         if isinstance(classifier, tf.keras.Model):
             return TensorFlowV2Classifier(
-                model=classifier, nb_classes=nb_classes, input_shape=input_shape,
+                model=classifier,
+                nb_classes=nb_classes,
+                input_shape=input_shape,
             )
         else:
             raise TypeError(
