@@ -13,12 +13,15 @@ from typing import Tuple, Any, Dict, List
 
 
 class PropertyInferenceAttack(Attack):
-    def __init__(self, target_model: Classifier):
+    def __init__(self, target_model: Classifier, dataset: np.ndarray):
         """
         Initialize the Property Inference Attack Class.
         :param target_model: the target model to be attacked
+        :param dataset: dataset for training of shadow classifiers, test_data from dataset with concatenation [test_features, test_labels]
         """
-
+        self.dataset=dataset
+        # count of shadow training sets, must be eval
+        self.amount_sets = 6
         super().__init__(target_model, None, None, None, None)
 
     def create_shadow_training_set(
@@ -279,6 +282,52 @@ class PropertyInferenceAttack(Attack):
         predictions = meta_classifier.predict(x=[feature_extraction_target_model])
         return predictions
 
+    def placeholder_give_me_a_name(self, 
+            feature_extraction_target_model: np.ndarray,
+            shadow_classifiers_neg_property,
+            ratio: float,
+            size_set: int
+            ):
+
+        property_num_elements_per_classes = {0: int((1-ratio) * size_set), 1: int(ratio * size_set)}
+        # create shadow training sets with unbalanced (property_num_elements_per_classes) samples per class
+        (
+            property_training_sets,
+        ) = self.create_shadow_training_set(
+            self.dataset, self.amount_sets/2, property_num_elements_per_classes
+        )
+
+        input_shape =  self.dataset[0].shape
+        # create shadow classifiers with trained models with unbalanced data set
+        (
+            shadow_classifiers_property,
+            accuracy_prop,
+        ) = self.train_shadow_classifiers(
+            property_training_sets,
+            property_num_elements_per_classes,
+            input_shape
+        )
+        # create meta training set
+        meta_features, meta_labels = self.create_meta_training_set(
+            shadow_classifiers_property, shadow_classifiers_neg_property
+        )
+
+        # create meta classifier
+        meta_classifier = self.train_meta_classifier(meta_features, meta_labels)
+
+        # get prediction
+        prediction = self.perform_prediction(
+            meta_classifier, feature_extraction_target_model
+        )
+
+        return prediction
+
+
+
+
+
+#shadow_classifiers_neg_property : List[:class:`.art.estimators.estimator.BaseEstimator`]
+
     def attack(self):
         """
         Perform Property Inference attack.
@@ -288,53 +337,52 @@ class PropertyInferenceAttack(Attack):
         :rtype: np.ndarray with shape (1, 2)
         """
         # load data (CIFAR10)
-        train_dataset, test_dataset = data.dataset_downloader()
-        input_shape = [32, 32, 3]
-
-        # count of shadow training sets
-        amount_sets = 6
-
-        # set ratio and size for unbalanced data sets
-        size_set = 1500
-        property_num_elements_per_classes = {0: 500, 1: 1000}
-
-        # create shadow training sets. Half unbalanced (property_num_elements_per_classes), half balanced
-        (
-            property_training_sets,
-            neg_property_training_sets,
-            property_num_elements_per_classes,
-            neg_property_num_elements_per_classes,
-        ) = self.create_shadow_training_set(
-            test_dataset, amount_sets, size_set, property_num_elements_per_classes
-        )
-
-        # create shadow classifiers with trained models, half on unbalanced data set, half with balanced data set
-        (
-            shadow_classifiers_property,
-            shadow_classifiers_neg_property,
-            accuracy_prop,
-            accuracy_neg,
-        ) = self.train_shadow_classifiers(
-            property_training_sets,
-            neg_property_training_sets,
-            property_num_elements_per_classes,
-            neg_property_num_elements_per_classes,
-            input_shape,
-        )
-
-        # create meta training set
-        meta_features, meta_labels = self.create_meta_training_set(
-            shadow_classifiers_property, shadow_classifiers_neg_property
-        )
-
-        # create meta classifier
-        meta_classifier = self.train_meta_classifier(meta_features, meta_labels)
+        #train_dataset, test_dataset = data.dataset_downloader()
+        input_shape =  self.dataset[0].shape #[32, 32, 3]
 
         # extract features of target model
         feature_extraction_target_model = self.feature_extraction(self.target_model)
 
-        # get prediction
-        prediction = self.perform_prediction(
-            meta_classifier, feature_extraction_target_model
+        # set ratio and size for unbalanced data sets
+        size_set = 1500 #TODO get size of on class of dataset
+
+        #balanced ratio
+        num_elements = int(round(size_set / 2))
+        neg_property_num_elements_per_classes={0: num_elements, 1: num_elements}
+
+        #create negation property training sets
+        (
+            neg_property_training_sets,
+        ) = self.create_shadow_training_set(
+            self.dataset, self.amount_sets/2, neg_property_num_elements_per_classes
         )
-        return prediction
+
+        #create clssifiers with trained models based on balanced data set
+        (
+            shadow_classifiers_neg_property,
+            accuracy_neg,
+        ) = self.train_shadow_classifiers(
+            neg_property_training_sets,
+            neg_property_num_elements_per_classes,
+            input_shape,
+        )
+
+        
+        predictions = Dict()
+        #iterate over ratios from 0.55 to 0.95 (means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
+        #TODO add more
+        for ratio in range(0.55, 0.95, 0.05):
+
+
+            predictions[ratio] = self.placeholder_give_me_a_name(feature_extraction_target_model, shadow_classifiers_neg_property,ratio, size_set)
+
+            predictions[(1-ratio)] = self.placeholder_give_me_a_name(feature_extraction_target_model, shadow_classifiers_neg_property,(1-ratio), size_set)
+            
+
+
+        
+
+        
+
+        
+        return 1

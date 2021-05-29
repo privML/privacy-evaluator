@@ -1,4 +1,5 @@
 import pytest
+import numpy as np
 
 from privacy_evaluator.attacks.property_inference_attack import PropertyInferenceAttack
 from privacy_evaluator.classifiers.classifier import Classifier
@@ -25,5 +26,7 @@ def test_property_inference_attack():
         model, num_classes, input_shape
     )
 
-    attack = PropertyInferenceAttack(target_model)
+    test_dataset=next(iter(test_dataset))[0].numpy()
+    
+    attack = PropertyInferenceAttack(target_model, test_dataset)
     attack.attack()
