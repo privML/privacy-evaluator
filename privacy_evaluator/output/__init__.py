@@ -1,0 +1,3 @@
+"""
+Module providing output wrapper.
+"""
