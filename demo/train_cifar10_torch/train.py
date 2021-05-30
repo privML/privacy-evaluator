@@ -102,7 +102,7 @@ def trainer_out_model(
     learning_rate: float = 0.001,
     weight_decay: float = 0,
     dropout: float = 0,
-) -> Tuple[float, torch.nn.Module] :
+) -> Tuple[float, torch.nn.Module]:
     """
     Get the best test accuracy after training for `num_epochs` epochs.
     """
