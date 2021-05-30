@@ -1,7 +1,7 @@
 import abc
 
 
-class Attack_Interface():
+class Attack_Interface:
 
     """Initilizes the Attack Class.
     :param model: the model to be attacked.
@@ -26,5 +26,3 @@ class Attack_Interface():
 
     def perform_attack(params):
         raise NotImplementedError
-
-
