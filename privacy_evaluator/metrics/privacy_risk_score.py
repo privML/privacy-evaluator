@@ -1,4 +1,4 @@
-from classifiers import Classifier
+from privacy_evaluator.classifiers.classifier import Classifier
 import numpy as np
 
 

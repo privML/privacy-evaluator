@@ -11,6 +11,7 @@ class Classifier:
     def __init__(
         self,
         classifier: Union[tf.keras.Model, torch.nn.Module],
+        loss: Union[tf.keras.losses.Loss, torch.nn.modules.loss._Loss],
         nb_classes: int,
         input_shape: Tuple[int, ...],
     ):
@@ -21,7 +22,7 @@ class Classifier:
         :param input_shape: Input shape of a data point of the classifier.
         """
         self.art_classifier = self._to_art_classifier(
-            classifier, nb_classes, input_shape
+            classifier, loss, nb_classes, input_shape
         )
 
     def predict(self, x: np.ndarray):
@@ -35,6 +36,7 @@ class Classifier:
     @staticmethod
     def _to_art_classifier(
         classifier: Union[tf.keras.Model, torch.nn.Module],
+        loss: Union[tf.keras.losses.Loss, torch.nn.modules.loss._Loss],
         nb_classes: int,
         input_shape: Tuple[int, ...],
     ) -> Union[TensorFlowV2Classifier, PyTorchClassifier]:
@@ -49,13 +51,14 @@ class Classifier:
         if isinstance(classifier, torch.nn.Module):
             return PyTorchClassifier(
                 model=classifier,
-                loss=None,
+                loss=loss,
                 nb_classes=nb_classes,
                 input_shape=input_shape,
             )
         if isinstance(classifier, tf.keras.Model):
             return TensorFlowV2Classifier(
                 model=classifier,
+                loss=loss,
                 nb_classes=nb_classes,
                 input_shape=input_shape,
             )
