@@ -1,4 +1,4 @@
 """
 Module providing output wrapper.
 """
-from privacy_evaluator.output import UserOutput
+from privacy_evaluator.output.user_output import UserOutput
