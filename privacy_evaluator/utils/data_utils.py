@@ -3,7 +3,9 @@ from tensorflow.keras.datasets import cifar10, mnist
 from typing import Tuple, Optional, Dict
 
 
-def dataset_downloader(dataset_name: str = "CIFAR10") -> Tuple[np.ndarray, np.ndarray]:
+def dataset_downloader(
+    dataset_name: str = "CIFAR10",
+) -> Tuple[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]]:
     """
     Download the corresponding dataset.
     Args:
@@ -14,7 +16,6 @@ def dataset_downloader(dataset_name: str = "CIFAR10") -> Tuple[np.ndarray, np.nd
     if dataset_name == "CIFAR10":
         train_dataset, test_dataset = cifar10.load_data()
     elif dataset_name == "MNIST":
-        # TODO: fix the type of the mnist.load_data()
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
         train_dataset = (x_train, y_train)
         test_dataset = (x_test, y_test)

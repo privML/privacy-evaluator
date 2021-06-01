@@ -9,6 +9,7 @@ import numpy as np
 import torch
 import tensorflow as tf
 from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
 from art.attacks.evasion import FastGradientMethod
 from art.estimators.classification import SklearnClassifier
 from typing import Tuple, Any, Dict, List
@@ -29,10 +30,10 @@ class PropertyInferenceAttack(Attack):
         amount_sets: int,
         property_num_elements_per_class: Dict[int, int],
     ) -> Tuple(
-        List[Tuple[np.ndarray, np.ndarray]], 
-        List[Tuple[np.ndarray, np.ndarray]], 
-        Dict[int, int], 
-        Dict[int, int]
+        List[Tuple[np.ndarray, np.ndarray]],
+        List[Tuple[np.ndarray, np.ndarray]],
+        Dict[int, int],
+        Dict[int, int],
     ):
         """
         Create the shadow training sets, half fulfill the property, half fulfill the negation of the property.
@@ -82,8 +83,8 @@ class PropertyInferenceAttack(Attack):
 
     def train_shadow_classifiers(
         self,
-        property_training_sets: List[torch.utils.data.Dataset],
-        neg_property_training_sets: List[torch.utils.data.Dataset],
+        property_training_sets: List[Tuple[np.ndarray, np.ndarray]],
+        neg_property_training_sets: List[Tuple[np.ndarray, np.ndarray]],
         property_num_elements_per_classes: Dict[int, int],
         neg_property_num_elements_per_classes: Dict[int, int],
         input_shape: Tuple[int, ...],
@@ -113,12 +114,13 @@ class PropertyInferenceAttack(Attack):
         num_classes = len(property_num_elements_per_classes)
 
         for shadow_training_set in property_training_sets:
-            len_train_set = math.ceil(len(shadow_training_set) * 0.7)
-            len_test_set = math.floor(len(shadow_training_set) * 0.3)
-
-            train_set, test_set = torch.utils.data.random_split(
-                shadow_training_set, [len_train_set, len_test_set]
+            shadow_training_X, shadow_training_y = shadow_training_set
+            train_X, train_y, test_X, test_y = train_test_split(
+                shadow_training_X, shadow_training_y, test_size=0.3
             )
+            train_set = (train_X, train_y)
+            test_set = (test_X, test_y)
+
             model_property = FCNeuralNet()
             accuracy = trainer(
                 train_set, test_set, property_num_elements_per_classes, model_property
@@ -133,12 +135,13 @@ class PropertyInferenceAttack(Attack):
             accuracy_prop.append(accuracy)
 
         for shadow_training_set in neg_property_training_sets:
-            len_train_set = math.ceil(len(shadow_training_set) * 0.7)
-            len_test_set = math.floor(len(shadow_training_set) * 0.3)
-
-            train_set, test_set = torch.utils.data.random_split(
-                shadow_training_set, [len_train_set, len_test_set]
+            shadow_training_X, shadow_training_y = shadow_training_set
+            train_X, train_y, test_X, test_y = train_test_split(
+                shadow_training_X, shadow_training_y, test_size=0.3
             )
+            train_set = (train_X, train_y)
+            test_set = (test_X, test_y)
+            
             model_neg_property = FCNeuralNet()
             accuracy = trainer(
                 train_set,
@@ -283,7 +286,7 @@ class PropertyInferenceAttack(Attack):
         :rtype: np.ndarray with shape (1, 2)
         """
         # load data (CIFAR10)
-        train_dataset, test_dataset = data_utils.dataset_downloader()
+        train_dataset, test_dataset = data_utils.dataset_downloader("CIFAR10")
         input_shape = [32, 32, 3]
 
         # count of shadow training sets

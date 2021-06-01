@@ -14,12 +14,12 @@ if __name__ == "main":
 
     attack = PropertyInferenceAttack(None)
     (
-        property_datasets, 
-        neg_property_datasets, 
+        property_datasets,
+        neg_property_datasets,
         property_num_elements_per_classes,
         neg_property_num_elements_per_classes,
     ) = attack.create_shadow_training_set(
-        test_dataset, 
+        test_dataset,
         amount_sets,
         property_num_elements_per_classes,
     )
@@ -32,5 +32,5 @@ if __name__ == "main":
         neg_property_datasets,
         property_num_elements_per_classes,
         neg_property_num_elements_per_classes,
-        input_shape
+        input_shape,
     )
