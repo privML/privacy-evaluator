@@ -9,7 +9,7 @@ import torch.nn as nn
 
 
 def test_sample_attack():
-    x_train, y_train, x_test, y_test = CIFAR10.numpy()
+    x_train, y_train, x_test, y_test = CIFAR10.numpy(model_type='torch')
     target_model = Classifier(
         load_dcti(),
         nb_classes=CIFAR10.N_CLASSES,

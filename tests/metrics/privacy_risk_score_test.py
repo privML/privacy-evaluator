@@ -13,7 +13,7 @@ from privacy_evaluator.classifiers.classifier import Classifier
 
 
 def test_privacy_risk_score():
-    x_train, y_train, x_test, y_test = CIFAR10.numpy()
+    x_train, y_train, x_test, y_test = CIFAR10.numpy(model_type='torch')
     classifier = Classifier(
         load_dcti(),
         nb_classes=CIFAR10.N_CLASSES,

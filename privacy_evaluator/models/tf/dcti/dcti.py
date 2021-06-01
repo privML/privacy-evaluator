@@ -16,9 +16,6 @@ from tensorflow.keras.layers import (
 )
 
 
-__all__ = ["DCTI", "dcti"]
-
-
 class Block(tf.keras.Model):
     def __init__(self, filters: int):
         super().__init__()
@@ -36,6 +33,9 @@ class Block(tf.keras.Model):
 
 
 class DCTI(tf.keras.Model):
+    """DCTI model architecture from `"Lightweight Deep Convolutional Network for Tiny Object Recognition" <https://www.scitepress.org/Papers/2018/67520/67520.pdf>`.
+    """
+
     def __init__(self):
         super().__init__()
 
@@ -70,23 +70,16 @@ class DCTI(tf.keras.Model):
         return self.model(x, training=training)
 
 
-def dcti(pretrained: bool = True) -> DCTI:
-    """
-    DCTI model from
-    `"Lightweight Deep Convolutional Network for Tiny Object Recognition"
-    <https://www.scitepress.org/Papers/2018/67520/67520.pdf>`_.
+def load_dcti(pretrained: bool = True) -> DCTI:
+    """Loads a TensorFlow DCTI model.
 
-    Note:
-        The pre-trained model expects inputs to be first scaled to [0, 1] and
-        then normalized with tensorflow.image.per_image_standardization
+    Note: The pre-trained model expects inputs to be first scaled to [0, 1] and then normalized with tensorflow.image.per_image_standardization.
 
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on CIFAR-10
+    :param pretrained: If True, returns a model pre-trained on CIFAR-10.
+    :return: Loaded TensorFlow DCTI model.
     """
     if pretrained:
-        here = os.path.dirname(os.path.abspath(__file__))
-        path = os.path.join(here, "dcti", "model")
-        model = tf.keras.models.load_model(path)
+        model = tf.keras.models.load_model(os.path.join(os.path.dirname(os.path.abspath(__file__)), "model"))
     else:
         model = DCTI()
 
