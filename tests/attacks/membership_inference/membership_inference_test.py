@@ -13,6 +13,5 @@ def test_membership_inference_attack():
     target_model = Classifier(
         load_dcti(), nb_classes=CIFAR10.N_CLASSES, input_shape=CIFAR10.INPUT_SHAPE
     )
-    attack = MembershipInferenceAttack(target_model, x_train, y_train, x_test, y_test)
-    with pytest.raises(NotImplementedError):
-        attack.attack()
+    with pytest.raises(AttributeError):
+        MembershipInferenceAttack(target_model, x_train, y_train, x_test, y_test)

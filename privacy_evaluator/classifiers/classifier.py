@@ -20,7 +20,7 @@ class Classifier:
         :param nb_classes: Number of classes that were used to train the classifier.
         :param input_shape: Input shape of a data point of the classifier.
         """
-        self.art_classifier = self._to_art_classifier(
+        self._art_classifier = self._init_art_classifier(
             classifier, nb_classes, input_shape
         )
 
@@ -30,21 +30,28 @@ class Classifier:
         :param x: Data which labels should be predicted for.
         :return: Predicted labels.
         """
-        return self.art_classifier.predict(x)
+        return self._art_classifier.predict(x)
+
+    def to_art_classifier(self):
+        """Converts the classifier to an ART classifier.
+
+        :return: Converted ART classifier.
+        """
+        return self._art_classifier
 
     @staticmethod
-    def _to_art_classifier(
+    def _init_art_classifier(
         classifier: Union[tf.keras.Model, torch.nn.Module],
         nb_classes: int,
         input_shape: Tuple[int, ...],
     ) -> Union[TensorFlowV2Classifier, PyTorchClassifier]:
-        """Converts a classifier to an ART classifier.
+        """Initializes an ART classifier.
 
-        :param classifier: Classifier to be converted. Either a Pytorch or Tensorflow classifier.
+        :param classifier: Original classifier, either Pytorch or Tensorflow.
         :param nb_classes: Number of classes that were used to train the classifier.
-        :param input_shape: Input shape of a data point of the classifier.
-        :return: Given classifier converted to an ART classifier.
-        :raises TypeError: If the given classifier is of an invalid type.
+        :param input_shape: Shape of a input data point of the classifier.
+        :return: Instance of an ART classifier.
+        :raises TypeError: If `classifier` is of invalid type.
         """
         if isinstance(classifier, torch.nn.Module):
             return PyTorchClassifier(
@@ -61,5 +68,5 @@ class Classifier:
             )
         else:
             raise TypeError(
-                f"Expected classifier to be an instance of {str(torch.nn.Module)} or {str(tf.keras.Model)}, received {str(type(classifier))} instead."
+                f"Expected `classifier` to be an instance of {str(torch.nn.Module)} or {str(tf.keras.Model)}, received {str(type(classifier))} instead."
             )
