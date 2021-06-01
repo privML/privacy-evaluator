@@ -7,6 +7,6 @@ setup(
     description="Tool to assess ML model's levels of privacy.",
     url="https://github.com/privML/privacy-evaluator",
     license="MIT",
-    packages=list(filter(lambda s: s.startswith("privacy_evaluator"), find_packages())),
+    packages=find_packages(include=["privacy_evaluator*"]),
     install_requires=["adversarial-robustness-toolbox[pytorch,tensorflow]==1.6.1"],
 )
