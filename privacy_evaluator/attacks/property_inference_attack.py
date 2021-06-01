@@ -141,7 +141,7 @@ class PropertyInferenceAttack(Attack):
             )
             train_set = (train_X, train_y)
             test_set = (test_X, test_y)
-            
+
             model_neg_property = FCNeuralNet()
             accuracy = trainer(
                 train_set,
