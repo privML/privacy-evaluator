@@ -20,5 +20,7 @@ def test_privacy_risk_score():
         input_shape=CIFAR10.INPUT_SHAPE,
         loss=nn.CrossEntropyLoss(reduction="none"),
     )
-    score = compute_privacy_risk_score(classifier, x_train, y_train, x_test, y_test)
+    score = compute_privacy_risk_score(
+        classifier, x_train[:100], y_train[:100], x_test[:100], y_test[:100]
+    )
     assert bool(score)
