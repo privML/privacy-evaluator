@@ -12,4 +12,4 @@ def test_output_function():
     user_output = UserOutput(
         data_y, priv_risk, ["green", "blue", "red", "orange", "white"]
     )
-    labels, count = user_output.histogram_top_k(4)
+    labels, count = user_output.histogram_top_k(4, show_diagram=False)

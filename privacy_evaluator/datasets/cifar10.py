@@ -80,7 +80,9 @@ class CIFAR10(Dataset):
         )
 
     @classmethod
-    def numpy(cls, model_type: str, one_hot_encode: bool = True) -> Tuple[np.ndarray, ...]:
+    def numpy(
+        cls, model_type: str, one_hot_encode: bool = True
+    ) -> Tuple[np.ndarray, ...]:
         """Loads train and test dataset for given model type as a numpy arrays.
 
         :param one_hot_encode: If data should be one-hot-encoded.
@@ -88,9 +90,9 @@ class CIFAR10(Dataset):
         :return: Train and Test data and labels as numpy arrays.
         :raises ValueError: If `model_type` is none of `torch`, `tf`.
         """
-        if model_type == 'torch':
+        if model_type == "torch":
             return cls._numpy_for_pytorch(one_hot_encode)
-        elif model_type == 'tf':
+        elif model_type == "tf":
             return cls._numpy_for_tensorflow(one_hot_encode)
         else:
             raise ValueError(
@@ -123,8 +125,16 @@ class CIFAR10(Dataset):
         x_test = tf.image.per_image_standardization(x_test)
 
         if one_hot_encode:
-            y_train = tf.one_hot(y_train, depth=10).numpy().reshape(cls.TRAIN_SET_SIZE, cls.N_CLASSES)
-            y_test = tf.one_hot(y_test, depth=10).numpy().reshape(cls.TEST_SET_SIZE, cls.N_CLASSES)
+            y_train = (
+                tf.one_hot(y_train, depth=10)
+                .numpy()
+                .reshape(cls.TRAIN_SET_SIZE, cls.N_CLASSES)
+            )
+            y_test = (
+                tf.one_hot(y_test, depth=10)
+                .numpy()
+                .reshape(cls.TEST_SET_SIZE, cls.N_CLASSES)
+            )
 
         return x_train, y_train, x_test, y_test
 

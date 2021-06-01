@@ -70,7 +70,9 @@ def load_dcti(
     if pretrained:
         model.load_state_dict(
             torch.load(
-                os.path.join(os.path.dirname(os.path.abspath(__file__)), "model", "model.pth"),
+                os.path.join(
+                    os.path.dirname(os.path.abspath(__file__)), "model", "model.pth"
+                ),
                 map_location=device,
             )
         )

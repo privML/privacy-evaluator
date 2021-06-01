@@ -33,8 +33,7 @@ class Block(tf.keras.Model):
 
 
 class DCTI(tf.keras.Model):
-    """DCTI model architecture from `"Lightweight Deep Convolutional Network for Tiny Object Recognition" <https://www.scitepress.org/Papers/2018/67520/67520.pdf>`.
-    """
+    """DCTI model architecture from `"Lightweight Deep Convolutional Network for Tiny Object Recognition" <https://www.scitepress.org/Papers/2018/67520/67520.pdf>`."""
 
     def __init__(self):
         super().__init__()
@@ -79,7 +78,9 @@ def load_dcti(pretrained: bool = True) -> DCTI:
     :return: Loaded TensorFlow DCTI model.
     """
     if pretrained:
-        model = tf.keras.models.load_model(os.path.join(os.path.dirname(os.path.abspath(__file__)), "model"))
+        model = tf.keras.models.load_model(
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "model")
+        )
     else:
         model = DCTI()
 

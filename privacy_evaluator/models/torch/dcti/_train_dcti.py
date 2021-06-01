@@ -44,7 +44,7 @@ def test(net, loader):
 
 def main():
     train_loader, test_loader = CIFAR10.pytorch_loader()
-    _, _, _, y_test = CIFAR10.numpy('torch')
+    _, _, _, y_test = CIFAR10.numpy("torch")
     net = DCTI().to(device)
     optimizer = optim.Adam(net.parameters(), lr=0.0001)
     criterion = nn.CrossEntropyLoss()

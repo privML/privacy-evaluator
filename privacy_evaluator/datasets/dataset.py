@@ -10,7 +10,9 @@ class Dataset:
     DATA_ROOT = "./data"
 
     @classmethod
-    def numpy(cls, model_type: str, one_hot_encode: bool = False) -> Tuple[np.ndarray, ...]:
+    def numpy(
+        cls, model_type: str, one_hot_encode: bool = False
+    ) -> Tuple[np.ndarray, ...]:
         """Loads train and test dataset for given model type as a numpy arrays.
 
         :param one_hot_encode: If data should be one-hot-encoded.
