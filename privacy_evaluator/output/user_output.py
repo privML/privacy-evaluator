@@ -30,7 +30,6 @@ class UserOutput:
         :param k: the number of points to consider, default 10
         :param show_diagram: determines if the diagram should be shown, default: True
         :return: All lables of the data with the number of points that are in the top k
-        :rtype: tuple
         """
         sorting = np.argsort(self.privacy_risk)
         sorting = np.flip(sorting)
