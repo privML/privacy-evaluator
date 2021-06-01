@@ -28,6 +28,11 @@ class PropertyInferenceAttack(Attack):
         dataset: Tuple[np.ndarray, np.ndarray],
         amount_sets: int,
         property_num_elements_per_class: Dict[int, int],
+    ) -> Tuple(
+        List[Tuple[np.ndarray, np.ndarray]], 
+        List[Tuple[np.ndarray, np.ndarray]], 
+        Dict[int, int], 
+        Dict[int, int]
     ):
         """
         Create the shadow training sets, half fulfill the property, half fulfill the negation of the property.

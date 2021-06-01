@@ -1,5 +1,4 @@
 from privacy_evaluator.attacks.property_inference_attack import PropertyInferenceAttack
-from property_inference_attack import PropertyInferenceAttack
 from tensorflow.keras.datasets import cifar10
 
 
