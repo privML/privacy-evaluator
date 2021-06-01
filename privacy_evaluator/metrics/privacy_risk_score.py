@@ -21,11 +21,10 @@ def compute_privacy_risk_score(
     (Helper method and description taken from
     https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/membership_inference_attack/membership_inference_attack.py#L217)
 
-    Args:
-        attack_input: input data for compute membership probability
-        num_bins: the number of bins used to compute the training/test histogram
-    Returns:
-        membership probability results
+
+    :param attack_input: input data for compute membership probability
+    :param num_bins: the number of bins used to compute the training/test histogram
+    :return: membership probability results
     """
     loss_train = target.art_classifier.compute_loss(x_train, y_train)
     loss_test = target.art_classifier.compute_loss(x_test, y_test)
@@ -36,12 +35,10 @@ def _compute_membership_probability(loss_train, loss_test, num_bins: int = 15):
     """
     Has been taken from https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/membership_inference_attack/membership_inference_attack.py#L217
     Helper function to compute_privacy_risk_score
-    Args:
-        loss_train: the loss of the target classifier on train data
-        loss_test: the loss of the target classifier on test data
-        num_bins: the number of bins used to compute the training/test histogram
-    Returns:
-        membership probability results
+    :param loss_train: the loss of the target classifier on train data
+    :param loss_test: the loss of the target classifier on test data
+    :param num_bins: the number of bins used to compute the training/test histogram
+    :return: membership probability results
     """
 
     train_values = loss_train
