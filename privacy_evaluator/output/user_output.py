@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 
 from typing import Tuple
 
+
 class UserOutput:
 
     """User Output Class"""
@@ -21,7 +22,9 @@ class UserOutput:
         self.privacy_risk = privacy_risk
         self.all_labels = all_labels
 
-    def histogram_top_k(self, k: int = 10, show_diagram: bool = True) -> Tuple[np.ndarray, np.ndarray]:
+    def histogram_top_k(
+        self, k: int = 10, show_diagram: bool = True
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Draws a historgam of the top k points with biggest Privacy score
         :param k: the number of points to consider, default 10
