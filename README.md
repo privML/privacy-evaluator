@@ -20,7 +20,7 @@ This attack makes use of the fact that machine learning models produce different
 
 The current implementation gives the user the choice of the attack model classifier. The default model is a neural network, but a random forest and gradient boosting models can be chosen as well.
 
-![](docs/mia_blackbox.pdf)
+![](docs/mia_blackbox.png)
 
 #### Black-box rule-based membership inference attack
 
@@ -28,13 +28,13 @@ Just as the case with the block-box membership attack and as the name implies, t
 
 In contrast to the black-box model above which involves training an attack classifier, this attack is much simpler. The attack uses a simple rule: if the target model’s prediction for a given input is correct then that input is considered to be a member of the training set and not a member otherwise.
 
-![](docs/mia_blackbox_rule_based.pdf)
+![](docs/mia_blackbox_rule_based.png)
 
 #### Label-Only Inference Attack based on Decision Boundary
 
 This is a black-box membership attack which only requires predicted label as the output of the target model and not a vector of probabilities. This fact makes the attack much more general and applicable to the cases where the attacker does not have an acces to the output probabilites of the black-box model.
 
-![](docs/mia_blackbox_decision_boundary.pdf)
+![](docs/mia_blackbox_decision_boundary.png)
 
 ## How to use the Privacy Evaluator?
 
