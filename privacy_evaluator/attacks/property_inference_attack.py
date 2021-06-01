@@ -1,6 +1,8 @@
 from privacy_evaluator.attacks.attack import Attack
 from privacy_evaluator.classifiers.classifier import Classifier
-from privacy_evaluator.models.train_cifar10_torch import data, train
+import privacy_evaluator.utils.data_utils as data_utils
+from privacy_evaluator.utils.trainer import trainer
+from privacy_evaluator.models.torch.fc_neural_net import FCNeuralNet
 
 import math
 import numpy as np
@@ -23,23 +25,16 @@ class PropertyInferenceAttack(Attack):
 
     def create_shadow_training_set(
         self,
-        dataset: torch.utils.data.Dataset,
+        dataset: Tuple[np.ndarray, np.ndarray],
         amount_sets: int,
-        size_set: int,
-        property_num_elements_per_classes: Dict[int, int],
-    ) -> Tuple[
-        List[torch.utils.data.Dataset],
-        List[torch.utils.data.Dataset],
-        Dict[int, int],
-        Dict[int, int],
-    ]:
+        property_num_elements_per_class: Dict[int, int],
+    ):
         """
         Create the shadow training sets, half fulfill the property, half fulfill the negation of the property.
         The function works for the specific binary case that the property is a fixed distribution specified in the input
         and the negation of the property is a balanced distribution.
         :param dataset: Dataset out of which shadow training sets should be created
         :param amount_sets: how many shadow training sets should be created
-        :param size_set: size of one shadow training set for one shadow classifier
         :param property_num_elements_per_classes: number of elements per class, this is the property
         :return: shadow training sets for property,
                  shadow training sets for negation,
@@ -52,39 +47,32 @@ class PropertyInferenceAttack(Attack):
         property_training_sets = []
         neg_property_training_sets = []
 
-        # PROPERTY
-        # according to property_num_elements_per_classes we select the classes and take random elements out of the dataset
-        # and create the shadow training sets with these elements"""
-        for i in range(amount_property):
-            shadow_training_set = []
-            for class_id, num_elements in property_num_elements_per_classes.items():
-                subset = data.subset(dataset, class_id, num_elements)
-                shadow_training_set.append(subset)
-            shadow_training_set = torch.utils.data.ConcatDataset(shadow_training_set)
-            property_training_sets.append(shadow_training_set)
-
-        # NEG_PROPERTY (BALANCED)
-        # create balanced shadow training sets with the classes specified in property_num_elements_per_classes
-        num_elements = int(round(size_set / len(property_num_elements_per_classes)))
-        for i in range(amount_property):
-            shadow_training_set = []
-            for class_id, _ in property_num_elements_per_classes.items():
-                subset = data.subset(dataset, class_id, num_elements)
-                shadow_training_set.append(subset)
-            shadow_training_set = torch.utils.data.ConcatDataset(shadow_training_set)
-            neg_property_training_sets.append(shadow_training_set)
-
-        # create neg_property_num_elements_per_classes, later needed in train_shadow_classifier
-        neg_property_num_elements_per_classes = {
-            class_id: num_elements
-            for class_id in property_num_elements_per_classes.keys()
+        negation_num_elements_per_class = {
+            class_id: int(
+                round(
+                    sum(property_num_elements_per_class.values())
+                    / len(property_num_elements_per_class)
+                )
+            )
+            for class_id in property_num_elements_per_class.keys()
         }
+
+        # Creation of shadow training sets with the size dictionaries
+        for i in range(amount_property):
+            shadow_training_set_property = data_utils.new_dataset_from_size_dict(
+                dataset, property_num_elements_per_class
+            )
+            shadow_training_set_negation = data_utils.new_dataset_from_size_dict(
+                dataset, negation_num_elements_per_class
+            )
+            property_training_sets.append(shadow_training_set_property)
+            neg_property_training_sets.append(shadow_training_set_negation)
 
         return (
             property_training_sets,
             neg_property_training_sets,
-            property_num_elements_per_classes,
-            neg_property_num_elements_per_classes,
+            property_num_elements_per_class,
+            negation_num_elements_per_class,
         )
 
     def train_shadow_classifiers(
@@ -126,8 +114,9 @@ class PropertyInferenceAttack(Attack):
             train_set, test_set = torch.utils.data.random_split(
                 shadow_training_set, [len_train_set, len_test_set]
             )
-            accuracy, model_property = train.trainer_out_model(
-                train_set, test_set, property_num_elements_per_classes, "FCNeuralNet"
+            model_property = FCNeuralNet()
+            accuracy = trainer(
+                train_set, test_set, property_num_elements_per_classes, model_property
             )
 
             # change pytorch classifier to art classifier
@@ -145,11 +134,12 @@ class PropertyInferenceAttack(Attack):
             train_set, test_set = torch.utils.data.random_split(
                 shadow_training_set, [len_train_set, len_test_set]
             )
-            accuracy, model_neg_property = train.trainer_out_model(
+            model_neg_property = FCNeuralNet()
+            accuracy = trainer(
                 train_set,
                 test_set,
                 neg_property_num_elements_per_classes,
-                "FCNeuralNet",
+                model_neg_property,
             )
 
             # change pytorch classifier to art classifier
@@ -288,7 +278,7 @@ class PropertyInferenceAttack(Attack):
         :rtype: np.ndarray with shape (1, 2)
         """
         # load data (CIFAR10)
-        train_dataset, test_dataset = data.dataset_downloader()
+        train_dataset, test_dataset = data_utils.dataset_downloader()
         input_shape = [32, 32, 3]
 
         # count of shadow training sets
