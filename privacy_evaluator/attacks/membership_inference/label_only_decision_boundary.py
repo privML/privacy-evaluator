@@ -1,5 +1,3 @@
-from art.attacks.inference.membership_inference import LabelOnlyDecisionBoundary
-from typing import Tuple
 import numpy as np
 
 from privacy_evaluator.attacks.membership_inference.membership_inference import (
@@ -10,6 +8,8 @@ from privacy_evaluator.classifiers.classifier import Classifier
 
 class MembershipInferenceLabelOnlyDecisionBoundaryAttack(MembershipInferenceAttack):
     """MembershipInferenceLabelOnlyDecisionBoundaryAttack class."""
+
+    _ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS = "LabelOnlyDecisionBoundary"
 
     def __init__(
         self,
@@ -29,22 +29,12 @@ class MembershipInferenceLabelOnlyDecisionBoundaryAttack(MembershipInferenceAtta
         """
         super().__init__(target_model, x_train, y_train, x_test, y_test)
 
-    def infer(self, *args, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
-        """Alias method for attack().
+    @MembershipInferenceAttack._fit_decorator
+    def fit(self, **kwargs):
+        """Fits the attack model.
 
-        :param args: Arguments of the attack.
-        :param kwargs: Keyword arguments of the attack.
-        :return: Two arrays holding the inferred membership status. The first array includes the results for the
-        inferred membership status of the train data and the second includes the results for the test data, where 1
-        indicates a member and 0 indicates non-member. The optimal attack would return only ones for the first array and
-        only zeros for the second.
+        :param kwargs: Keyword arguments for the fitting.
         """
-        attack = LabelOnlyDecisionBoundary(self.target_model.art_classifier)
-
-        attack.calibrate_distance_threshold(
+        self._art_attack.calibrate_distance_threshold(
             self.x_train, self.y_train, self.x_test, self.y_test, **kwargs
         )
-
-        inferred_train_data = attack.infer(self.x_train, self.y_train)
-        inferred_test_data = attack.infer(self.x_test, self.y_test)
-        return inferred_train_data, inferred_test_data

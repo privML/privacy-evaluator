@@ -13,4 +13,4 @@ def test_attack():
     )
     attack = Attack(target_model, x_train, y_train, x_test, y_test)
     with pytest.raises(NotImplementedError):
-        attack.attack()
+        attack.attack(x_train, y_train)
