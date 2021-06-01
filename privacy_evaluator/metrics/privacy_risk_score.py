@@ -1,5 +1,6 @@
 from privacy_evaluator.classifiers.classifier import Classifier
 import numpy as np
+from typing import Tuple
 
 
 def compute_privacy_risk_score(
@@ -9,7 +10,7 @@ def compute_privacy_risk_score(
     x_test: np.ndarray,
     y_test: np.ndarray,
     num_bins=15,
-):
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Computes each individual point's likelihood of being a member
     (denoted as privacy risk score in https://arxiv.org/abs/2003.10595).
@@ -31,7 +32,9 @@ def compute_privacy_risk_score(
     return _compute_membership_probability(loss_train, loss_test, num_bins)
 
 
-def _compute_membership_probability(loss_train, loss_test, num_bins: int = 15):
+def _compute_membership_probability(
+    loss_train, loss_test, num_bins: int = 15
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Has been taken from https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/membership_inference_attack/membership_inference_attack.py#L217
     Helper function to compute_privacy_risk_score
