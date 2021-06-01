@@ -17,6 +17,6 @@ def test_membership_inference_black_box_rule_based_attack():
         loss=nn.CrossEntropyLoss(reduction="none"),
     )
     attack = MembershipInferenceBlackBoxRuleBasedAttack(
-        target_model, x_train[:100], y_train[:100], x_test[:100], y_test[:100]
+        target_model, x_train, y_train, x_test, y_test
     )
-    attack.attack()
+    attack.attack(x_train, y_train)
