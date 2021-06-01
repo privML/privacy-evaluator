@@ -6,7 +6,7 @@ from privacy_evaluator.datasets.dataset import Dataset
 
 def test_dataset():
     with pytest.raises(NotImplementedError):
-        Dataset.numpy(model_type='none')
+        Dataset.numpy(model_type="none")
         Dataset.pytorch_loader()
         Dataset.tensorflow_loader()
 
