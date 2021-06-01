@@ -1,5 +1,3 @@
-from art.attacks.inference.membership_inference import MembershipInferenceBlackBox
-from typing import Tuple
 import numpy as np
 
 from privacy_evaluator.attacks.membership_inference.membership_inference import (
@@ -11,6 +9,8 @@ from privacy_evaluator.classifiers.classifier import Classifier
 class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
     """MembershipInferenceBlackBoxAttack class."""
 
+    _ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS = "MembershipInferenceBlackBox"
+
     def __init__(
         self,
         target_model: Classifier,
@@ -18,7 +18,7 @@ class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
         y_train: np.ndarray,
         x_test: np.ndarray,
         y_test: np.ndarray,
-        attack_train_ratio: float = 0.5,
+        attack_model_type: str = "nn",
     ):
         """Initializes a MembershipInferenceBlackBoxAttack class.
 
@@ -27,46 +27,31 @@ class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
         :param y_train: Labels for the data that was used to train the target model.
         :param x_test: Data that was not used to train the target model.
         :param y_test: Labels for the data that was not used to train the target model.
-        :param attack_train_ratio: Ratio between used test and train data from the target model to train the attack model.
-        """
-        super().__init__(target_model, x_train, y_train, x_test, y_test)
-
-        self.attack_train_ratio = attack_train_ratio
-        self.attack_train_size = int(len(x_train) * attack_train_ratio)
-        self.attack_test_size = int(len(x_test) * attack_train_ratio)
-
-    def infer(
-        self, attack_model_type: str = "nn", *args, **kwargs
-    ) -> Tuple[np.ndarray, np.ndarray]:
-        """Alias method for attack().
-
         :param attack_model_type: Type of the attack model. On of "rf", "gb", "nn".
-        :param args: Arguments of the attack.
-        :param kwargs: Keyword arguments of the attack.
-        :return: Two arrays holding the inferred membership status. The first array includes the results for the
-        inferred membership status of the train data and the second includes the results for the test data, where 1
-        indicates a member and 0 indicates non-member. The optimal attack would return only ones for the first array and
-        only zeros for the second.
+        :raises TypeError: If `attack_model_type` is of invalid type.
+        :raises ValueError: If `attack_model_type` is none of `rf`, `gb`, `nn`.
         """
-        assert attack_model_type in ["rf", "gb", "nn"]
-
-        attack = MembershipInferenceBlackBox(
-            self.target_model.art_classifier, attack_model_type=attack_model_type
+        if not isinstance(attack_model_type, str):
+            raise TypeError(
+                f"Expected `attack_model_type` to be an instance of {str(str)}, received {str(type(attack_model_type))} instead."
+            )
+        if attack_model_type not in ["rf", "gb", "nn"]:
+            raise ValueError(
+                f"Expected `attack_model_type` to be one of `rf`, `gb`, `nn`, received {attack_model_type} instead."
+            )
+        super().__init__(
+            target_model,
+            x_train,
+            y_train,
+            x_test,
+            y_test,
+            attack_model_type=attack_model_type,
         )
 
-        attack.fit(
-            self.x_train[: self.attack_train_size],
-            self.y_train[: self.attack_train_size],
-            self.x_test[: self.attack_test_size],
-            self.y_test[: self.attack_test_size],
-        )
+    @MembershipInferenceAttack._fit_decorator
+    def fit(self, **kwargs):
+        """Fits the attack model.
 
-        inferred_train_data = attack.infer(
-            self.x_train[self.attack_train_size :],
-            self.y_train[self.attack_train_size :],
-        )
-        inferred_test_data = attack.infer(
-            self.x_test[self.attack_test_size :], self.y_test[self.attack_test_size :]
-        )
-
-        return inferred_train_data, inferred_test_data
+        :param kwargs: Keyword arguments for the fitting.
+        """
+        self._art_attack.fit(self.x_train, self.y_train, self.x_test, self.y_test)
