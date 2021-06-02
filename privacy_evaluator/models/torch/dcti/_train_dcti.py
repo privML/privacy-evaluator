@@ -44,7 +44,7 @@ def test(net, loader):
 
 def main():
     train_loader, test_loader = CIFAR10.pytorch_loader()
-    _, _, _, y_test = CIFAR10.numpy()
+    _, _, _, y_test = CIFAR10.numpy("torch")
     net = DCTI().to(device)
     optimizer = optim.Adam(net.parameters(), lr=0.0001)
     criterion = nn.CrossEntropyLoss()
@@ -56,7 +56,7 @@ def main():
             f"Train epoch: {epoch:>3}\t Loss: {loss:.4f}\t Accuracy: {accuracy(y_test, y_prediction):.2f}"
         )
 
-    torch.save(net.state_dict(), "./model.pth")
+    torch.save(net.state_dict(), "./model/model.pth")
 
 
 if __name__ == "__main__":

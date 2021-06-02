@@ -5,7 +5,7 @@ import torch.nn as nn
 
 
 def test_classifier():
-    x_train, _, _, _ = CIFAR10.numpy()
+    x_train, _, _, _ = CIFAR10.numpy(model_type="torch")
     classifier = Classifier(
         load_dcti(),
         nb_classes=CIFAR10.N_CLASSES,
