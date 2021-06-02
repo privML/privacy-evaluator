@@ -1,4 +1,3 @@
-from typing import Tuple
 import numpy as np
 
 from privacy_evaluator.attacks.attack import Attack
@@ -26,12 +25,13 @@ class SampleAttack(Attack):
         """
         super().__init__(target_model, x_train, y_train, x_test, y_test)
 
-    def attack(self, *args, **kwargs) -> Tuple[np.ndarray, ...]:
+    def attack(self, x: np.ndarray, y: np.ndarray, *args, **kwargs) -> np.ndarray:
         """Performs the attack on the target model.
 
+        :param x: Input data to attack.
+        :param y: True labels for x.
         :param args: Arguments of the attack.
         :param kwargs: Keyword arguments of the attack.
-        :return: Two arrays holding the results of the attack. The first array includes the results for the train data
-        and the second includes the results for the test data.
+        :return: An array holding the result of the attack.
         """
-        return np.ones(10), np.zeros(10)
+        return np.ones(10)

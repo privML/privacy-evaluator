@@ -1,3 +1,4 @@
+from setuptools import find_packages
 from setuptools import setup
 
 setup(
@@ -6,6 +7,6 @@ setup(
     description="Tool to assess ML model's levels of privacy.",
     url="https://github.com/privML/privacy-evaluator",
     license="MIT",
-    packages=["privacy_evaluator"],
+    packages=find_packages(include=["privacy_evaluator*"]),
     install_requires=["adversarial-robustness-toolbox[pytorch,tensorflow]==1.6.1"],
 )
