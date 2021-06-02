@@ -132,6 +132,7 @@ class MembershipInferenceAttack(Attack):
 
         :return: Decorator method.
         """
+
         def __fit_decorator(self, **kwargs):
             if self._art_attack_model_fitted is False:
                 fit_function(self, **kwargs)
