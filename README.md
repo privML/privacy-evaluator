@@ -25,7 +25,6 @@ To quantifiably measure the membership inference attack, two metrics are used:
 
 The following inference techniques are generic and not based on any particular dataset or model type.
 
-
 #### Membership Inference Back-Box Attack
 
 This is the implementation of the initial idea of a black-box membership inference attack as provided by [Shokri et al.](https://arxiv.org/abs/1610.05820).
@@ -50,10 +49,7 @@ The current implementation gives the user the choice of the attack model classif
 Important to note is that this attack performs faster on specifically larger datasets than its brother, the Label-Only Membership Inference attack (see next attack), which in return offers robustness against privacy defense mechanisms that modify a model's output (confidence values) in order to thwart attacks.
 In general, this attack should be the preferred one, and in case of bad Precision and Recall values, the Label-Only-based membership inference attack should be applied.
 
-
 ![](docs/mia_blackbox.png)
-
-
 
 #### Membership Inference Back-Box Label-Only Attack - Decision Boundary
 
@@ -76,7 +72,6 @@ This attack is motivated by the protection of the privacy of the population from
 Similar to the other two membership attacks, this attack works in the black-box setting and only makes observations based on the outputs of the target model for given inputs.
 
 In contrast to the black-box models above, which involve training an attack classifier, this attack is much simpler. The attack uses a simple rule: if the target model’s prediction for a given input is correct then that input is considered to be a member of the population underlying the target model’s dataset and not a member otherwise.
-
 
 ![](docs/mia_blackbox_rule_based.png)
 
