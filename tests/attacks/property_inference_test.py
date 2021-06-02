@@ -1,10 +1,12 @@
 import pytest
 import numpy as np
+from typing import Tuple
 
 from privacy_evaluator.attacks.property_inference_attack import PropertyInferenceAttack
 from privacy_evaluator.classifiers.classifier import Classifier
-from privacy_evaluator.models.train_cifar10_torch.data import dataset_downloader, new_dataset_from_size_dict
-from privacy_evaluator.models.train_cifar10_torch.train import trainer_out_model
+from privacy_evaluator.utils.data_utils import dataset_downloader, new_dataset_from_size_dict
+from privacy_evaluator.utils.trainer import trainer
+from privacy_evaluator.models.torch.fc_neural_net import FCNeuralNet
 
 
 def test_property_inference_attack():
@@ -14,11 +16,13 @@ def test_property_inference_attack():
     num_elements_per_classes = {0: 5000, 1: 5000}
 
     train_set, test_set = new_dataset_from_size_dict(
-            train_dataset, test_dataset, num_elements_per_classes
-        )
+            train_dataset, num_elements_per_classes
+    )
 
-    accuracy, model = trainer_out_model(
-        train_set, test_set, num_elements_per_classes, "FCNeuralNet"
+
+    model = FCNeuralNet()
+    trainer(
+        train_set, test_set, num_elements_per_classes, model
     )
 
     # change pytorch classifier to art classifier
@@ -26,7 +30,7 @@ def test_property_inference_attack():
         model, num_classes, input_shape
     )
 
-    test_dataset=next(iter(test_dataset))[0].numpy()
-    
+    test_dataset = next(iter(test_dataset))[0].numpy()
+
     attack = PropertyInferenceAttack(target_model, test_dataset)
     attack.attack()
