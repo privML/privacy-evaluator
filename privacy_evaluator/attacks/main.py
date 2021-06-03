@@ -1,14 +1,14 @@
 from privacy_evaluator.attacks.property_inference_attack import PropertyInferenceAttack
-from tensorflow.keras.datasets import cifar10
+from privacy_evaluator.utils.data_utils import dataset_downloader
 
 
 amount_sets = 6
-property_num_elements_per_classes = {0: 30, 1: 70}
+property_num_elements_per_classes = {0: 300, 1: 700}
 input_shape = [32, 32, 3]
 
-if True :
+if True:
     print("started")
-    train_dataset, test_dataset = cifar10.load_data()
+    train_dataset, test_dataset = dataset_downloader("CIFAR10")
     print("loaded")
 
     attack = PropertyInferenceAttack(None)
