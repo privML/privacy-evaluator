@@ -170,6 +170,7 @@ def _trainer_torch(
         with torch.no_grad():
             for images, labels in test_loader:
                 labels = labels.apply_(lambda id: class_encoding[id])
+                images = images / 255.0
                 images, labels = images.to(device), labels.to(device)
 
                 # forward pass
