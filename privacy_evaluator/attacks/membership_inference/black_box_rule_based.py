@@ -1,9 +1,9 @@
 import numpy as np
 
-from privacy_evaluator.attacks.membership_inference.membership_inference import (
+from .membership_inference import (
     MembershipInferenceAttack,
 )
-from privacy_evaluator.classifiers.classifier import Classifier
+from ...classifiers.classifier import Classifier
 
 
 class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
