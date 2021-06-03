@@ -5,7 +5,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 import numpy as np
 from typing import Tuple, Dict, Union
-from privacy_evaluator.models import ResNet50, FCNeuralNet
+#from privacy_evaluator.models import ResNet50, FCNeuralNet
 from privacy_evaluator.utils.metric import cross_entropy_loss, accuracy
 
 
@@ -13,11 +13,11 @@ def trainer(
     train_set: Union[Tuple[np.ndarray, np.ndarray], torch.utils.data.Dataset],
     test_set: Union[Tuple[np.ndarray, np.ndarray], torch.utils.data.Dataset],
     size_dict: Dict[int, int],
-    model: Union[torch.Module, keras.Model],
+    model: Union[nn.Module, keras.Model],
     batch_size: int = 500,
     num_epochs: int = 20,
     learning_rate: float = 0.001,
-    weight_decay: float = 0,
+    weight_decay: float = 0
 ) -> float:
     if isinstance(model, keras.Model):
         return _trainer_tf(
@@ -30,17 +30,8 @@ def trainer(
             learning_rate,
             weight_decay,
         )
-    elif isinstance(model, torch.Module):
-        return _trainer_torch(
-            train_set,
-            test_set,
-            size_dict,
-            model,
-            batch_size,
-            num_epochs,
-            learning_rate,
-            weight_decay,
-        )
+    elif isinstance(model, nn.Module):
+        return _trainer_torch(train_set, test_set, size_dict, model, batch_size, num_epochs, learning_rate, weight_decay)
 
 
 def _trainer_tf(
@@ -109,8 +100,8 @@ def _trainer_torch(
     train_set: Union[Tuple[np.ndarray, np.ndarray], torch.utils.data.Dataset],
     test_set: Union[Tuple[np.ndarray, np.ndarray], torch.utils.data.Dataset],
     size_dict: Dict[int, int],
-    model: torch.Module,
-    device: torch.device = torch.device("cpu"),
+    model: nn.Module,
+    #device: torch.device = torch.device("cpu"),
     batch_size: int = 500,
     num_epochs: int = 20,
     learning_rate: float = 0.001,
@@ -157,10 +148,11 @@ def _trainer_torch(
 
     # start training
     best_acc = 0
-    for _ in range(num_epochs):
+    for i in range(num_epochs):
         model.train()
         for images, labels in train_loader:
             labels = labels.apply_(lambda id: class_encoding[id])
+            images = images/255.0
             images, labels = images.to(device), labels.to(device)
 
             # forward pass

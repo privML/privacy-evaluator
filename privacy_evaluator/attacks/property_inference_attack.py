@@ -29,12 +29,12 @@ class PropertyInferenceAttack(Attack):
         dataset: Tuple[np.ndarray, np.ndarray],
         amount_sets: int,
         property_num_elements_per_class: Dict[int, int],
-    ) -> Tuple(
+    ) -> Tuple[
         List[Tuple[np.ndarray, np.ndarray]],
         List[Tuple[np.ndarray, np.ndarray]],
         Dict[int, int],
         Dict[int, int],
-    ):
+    ]:
         """
         Create the shadow training sets, half fulfill the property, half fulfill the negation of the property.
         The function works for the specific binary case that the property is a fixed distribution specified in the input
@@ -115,7 +115,7 @@ class PropertyInferenceAttack(Attack):
 
         for shadow_training_set in property_training_sets:
             shadow_training_X, shadow_training_y = shadow_training_set
-            train_X, train_y, test_X, test_y = train_test_split(
+            train_X, test_X, train_y, test_y = train_test_split(
                 shadow_training_X, shadow_training_y, test_size=0.3
             )
             train_set = (train_X, train_y)
@@ -136,7 +136,7 @@ class PropertyInferenceAttack(Attack):
 
         for shadow_training_set in neg_property_training_sets:
             shadow_training_X, shadow_training_y = shadow_training_set
-            train_X, train_y, test_X, test_y = train_test_split(
+            train_X, test_X, train_y, test_y = train_test_split(
                 shadow_training_X, shadow_training_y, test_size=0.3
             )
             train_set = (train_X, train_y)

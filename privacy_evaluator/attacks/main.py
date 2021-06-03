@@ -6,8 +6,7 @@ amount_sets = 6
 property_num_elements_per_classes = {0: 30, 1: 70}
 input_shape = [32, 32, 3]
 
-
-if __name__ == "main":
+if True :
     print("started")
     train_dataset, test_dataset = cifar10.load_data()
     print("loaded")
@@ -27,6 +26,8 @@ if __name__ == "main":
     (
         shadow_classifiers_property,
         shadow_classifiers_neg_property,
+        accuracy_prop,
+        accuracy_neg,
     ) = attack.train_shadow_classifiers(
         property_datasets,
         neg_property_datasets,
@@ -34,3 +35,8 @@ if __name__ == "main":
         neg_property_num_elements_per_classes,
         input_shape,
     )
+    print("trained shadow training sets")
+    print("Accuracy Property:")
+    print(accuracy_prop)
+    print("Accuracy Negation:")
+    print(accuracy_neg)
