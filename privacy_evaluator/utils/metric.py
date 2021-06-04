@@ -49,6 +49,6 @@ def accuracy(
 
     pred = np.argmax(outputs, axis=1)
     correct = (pred == labels).sum()
-    total = labels.ahape[0]
+    total = labels.shape[0]
     accuracy = 1.0 * correct / total
     return accuracy

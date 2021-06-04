@@ -155,11 +155,12 @@ def _trainer_torch(
 
     # start training
     best_acc = 0
-    
-    for _ in range(num_epochs):
+    for i in range(num_epochs):
         model.train()
         for images, labels in train_loader:
             labels = labels.apply_(lambda id: class_encoding[id])
+            images = images / 255.0
+            labels = labels.to(torch.long)
             images, labels = images.to(device), labels.to(device)
 
             # forward pass
@@ -177,6 +178,7 @@ def _trainer_torch(
         with torch.no_grad():
             for images, labels in test_loader:
                 labels = labels.apply_(lambda id: class_encoding[id])
+                images = images / 255.0
                 images, labels = images.to(device), labels.to(device)
 
                 # forward pass

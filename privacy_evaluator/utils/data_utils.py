@@ -52,8 +52,7 @@ def subset(
 
 
 def new_dataset_from_size_dict(
-    dataset: np.ndarray,
-    size_dict: Dict[int, int],
+    dataset: Tuple[np.ndarray, np.ndarray], size_dict: Dict[int, int]
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Build new dataset from original, using the `size_dict` to set the size of

@@ -1,6 +1,4 @@
 import pytest
-import numpy as np
-from typing import Tuple
 
 from privacy_evaluator.attacks.property_inference_attack import PropertyInferenceAttack
 from privacy_evaluator.classifiers.classifier import Classifier
@@ -11,14 +9,16 @@ from privacy_evaluator.models.torch.fc_neural_net import FCNeuralNet
 
 def test_property_inference_attack():
     train_dataset, test_dataset = dataset_downloader()
-    input_shape = [32, 32, 3]
+    input_shape =  test_dataset[0].shape
     num_classes = 2
-    num_elements_per_classes = {0: 5000, 1: 5000}
-
-    train_set, test_set = new_dataset_from_size_dict(
+    num_elements_per_classes = {0: 1000, 1: 1000}
+   
+    train_set = new_dataset_from_size_dict(
             train_dataset, num_elements_per_classes
     )
-
+    test_set = new_dataset_from_size_dict(
+            test_dataset, num_elements_per_classes
+    )
 
     model = FCNeuralNet()
     trainer(
@@ -30,7 +30,9 @@ def test_property_inference_attack():
         model, num_classes, input_shape
     )
 
-    test_dataset = next(iter(test_dataset))[0].numpy()
-
     attack = PropertyInferenceAttack(target_model, test_dataset)
     attack.attack()
+    """res = attack.attack()
+    f = open('test.txt', 'a')
+    f.write(str(res))
+    f.close()"""
