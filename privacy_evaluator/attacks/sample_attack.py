@@ -1,7 +1,7 @@
 import numpy as np
 
 from .attack import Attack
-from privacy_evaluator.classifiers.classifier import Classifier
+from ..classifiers.classifier import Classifier
 
 
 class SampleAttack(Attack):

@@ -1,7 +1,7 @@
 from typing import Dict
 import numpy as np
 
-from privacy_evaluator.metrics.basics import (
+from ...metrics.basics import (
     accuracy,
     train_to_test_accuracy_gap,
     train_to_test_accuracy_ratio,
