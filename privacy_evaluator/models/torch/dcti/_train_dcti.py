@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from privacy_evaluator.models.torch.dcti.dcti import DCTI
-from privacy_evaluator.datasets.cifar10 import CIFAR10
-from privacy_evaluator.metrics.basics import accuracy
+from .dcti import DCTI
+from ....datasets.cifar10 import CIFAR10
+from ....metrics.basics import accuracy
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

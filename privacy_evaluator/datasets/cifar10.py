@@ -7,7 +7,7 @@ import tensorflow as tf
 import numpy as np
 from typing import Tuple
 
-from privacy_evaluator.datasets.dataset import Dataset
+from .dataset import Dataset
 
 
 class CIFAR10(Dataset):

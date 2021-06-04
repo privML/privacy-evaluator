@@ -1,6 +1,6 @@
 import numpy as np
 
-from privacy_evaluator.classifiers.classifier import Classifier
+from ..classifiers.classifier import Classifier
 
 
 class Attack:

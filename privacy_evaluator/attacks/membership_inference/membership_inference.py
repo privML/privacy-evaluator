@@ -1,13 +1,13 @@
 from typing import Dict
 import numpy as np
 
-from privacy_evaluator.metrics.basics import (
+from ...metrics.basics import (
     accuracy,
     train_to_test_accuracy_gap,
     train_to_test_accuracy_ratio,
 )
-from privacy_evaluator.attacks.attack import Attack
-from privacy_evaluator.classifiers.classifier import Classifier
+from ..attack import Attack
+from ...classifiers.classifier import Classifier
 
 
 class MembershipInferenceAttack(Attack):
