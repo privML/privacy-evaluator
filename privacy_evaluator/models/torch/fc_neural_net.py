@@ -1,5 +1,5 @@
 from torch import nn
-from typing import Tuple
+from typing import Tuple, Optional
 import math
 
 
