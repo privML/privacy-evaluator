@@ -80,7 +80,14 @@ def new_dataset_from_size_dict(
         new_data_x.append(subset(dataset, class_id, size)[0])
         new_data_y.append(subset(dataset, class_id, size)[1])
     new_data_x = np.vstack(new_data_x)
-    new_data_y = np.concatenate(new_data_y, axis=0)
+
+    #TODO find solution instead of workaround, vstack works for CIFAR10, concatenate for MNIST
+    input_shape = dataset[0][0].shape
+    if input_shape == (32, 32, 3):
+        new_data_y = np.vstack(new_data_y).flatten()
+    elif input_shape in [(28, 28), (28, 28,), (28, 28, 1)]:
+        new_data_y = np.concatenate(new_data_y, axis=0)
+
     new_dataset = (new_data_x, new_data_y)
 
     return new_dataset

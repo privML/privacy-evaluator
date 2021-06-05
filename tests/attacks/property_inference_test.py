@@ -8,10 +8,10 @@ from privacy_evaluator.models.torch.fc_neural_net import FCNeuralNet
 
 
 def test_property_inference_attack():
-    train_dataset, test_dataset = dataset_downloader("CIFAR10")
+    train_dataset, test_dataset = dataset_downloader("MNIST")
     input_shape = test_dataset[0][0].shape
 
-    num_elements_per_class = {0: 1000, 1: 1000}
+    num_elements_per_class = {0: 500, 1: 500} #TODO change back to higher number
     num_classes = len(num_elements_per_class)
 
     train_set = new_dataset_from_size_dict(
@@ -21,7 +21,7 @@ def test_property_inference_attack():
         test_dataset, num_elements_per_class
     )
 
-    model = FCNeuralNet()
+    model = FCNeuralNet(input_shape)
     trainer(
         test_set, num_elements_per_class, model
     )
@@ -30,4 +30,10 @@ def test_property_inference_attack():
     target_model = Classifier._to_art_classifier(model, num_classes, input_shape)
 
     attack = PropertyInferenceAttack(target_model, train_dataset)
-    attack.attack()
+    print(attack.attack())
+
+test_property_inference_attack()
+
+
+
+

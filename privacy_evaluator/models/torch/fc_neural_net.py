@@ -4,10 +4,10 @@ import math
 
 
 def FCNeuralNet(
+    input_shape: Tuple[int, ...],
     num_classes: int = 2,
     dropout: float = 0,
-    input_shape: Tuple[int, ...] = (32, 32, 3)
-) -> Optional[torch.Module]:
+) -> Optional[nn.Module]:
     """A simple fully-connected network for multi-classification.
 
     Args:
@@ -22,15 +22,15 @@ def FCNeuralNet(
         return FCNeuralNet28X28X1(num_classes, dropout)
 
 
-class FCNeuralNet32X32X3(torch.Module):
+class FCNeuralNet32X32X3(nn.Module):
     def __init__(
             self,
             num_classes: int = 2,
             dropout: float = 0,
     ):
-        super(FCNeuralNet, self).__init__()
+        super(FCNeuralNet32X32X3, self).__init__()
         self.flatten = nn.Flatten()
-        self.input_layer = nn.Linear()
+        #self.input_layer = nn.Linear() # TODO: retrieve later
         self.fc = nn.Sequential(
             nn.Linear(32 * 32 * 3, 512),  # TODO: retrieve later
             nn.ReLU(),
@@ -47,15 +47,15 @@ class FCNeuralNet32X32X3(torch.Module):
         return out
 
 
-class FCNeuralNet28X28X1(torch.Module):
+class FCNeuralNet28X28X1(nn.Module):
     def __init__(
             self,
             num_classes: int = 2,
             dropout: float = 0,
     ):
-        super(FCNeuralNet, self).__init__()
+        super(FCNeuralNet28X28X1, self).__init__()
         self.flatten = nn.Flatten()
-        self.input_layer = nn.Linear()
+        #self.input_layer = nn.Linear() # TODO: retrieve later
         self.fc = nn.Sequential(
             nn.Linear(28 * 28 * 1, 512),  # TODO: retrieve later
             nn.ReLU(),

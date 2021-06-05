@@ -24,8 +24,8 @@ class PropertyInferenceAttack(Attack):
         :param dataset: dataset for training of shadow classifiers, test_data from dataset with concatenation [test_features, test_labels]
         """
         self.dataset = dataset
-        # count of shadow training sets, must be eval
-        self.amount_sets = 6
+        # count of shadow training sets, must be even
+        self.amount_sets = 2 #TODO change to higher number
         self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
         super().__init__(target_model, None, None, None, None)
 
@@ -66,7 +66,7 @@ class PropertyInferenceAttack(Attack):
         shadow_classifiers = []
         num_classes = len(num_elements_per_classes)
         for shadow_training_set in shadow_training_sets:
-            model = FCNeuralNet()  # TODO: infer model structure from the target model adaptively
+            model = FCNeuralNet(self.input_shape)  # TODO: infer model structure from the target model adaptively
             trainer(
                 shadow_training_set, num_elements_per_classes, model
             )
