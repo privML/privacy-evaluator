@@ -66,7 +66,7 @@ class PropertyInferenceAttack(Attack):
         shadow_classifiers = []
         num_classes = len(num_elements_per_classes)
         for shadow_training_set in shadow_training_sets:
-            model = FCNeuralNet()
+            model = FCNeuralNet()  # TODO: infer model structure from the target model adaptively
             trainer(
                 shadow_training_set, num_elements_per_classes, model
             )

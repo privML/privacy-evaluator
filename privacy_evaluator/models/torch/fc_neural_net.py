@@ -1,5 +1,6 @@
 from torch import nn
-
+from typing import Tuple
+import math
 
 class FCNeuralNet(nn.Module):
     """A simple fully-connected network for multi-classification.
@@ -9,11 +10,17 @@ class FCNeuralNet(nn.Module):
         dropout: Drop-out rate in the fully-connected layer.
     """
 
-    def __init__(self, num_classes: int = 2, dropout: float = 0):
+    def __init__(
+            self,
+            num_classes: int = 2,
+            dropout: float = 0,
+            input_shape: Tuple[int, ...] = (32, 32, 3)
+    ):
         super(FCNeuralNet, self).__init__()
         self.flatten = nn.Flatten()
+        self.length_after_flatten = math.prod(input_shape)
         self.fc = nn.Sequential(
-            nn.Linear(32 * 32 * 3, 512),
+            nn.Linear(length_after_flatten, 512),
             nn.ReLU(),
             nn.Dropout(dropout),
             nn.Linear(512, 64),
