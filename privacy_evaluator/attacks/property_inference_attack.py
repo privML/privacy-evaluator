@@ -252,7 +252,7 @@ class PropertyInferenceAttack(Attack):
         feature_extraction_target_model = self.feature_extraction(self.target_model)
 
         # set ratio and size for unbalanced data sets
-        size_set = 1000 #TODO get size of one class of dataset
+        size_set = 1000  # TODO get size of one class of dataset
 
         # balanced ratio
         num_elements = int(round(size_set / 2))
