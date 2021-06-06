@@ -8,6 +8,14 @@ setup(
     url="https://github.com/privML/privacy-evaluator",
     license="MIT",
     packages=find_packages(include=["privacy_evaluator*"]),
-    install_requires=["adversarial-robustness-toolbox[pytorch,tensorflow]==1.6.1"],
+    install_requires=[
+        "numpy",
+        "pandas",
+        "matplotlib",
+        "torch",
+        "torchvision",
+        "tensorflow",
+        "adversarial-robustness-toolbox[pytorch,tensorflow]==1.6.1"
+    ],
     include_package_data=True,
 )
