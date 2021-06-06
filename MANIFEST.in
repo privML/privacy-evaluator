@@ -1,1 +1,1 @@
-recursive-include privacy-evaluator/models/*/dcti/model/*
+include privacy_evaluator/models/torch/dcti/model/model.pth
