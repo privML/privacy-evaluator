@@ -1,3 +1,2 @@
 numpy
 adversarial-robustness-toolbox[pytorch,tensorflow]==1.6.1
--e .

@@ -1,1 +1,2 @@
-include privacy_evaluator/models/torch/dcti/model/model.pth
+graft privacy_evaluator/models/torch/dcti/model
+graft privacy_evaluator/models/tf/dcti/model

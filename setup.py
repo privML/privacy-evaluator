@@ -9,4 +9,5 @@ setup(
     license="MIT",
     packages=find_packages(include=["privacy_evaluator*"]),
     install_requires=["adversarial-robustness-toolbox[pytorch,tensorflow]==1.6.1"],
+    include_package_data=True,
 )
