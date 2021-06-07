@@ -132,7 +132,7 @@ class PropertyInferenceAttack(Attack):
 
             # change pytorch classifier to art classifier
             art_model_property = Classifier._to_art_classifier(
-                model_property, num_classes, input_shape
+                model_property, None, num_classes, input_shape
             )
 
             shadow_classifiers_property.append(art_model_property)

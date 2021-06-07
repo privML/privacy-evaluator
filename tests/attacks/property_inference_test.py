@@ -23,7 +23,7 @@ def test_property_inference_attack():
 
     # change pytorch classifier to art classifier
     target_model = Classifier(
-        classifier=model, loss=None, nb_classes=num_classes, input_shape=input_shape
+        model, None, num_classes, input_shape
     )
 
     attack = PropertyInferenceAttack(target_model.to_art_classifier)
