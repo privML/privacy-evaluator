@@ -18,7 +18,36 @@ Developers and anyone else with a PyTorch or TensorFlow neural network model at 
 - for detailed list see [requirements.txt](requirements.txt) 
 
 ## Installation
-- tbd
+
+### Production
+
+To install the `privacy-evaluator` package for production purposes please, follow the subsequent instructions. All instructions also work for Python's and Anaconda's virtual environments.
+
+If you want to use `git clone` together with `pip`, you can run:
+
+```
+git clone https://github.com/privML/privacy-evaluator.git
+cd privacy-evaluator
+pip install .
+```
+
+If you want to use `pip` only, you can run:
+
+```
+pip install git+https://github.com/privML/privacy-evaluator
+```
+
+### Development
+
+To install the `privacy-evaluator` package for development purposes please, follow the subsequent instructions.
+
+If you want to use `git clone` together with `pip`, you can run:
+
+```
+git clone https://github.com/privML/privacy-evaluator.git
+cd privacy-evaluator
+pip install -e .
+```
 
 ## How to use the Privacy Evaluator?
 - tbd
