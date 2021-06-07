@@ -50,7 +50,7 @@ python main.py
 
 ### Expriments
 #### Experiment Settings
-For both PyTorch and TensorFlow, the following hyperparamters are applied: 
+For both PyTorch and TensorFlow, the following hyperparamters are applied to train ResNet50: 
 ```python
 num_epochs = 10
 batch_size = 500
@@ -60,12 +60,16 @@ dropout = 0.3
 ```
 
 #### Results
-|Dataset|Torch+ResNet50|TF+Resnet50|
-|:-:|-:|-:|
-|{0: 5000, 1: 5000}|88.30%|92.40%|
-|{0: 5000, 1: 4000}|87.65%|92.30%|
-|{0: 5000, 1: 3000}|87.70%|92.15%|
-|{0: 5000, 1: 2000}|87.85%|90.95%|
-|{0: 5000, 1: 1000}|85.15%|89.55%|
-|{0: 5000, 1: 500} |83.65%|87.75%|
-|{0: 3000, 1: 1000, 2: 500}|72.83%|79.80%|
+|Dataset|Torch+ResNet50|TF+Resnet50|Torch+FC|TF+FC|
+|:-:|-:|-:|-:|-:|
+|{0: 5000, 1: 5000}|88.30%|92.40%|84.30%|83.30%|
+|{0: 5000, 1: 4000}|87.65%|92.30%|83.70%|83.40%|
+|{0: 5000, 1: 3000}|87.70%|92.15%|82.45%|80.50%|
+|{0: 5000, 1: 2000}|87.85%|90.95%|81.65%|80.20%|
+|{0: 5000, 1: 1000}|85.15%|89.55%|72.25%|79.60%|
+|{0: 5000, 1: 500} |83.65%|87.75%|67.40%|77.80%|
+|{0: 3000, 1: 1000, 2: 500}|72.83%|79.80%|63.73%|64.70%|
+
+#### Checkpoints
+The pre-trained models can be downloaded [here](https://www.dropbox.com/sh/299cmfus7lafigs/AAAb10rhHwIU7wL7u6kkvxXEa?dl=0).
+The naming of the models is: The first word (`tf` for TensorFlow and `torch` for PyTorch) implies the framework, the second word `pt` means we used pretrained weights, the third word is the name of the model, and the rest words are the class_id and num_samples pairs.
