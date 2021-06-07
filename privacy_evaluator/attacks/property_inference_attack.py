@@ -1,9 +1,11 @@
 from sklearn.base import clone
+from tensorflow.python.ops.numpy_ops import np_arrays
 from privacy_evaluator.attacks.attack import Attack
 from privacy_evaluator.classifiers.classifier import Classifier
 import privacy_evaluator.utils.data_utils as data_utils
 from privacy_evaluator.utils.trainer import trainer
 from privacy_evaluator.models.torch.fc_neural_net import FCNeuralNet
+from privacy_evaluator.models.tf.conv_net_meta_classifier import ConvNetMetaClassifier
 
 import math
 import numpy as np
@@ -14,7 +16,7 @@ from sklearn.model_selection import train_test_split
 from art.attacks.evasion import FastGradientMethod
 from art.estimators.classification import SklearnClassifier
 from typing import Tuple, Any, Dict, List
-
+from art.estimators.classification import TensorFlowV2Classifier
 
 class PropertyInferenceAttack(Attack):
     def __init__(self, target_model: Classifier, dataset: Tuple[np.ndarray,np.ndarray]):
@@ -188,37 +190,38 @@ class PropertyInferenceAttack(Attack):
             [feature_list_with_property, feature_list_without_property]
         )
         # Create corresponding labels
-        # meta_labels = np.concatenate([np.ones(len(feature_list_with_property)), np.zeros(len(feature_list_without_property))])
-        # For scikit-learn SVM classifier we need one hot encoded labels, therefore:
-        meta_labels = np.concatenate(
-            [
-                np.array([[1, 0]] * len(feature_list_with_property)),
-                np.array([[0, 1]] * len(feature_list_without_property)),
-            ]
-        )
+        meta_labels = np.concatenate([np.ones(len(feature_list_with_property)), np.zeros(len(feature_list_without_property))])
+
         return meta_features, meta_labels
 
-    def train_meta_classifier(self, meta_training_X, meta_training_y):
+    def train_meta_classifier(self, meta_training_X : np.ndarray, meta_training_y: np.ndarray) -> TensorFlowV2Classifier:
         """
         Train meta-classifier with the meta-training set.
         :param meta_training_X: Set of feature representation of each shadow classifier.
-        :type meta_training_X: np.ndarray
-        :param meta_training_y: Set of (one-hot-encoded) labels for each shadow classifier,
-                                according to whether property is fullfilled ([1, 0]) or not ([0, 1]).
-        :type meta_training_y: np.ndarray
-        :return: Meta classifier
-        :rtype: "CLASSIFIER_TYPE" (to be found in `.art.utils`) # classifier.predict is an one-hot-encoded label vector:
-                                                    [1, 0] means target model has the property, [0, 1] means it does not.
+        :param meta_training_y: Set of labels for each shadow classifier,
+                                according to whether property is fullfilled (1) or not (0)
+        :return: Art Meta classifier  
         """
-        # Create a scikit SVM model, which will be trained on meta_training
-        model = SVC(C=1.0, kernel="rbf")
 
-        # Turn into ART classifier
-        classifier = SklearnClassifier(model=model)
+        meta_training_X = meta_training_X.reshape((meta_training_X.shape[0], meta_training_X[0].shape[0], 1))
+        meta_input_shape = meta_training_X[0].shape
+        nb_classes = 2
+        inputs = tf.keras.Input(shape=meta_input_shape)
+        print("Meta input: ", inputs, "train data: ", meta_training_X[0])
+        cnmc = ConvNetMetaClassifier(inputs=inputs, num_classes=nb_classes)
 
-        # Train the ART classifier as meta_classifier and return
-        classifier.fit(meta_training_X, meta_training_y)
-        return classifier
+        
+        cnmc.model.fit(
+            x=meta_training_X, y=meta_training_y,
+            epochs=2,
+            batch_size=128,
+            # If enough shadow classifiers are available, one could split the training set and create an additional validation set as input:
+            # validation_data = (validation_X, validation_y),
+        )
+
+        art_meta_classifier = Classifier._to_art_classifier(cnmc.model, nb_classes=nb_classes, input_shape=meta_input_shape)
+
+        return art_meta_classifier
 
     def perform_prediction(
         self, meta_classifier, feature_extraction_target_model

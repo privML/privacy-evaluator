@@ -1,42 +1,37 @@
+import pytest
+
 from privacy_evaluator.attacks.property_inference_attack import PropertyInferenceAttack
-from privacy_evaluator.utils.data_utils import dataset_downloader
+from privacy_evaluator.classifiers.classifier import Classifier
+from privacy_evaluator.utils.data_utils import dataset_downloader, new_dataset_from_size_dict
+from privacy_evaluator.utils.trainer import trainer
+from privacy_evaluator.models.torch.fc_neural_net import FCNeuralNet
 
 
-amount_sets = 6
-property_num_elements_per_classes = {0: 300, 1: 700}
-input_shape = [32, 32, 3]
-
-if True:
-    print("started")
-    train_dataset, test_dataset = dataset_downloader("CIFAR10")
-    print("loaded")
-
-    attack = PropertyInferenceAttack(None)
-    (
-        property_datasets,
-        neg_property_datasets,
-        property_num_elements_per_classes,
-        neg_property_num_elements_per_classes,
-    ) = attack.create_shadow_training_set(
-        test_dataset,
-        amount_sets,
-        property_num_elements_per_classes,
+def test_property_inference_attack():
+    train_dataset, test_dataset = dataset_downloader()
+    input_shape =  test_dataset[0].shape
+    num_classes = 2
+    num_elements_per_classes = {0: 1000, 1: 1000}
+   
+    train_set = new_dataset_from_size_dict(
+            train_dataset, num_elements_per_classes
     )
-    print("created shadow training sets")
-    (
-        shadow_classifiers_property,
-        shadow_classifiers_neg_property,
-        accuracy_prop,
-        accuracy_neg,
-    ) = attack.train_shadow_classifiers(
-        property_datasets,
-        neg_property_datasets,
-        property_num_elements_per_classes,
-        neg_property_num_elements_per_classes,
-        input_shape,
+    test_set = new_dataset_from_size_dict(
+            test_dataset, num_elements_per_classes
     )
-    print("trained shadow training sets")
-    print("Accuracy Property:")
-    print(accuracy_prop)
-    print("Accuracy Negation:")
-    print(accuracy_neg)
+
+    model = FCNeuralNet()
+    trainer(
+        train_set, test_set, num_elements_per_classes, model
+    )
+
+    # change pytorch classifier to art classifier
+    target_model = Classifier._to_art_classifier(model, num_classes, input_shape)
+
+    attack = PropertyInferenceAttack(target_model, test_dataset)
+    attack.attack()
+    res = attack.attack()
+    f = open('test.txt', 'a')
+    f.write(str(res))
+    f.close()
+
