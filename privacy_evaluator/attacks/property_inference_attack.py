@@ -1,5 +1,4 @@
 from sklearn.base import clone
-from tensorflow.python.ops.numpy_ops import np_arrays
 from privacy_evaluator.attacks.attack import Attack
 from privacy_evaluator.classifiers.classifier import Classifier
 import privacy_evaluator.utils.data_utils as data_utils
@@ -7,16 +6,21 @@ from privacy_evaluator.utils.trainer import trainer
 from privacy_evaluator.models.torch.fc_neural_net import FCNeuralNet
 from privacy_evaluator.models.tf.conv_net_meta_classifier import ConvNetMetaClassifier
 
+
 import math
 import numpy as np
 import torch
 import tensorflow as tf
-from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeRegressor
+from torch import nn 
+import torch.nn.functional as F
+import torch.optim as optim
 from sklearn.model_selection import train_test_split
 from art.attacks.evasion import FastGradientMethod
-from art.estimators.classification import SklearnClassifier
+from art.estimators.classification.scikitlearn import ScikitlearnDecisionTreeRegressor
 from typing import Tuple, Any, Dict, List
 from art.estimators.classification import TensorFlowV2Classifier
+from art.estimators.classification import PyTorchClassifier
 
 class PropertyInferenceAttack(Attack):
     def __init__(self, target_model: Classifier, dataset: Tuple[np.ndarray,np.ndarray]):
@@ -27,7 +31,7 @@ class PropertyInferenceAttack(Attack):
         """
         self.dataset=dataset
         # count of shadow training sets, must be eval
-        self.amount_sets = 6
+        self.amount_sets = 2
         self.input_shape =  self.dataset[0].shape #[32, 32, 3]
         super().__init__(target_model, None, None, None, None)
 
@@ -190,7 +194,7 @@ class PropertyInferenceAttack(Attack):
             [feature_list_with_property, feature_list_without_property]
         )
         # Create corresponding labels
-        meta_labels = np.concatenate([np.ones(len(feature_list_with_property)), np.zeros(len(feature_list_without_property))])
+        meta_labels = np.concatenate([np.ones(len(feature_list_with_property), dtype=int), np.zeros(len(feature_list_without_property), dtype=int)])
 
         return meta_features, meta_labels
 
@@ -203,14 +207,22 @@ class PropertyInferenceAttack(Attack):
         :return: Art Meta classifier  
         """
 
+        #Try to implement model of Janis
+
         meta_training_X = meta_training_X.reshape((meta_training_X.shape[0], meta_training_X[0].shape[0], 1))
+        meta_training_y = meta_training_y.reshape((meta_training_y.shape[0], 1))
         meta_input_shape = meta_training_X[0].shape
         nb_classes = 2
         inputs = tf.keras.Input(shape=meta_input_shape)
-        print("Meta input: ", inputs, "train data: ", meta_training_X[0])
+        
         cnmc = ConvNetMetaClassifier(inputs=inputs, num_classes=nb_classes)
 
-        
+        cnmc.model.compile(
+            loss='sparse_categorical_crossentropy',
+            optimizer='adam',
+            metrics=['accuracy']
+        )
+
         cnmc.model.fit(
             x=meta_training_X, y=meta_training_y,
             epochs=2,
@@ -219,8 +231,10 @@ class PropertyInferenceAttack(Attack):
             # validation_data = (validation_X, validation_y),
         )
 
-        art_meta_classifier = Classifier._to_art_classifier(cnmc.model, nb_classes=nb_classes, input_shape=meta_input_shape)
+        #model has .evaluate(test_X,test_y) function
 
+        art_meta_classifier = Classifier._to_art_classifier(cnmc.model, nb_classes=nb_classes, input_shape=meta_input_shape)
+        
         return art_meta_classifier
 
     def perform_prediction(
@@ -236,6 +250,9 @@ class PropertyInferenceAttack(Attack):
         fulfilled for target data set
         :rtype: np.ndarray with shape (1, 2)
         """
+
+        feature_extraction_target_model = feature_extraction_target_model.reshape((feature_extraction_target_model.shape[0], 1))
+
         assert meta_classifier.input_shape == tuple(
             feature_extraction_target_model.shape
         )
@@ -268,7 +285,7 @@ class PropertyInferenceAttack(Attack):
         prediction = self.perform_prediction(
             meta_classifier, feature_extraction_target_model
         )
-
+        
         return prediction
     
 

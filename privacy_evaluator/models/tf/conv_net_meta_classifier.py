@@ -11,8 +11,7 @@ class ConvNetMetaClassifier(tf.keras.Model):
 
 
 
-    def ConvBlock(inputs, filters, pool=True):
-
+    def ConvBlock(self, inputs, filters, pool=True):
         x = Conv1D(filters, 5)(inputs)
         x = ReLU()(x)
         x = BatchNormalization()(x)
@@ -21,7 +20,7 @@ class ConvNetMetaClassifier(tf.keras.Model):
 
         return x
 
-    def DenseBlock(inputs, units):
+    def DenseBlock(self, inputs, units):
 
         x = Dense(units)(inputs)
         x = Dropout(rate=0.5)(x)
