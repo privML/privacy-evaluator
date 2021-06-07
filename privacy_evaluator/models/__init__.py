@@ -1,5 +1,6 @@
 """
 Module providing models.
 """
-from privacy_evaluator.models import torch
-from privacy_evaluator.models import tf
+from . import torch
+from . import tf
+from . import train_cifar10_torch

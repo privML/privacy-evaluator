@@ -1,4 +1,4 @@
-from privacy_evaluator.classifiers.classifier import Classifier
+from ..classifiers.classifier import Classifier
 import numpy as np
 from typing import Tuple
 

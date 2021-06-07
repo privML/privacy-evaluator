@@ -1,17 +1,17 @@
 import torch
 import torchvision
-from data import dataset_downloader, new_dataset_from_size_dict
-from train import trainer
+from demo.train_cifar10_torch.data import dataset_downloader, new_dataset_from_size_dict
+from demo.train_cifar10_torch.train import trainer
 
 # alternative: "ResNet18"
-model_name = "ResNet50"
+model_name = "FCNeuralNet"  # "ResNet50"
 
 # hyper-parameters
-num_epochs = 10
+num_epochs = 12
 batch_size = 500
-learning_rate = 0.001
-weight_decay = 0.002
-dropout = 0.3
+learning_rate = 0.002
+weight_decay = 0
+dropout = 0
 
 # put your designed sample distribution here
 # each line corresponds to an experiment

@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from privacy_evaluator.models.tf.dcti.dcti import DCTI
+from .dcti import DCTI
 
 
 def augment(x, y):
