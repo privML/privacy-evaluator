@@ -9,6 +9,7 @@ def compute_privacy_risk_score(
     y_train: np.ndarray,
     x_test: np.ndarray,
     y_test: np.ndarray,
+    slice_by=None,
     num_bins=15,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
@@ -25,11 +26,20 @@ def compute_privacy_risk_score(
 
     :param attack_input: input data for compute membership probability
     :param num_bins: the number of bins used to compute the training/test histogram
+    :param slyce_by: has to be "class", "percentage", "classification_correctness" or None
     :return: membership probability results
     """
-    loss_train = target.art_classifier.compute_loss(x_train, y_train)
-    loss_test = target.art_classifier.compute_loss(x_test, y_test)
-    return _compute_membership_probability(loss_train, loss_test, num_bins)
+    if slice_by not in [None, "class", "percentage", "classification_correctness"]:
+        raise ValueError(
+            f"Expected `slice_by` to be one of None, `class`, `percentage`, `classification_correctness`, received {slice_by} instead."
+        )
+
+    if not slice_by:
+        loss_train = target.art_classifier.compute_loss(x_train, y_train)
+        loss_test = target.art_classifier.compute_loss(x_test, y_test)
+        return _compute_membership_probability(loss_train, loss_test, num_bins)
+    else:
+        raise NotImplementedError
 
 
 def _compute_membership_probability(
