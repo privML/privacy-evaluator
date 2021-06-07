@@ -6,6 +6,7 @@ from typing import Tuple
 
 from .user_output import UserOutput
 
+
 class UserOutputPrivacyScore(UserOutput):
 
     """User Output Class"""
