@@ -1,5 +1,3 @@
-import pytest
-
 from privacy_evaluator.attacks.property_inference_attack import PropertyInferenceAttack
 from privacy_evaluator.classifiers.classifier import Classifier
 from privacy_evaluator.models.train_cifar10_torch.data import (
@@ -11,7 +9,7 @@ from privacy_evaluator.models.train_cifar10_torch.train import trainer_out_model
 
 def test_property_inference_attack():
     train_dataset, test_dataset = dataset_downloader()
-    input_shape = [32, 32, 3]
+    input_shape = (32, 32, 3)
     num_classes = 2
     num_elements_per_classes = {0: 5000, 1: 5000}
 
@@ -24,7 +22,7 @@ def test_property_inference_attack():
     )
 
     # change pytorch classifier to art classifier
-    target_model = Classifier._to_art_classifier(model, num_classes, input_shape)
+    target_model = Classifier(model, None, num_classes, input_shape)
 
-    attack = PropertyInferenceAttack(target_model)
+    attack = PropertyInferenceAttack(target_model.to_art_classifier)
     attack.attack()
