@@ -15,8 +15,9 @@ def test_sample_attack():
     attack = SampleAttack(target_model, x_train, y_train, x_test, y_test)
 
     actual_inferred_train_data, actual_inferred_test_data = attack.attack()
-    expected_inferred_train_data, expected_inferred_test_data = np.ones(10), np.zeros(
-        10
+    expected_inferred_train_data, expected_inferred_test_data = (
+        np.ones(10),
+        np.zeros(10),
     )
 
     assert len(actual_inferred_train_data) == len(expected_inferred_train_data)

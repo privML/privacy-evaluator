@@ -1,17 +1,20 @@
-import tensorflow as tf
-import numpy as np
-from data import dataset_downloader, new_dataset_from_size_dict
-from train import trainer
+import torch
+import torchvision
+from privacy_evaluator.models.train_cifar10_torch.data import (
+    dataset_downloader,
+    new_dataset_from_size_dict,
+)
+from privacy_evaluator.models.train_cifar10_torch.train import trainer
 
-
-model_name = "ResNet50"
+# alternative: "ResNet18"
+model_name = "FCNeuralNet"  # "ResNet50"
 
 # hyper-parameters
-num_epochs = 10
+num_epochs = 12
 batch_size = 500
-learning_rate = 0.001
-weight_decay = 0.002
-dropout = 0.3
+learning_rate = 0.002
+weight_decay = 0
+dropout = 0
 
 # put your designed sample distribution here
 # each line corresponds to an experiment
@@ -27,9 +30,7 @@ size_dicts = [
 
 if __name__ == "__main__":
     # set device
-    gpus = tf.config.experimental.list_physical_devices("GPU")
-    if gpus:
-        tf.config.experimental.set_visible_devices(gpus[0], "GPU")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     train_dataset, test_dataset = dataset_downloader("CIFAR10")
     for size_dict in size_dicts:
@@ -41,6 +42,7 @@ if __name__ == "__main__":
             test_set=test_set,
             size_dict=size_dict,
             model=model_name,
+            device=device,
             batch_size=batch_size,
             num_epochs=num_epochs,
             learning_rate=learning_rate,
