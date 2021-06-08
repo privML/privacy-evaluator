@@ -52,7 +52,7 @@ class ConvNetMetaClassifier(tf.keras.Model):
 
         x = self.DenseBlock(x, 64)
 
-        x = Dense(num_classes)(x)
+        x = Dense(num_classes, activation=tf.keras.activations.softmax)(x)
 
         model = tf.keras.Model(inputs=inputs, outputs=x, name="DeepMetaClassifier")
         return model

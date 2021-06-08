@@ -206,15 +206,17 @@ class PropertyInferenceAttack(Attack):
                                 according to whether property is fullfilled (1) or not (0)
         :return: Art Meta classifier  
         """
-
-        #Try to implement model of Janis
-
+        #reshaping train data to fit models input
         meta_training_X = meta_training_X.reshape((meta_training_X.shape[0], meta_training_X[0].shape[0], 1))
         meta_training_y = meta_training_y.reshape((meta_training_y.shape[0], 1))
         meta_input_shape = meta_training_X[0].shape
+
+        #currently there are just 2 classes
         nb_classes = 2
+
         inputs = tf.keras.Input(shape=meta_input_shape)
         
+        #create model according to model from https://arxiv.org/pdf/2002.05688.pdf
         cnmc = ConvNetMetaClassifier(inputs=inputs, num_classes=nb_classes)
 
         cnmc.model.compile(
@@ -233,6 +235,7 @@ class PropertyInferenceAttack(Attack):
 
         #model has .evaluate(test_X,test_y) function
 
+        #convert model to ART classifier
         art_meta_classifier = Classifier._to_art_classifier(cnmc.model, nb_classes=nb_classes, input_shape=meta_input_shape)
         
         return art_meta_classifier
