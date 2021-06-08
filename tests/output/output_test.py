@@ -1,7 +1,7 @@
 import numpy as np
 
 from privacy_evaluator.metrics.basics import *
-from privacy_evaluator.output.user_output import UserOutput
+from privacy_evaluator.output.user_output_privacy_score import UserOutputPrivacyScore
 
 
 def test_output_function():
@@ -9,7 +9,7 @@ def test_output_function():
         ["blue", "orange", "red", "orange", "red", "red", "blue", "red", "orange"]
     )
     priv_risk = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
-    user_output = UserOutput(data_y, priv_risk)
+    user_output = UserOutputPrivacyScore(data_y, priv_risk)
     labels, count = user_output.histogram_top_k(
         np.array(["green", "blue", "red", "orange", "white"]),
         4,
@@ -22,7 +22,7 @@ def test_output_function_relative():
         ["blue", "orange", "red", "orange", "red", "red", "blue", "red", "orange"]
     )
     priv_risk = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
-    user_output = UserOutput(data_y, priv_risk)
+    user_output = UserOutputPrivacyScore(data_y, priv_risk)
     labels, count = user_output.histogram_top_k_relative(
         np.array([5, 40, 6, 35, 4]),
         np.array(["green", "blue", "red", "orange", "white"]),
