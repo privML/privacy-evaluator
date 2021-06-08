@@ -2,7 +2,7 @@ name: Testing with pytest
 
 on:
   pull_request:
-    branches: [ main, team1sprint2,  team1sprint3, team1sprint4]
+    branches: [ main, team1sprint2, team1sprint3, team1sprint4 ]
     types:
       - opened
       - edited
@@ -29,4 +29,3 @@ jobs:
 
       - name: Test with pytest
         run: pytest
-

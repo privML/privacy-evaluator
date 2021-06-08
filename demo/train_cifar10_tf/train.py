@@ -1,8 +1,9 @@
 import tensorflow as tf
 import numpy as np
 from typing import Tuple, Dict
-from model import ResNet50
+from model import ResNet50, FCNeuralNet
 from metric import cross_entropy_loss, accuracy
+import os
 
 
 def trainer(
@@ -33,6 +34,8 @@ def trainer(
     num_classes = len(size_dict)
     if model == "ResNet50":
         model = ResNet50(num_classes, dropout)
+    elif model == "FCNeuralNet":
+        model = FCNeuralNet(num_classes, dropout)
     optimizer = tf.optimizers.Adam(learning_rate=learning_rate)
 
     # here class encoding is necessary since we need the dimension
@@ -41,7 +44,7 @@ def trainer(
 
     # start training
     best_acc = 0
-    for epoch in range(num_epochs):
+    for _ in range(num_epochs):
         for images, labels in train_loader:
             labels = np.vectorize(lambda id: class_encoding[id])(labels)
             with tf.GradientTape() as g:
@@ -66,5 +69,10 @@ def trainer(
             accuracies.append(batch_acc)
 
         epoch_acc = sum(accuracies) / len(accuracies)
-        best_acc = max(best_acc, epoch_acc)
+        if epoch_acc > best_acc:
+            best_acc = epoch_acc
+            model_name = "tf_fc_class_0_{}_class_1_{}".format(
+                size_dict[0], size_dict[1]
+            )
+            model.save(os.path.join("../", model_name))
     return float(round(best_acc, 4))
