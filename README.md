@@ -15,7 +15,7 @@ Developers and anyone else with a PyTorch or TensorFlow neural network model at 
 - [Adversarial Robustness Toolbox (ART) 1.6.1](https://github.com/Trusted-AI/adversarial-robustness-toolbox)
 - [PyTorch](https://pytorch.org/)
 - [Tensorflow v2](https://www.tensorflow.org/)
-- for detailed list see [requirements.txt](requirements.txt) 
+- for detailed list see [setup.py](setup.py) 
 
 ## Installation
 
@@ -28,6 +28,17 @@ If you want to use `git clone` together with `pip`, you can run:
 ```
 git clone https://github.com/privML/privacy-evaluator.git
 cd privacy-evaluator
+```
+
+Optionally, If you want to install a specific branch, please check out the wanted branch first:
+
+```
+git checkout <branch-name>
+```
+
+Then install the package:
+
+```
 pip install .
 ```
 
@@ -35,6 +46,12 @@ If you want to use `pip` only, you can run:
 
 ```
 pip install git+https://github.com/privML/privacy-evaluator
+```
+
+Optionally, If you want to install a specific branch, please run the following command:
+
+```
+pip install git+https://github.com/privML/privacy-evaluator@<branch-name>
 ```
 
 ### Development
@@ -46,7 +63,18 @@ If you want to use `git clone` together with `pip`, you can run:
 ```
 git clone https://github.com/privML/privacy-evaluator.git
 cd privacy-evaluator
-pip install -r requirements.txt
+```
+
+Optionally, If you want to install a specific branch, please check out the wanted branch first:
+
+```
+git checkout <branch-name> 
+```
+
+Then install the package:
+
+```
+pip install -e .[development]
 ```
 
 ## How to use the Privacy Evaluator?
