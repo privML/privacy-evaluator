@@ -17,6 +17,9 @@ class UserOutput:
     ):
         """
         Initilaizes the Class with values
+        :param attack_data_y: An Array of the labels of the attck data
+        :param privacy_risk: the Privacy risk corresponding to the attack data
+        :param all_labels: All labels that are in the training set
         """
         self.attack_data_y = attack_data_y
         self.privacy_risk = privacy_risk
@@ -26,7 +29,7 @@ class UserOutput:
         self, k: int = 10, show_diagram: bool = True
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Draws a historgam of the top k points with biggest Privacy score
+        Draw histogram of class distribution of the k points with highest privacy risk score
         :param k: the number of points to consider, default 10
         :param show_diagram: determines if the diagram should be shown, default: True
         :return: All lables of the data with the number of points that are in the top k
