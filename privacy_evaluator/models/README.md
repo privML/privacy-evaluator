@@ -1,5 +1,5 @@
 ## Demo 1: Image Classification on CIFAR10
-This is an implemention of doing classification on CIFAR10 dataset which supports manually making the dataset unbalanced. Now you can easily control the sample size of each class! Implementations using PyTorch and Tensorflow are provided, with source code in sub-folder `./train-cifar-10-torch` and `./train-cifar-10-tf` respectively.
+This is an implemention of doing classification on CIFAR10 dataset which supports manually making the dataset unbalanced. Now you can easily control the sample size of each class! Implementations using PyTorch and TensorFlow are provided, with source code in sub-folder `./train-cifar-10-torch` and `./train-cifar-10-tf` respectively.
 
 ### How it works
 #### Data Preparation

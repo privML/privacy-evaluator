@@ -145,7 +145,7 @@ class CIFAR10(Dataset):
         test_batch_size: int = 128,
         one_hot_encode: bool = False,
     ):
-        """Loads the dataset as Tensorflow train and test data loader.
+        """Loads the dataset as TensorFlow train and test data loader.
 
         :param train_batch_size: Batch size of the train data loader.
         :param test_batch_size: Batch size of the test data loader.

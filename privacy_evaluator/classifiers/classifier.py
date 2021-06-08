@@ -17,7 +17,7 @@ class Classifier:
     ):
         """Initializes a Classifier class.
 
-        :param classifier: The classifier. Either a Pytorch or Tensorflow classifier.
+        :param classifier: The classifier. Either a Pytorch or TensorFlow classifier.
         :param nb_classes: Number of classes that were used to train the classifier.
         :param input_shape: Input shape of a data point of the classifier.
         """
@@ -49,7 +49,7 @@ class Classifier:
     ) -> Union[TensorFlowV2Classifier, PyTorchClassifier]:
         """Initializes an ART classifier.
 
-        :param classifier: Original classifier, either Pytorch or Tensorflow.
+        :param classifier: Original classifier, either Pytorch or TensorFlow.
         :param nb_classes: Number of classes that were used to train the classifier.
         :param input_shape: Shape of a input data point of the classifier.
         :return: Instance of an ART classifier.
