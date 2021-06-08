@@ -17,22 +17,24 @@ from typing import Tuple, Any, Dict, List
 
 
 class PropertyInferenceAttack(Attack):
-    def __init__(self, target_model: Classifier, dataset: Tuple[np.ndarray,np.ndarray]):
+    def __init__(
+        self, target_model: Classifier, dataset: Tuple[np.ndarray, np.ndarray]
+    ):
         """
         Initialize the Property Inference Attack Class.
         :param target_model: the target model to be attacked
         :param dataset: dataset for training of shadow classifiers, test_data from dataset with concatenation [test_features, test_labels]
         """
-        self.dataset=dataset
+        self.dataset = dataset
         # count of shadow training sets, must be eval
         self.amount_sets = 6
-        self.input_shape =  self.dataset[0].shape #[32, 32, 3]
+        self.input_shape = self.dataset[0].shape  # [32, 32, 3]
         super().__init__(target_model, None, None, None, None)
 
     def create_shadow_training_set(
         self,
         num_elements_per_class: Dict[int, int],
-    ) ->List[Tuple[np.ndarray, np.ndarray]]:
+    ) -> List[Tuple[np.ndarray, np.ndarray]]:
         """
         Create the shadow training sets with given ratio.
         The function works for the specific binary case that the ratio is a fixed distribution specified in the input.
@@ -41,7 +43,7 @@ class PropertyInferenceAttack(Attack):
         """
 
         training_sets = []
-        #neg_property_training_sets = []
+        # neg_property_training_sets = []
 
         """negation_num_elements_per_class = {
             class_id: int(
@@ -65,7 +67,7 @@ class PropertyInferenceAttack(Attack):
     def train_shadow_classifiers(
         self,
         shadow_training_sets: List[Tuple[np.ndarray, np.ndarray]],
-        num_elements_per_classes: Dict[int, int]
+        num_elements_per_classes: Dict[int, int],
     ):
         """
         Train shadow classifiers with each shadow training set (follows property or negation of property).
@@ -78,7 +80,7 @@ class PropertyInferenceAttack(Attack):
         """
 
         shadow_classifiers = []
-        accuracies =[]
+        accuracies = []
 
         num_classes = len(num_elements_per_classes)
 
@@ -91,9 +93,7 @@ class PropertyInferenceAttack(Attack):
             test_set = (test_X, test_y)
 
             model = FCNeuralNet()
-            accuracy = trainer(
-                train_set, test_set, num_elements_per_classes, model
-            )
+            accuracy = trainer(train_set, test_set, num_elements_per_classes, model)
 
             # change pytorch classifier to art classifier
             art_model = Classifier._to_art_classifier(
@@ -103,30 +103,22 @@ class PropertyInferenceAttack(Attack):
             shadow_classifiers.append(art_model)
             accuracies.append(accuracy)
 
-        return (
-            shadow_classifiers,
-            accuracies
-        )
+        return (shadow_classifiers, accuracies)
 
-    def create_shadow_classifier_from_training_set(self, num_elements_per_classes:  Dict[int, int]
-                                )-> Tuple[list,list]:
-        
-        #create training sets
-        
-        training_sets = self.create_shadow_training_set(
-            num_elements_per_classes
-        )
+    def create_shadow_classifier_from_training_set(
+        self, num_elements_per_classes: Dict[int, int]
+    ) -> Tuple[list, list]:
 
-        #create classifiers with trained models based on given data set
-        (
-            shadow_classifiers,
-            accuracy
-        ) = self.train_shadow_classifiers(
+        # create training sets
+
+        training_sets = self.create_shadow_training_set(num_elements_per_classes)
+
+        # create classifiers with trained models based on given data set
+        (shadow_classifiers, accuracy) = self.train_shadow_classifiers(
             training_sets,
             num_elements_per_classes,
         )
-        return (shadow_classifiers,accuracy)
-
+        return (shadow_classifiers, accuracy)
 
     def feature_extraction(self, model):
         """
@@ -240,18 +232,27 @@ class PropertyInferenceAttack(Attack):
         predictions = meta_classifier.predict(x=[feature_extraction_target_model])
         return predictions
 
-    def prediction_on_specific_property(self, 
-            feature_extraction_target_model: np.ndarray,
-            shadow_classifiers_neg_property: list,
-            ratio: float,
-            size_set: int
-            ):
+    def prediction_on_specific_property(
+        self,
+        feature_extraction_target_model: np.ndarray,
+        shadow_classifiers_neg_property: list,
+        ratio: float,
+        size_set: int,
+    ):
 
-        #property of given ratio, only on class 0 and 1 at the moment
-        property_num_elements_per_classes = {0: int((1-ratio) * size_set), 1: int(ratio * size_set)}
+        # property of given ratio, only on class 0 and 1 at the moment
+        property_num_elements_per_classes = {
+            0: int((1 - ratio) * size_set),
+            1: int(ratio * size_set),
+        }
 
         # create shadow classifiers with trained models with unbalanced data set
-        shadow_classifiers_property,accuracy_property = self.create_shadow_classifier_from_training_set(property_num_elements_per_classes)
+        (
+            shadow_classifiers_property,
+            accuracy_property,
+        ) = self.create_shadow_classifier_from_training_set(
+            property_num_elements_per_classes
+        )
 
         # create meta training set
         meta_features, meta_labels = self.create_meta_training_set(
@@ -267,7 +268,6 @@ class PropertyInferenceAttack(Attack):
         )
 
         return prediction
-    
 
     def attack(self):
         """
@@ -282,22 +282,37 @@ class PropertyInferenceAttack(Attack):
         feature_extraction_target_model = self.feature_extraction(self.target_model)
 
         # set ratio and size for unbalanced data sets
-        size_set = 1000 #TODO get size of on class of dataset
+        size_set = 1000  # TODO get size of on class of dataset
 
-        #balanced ratio
+        # balanced ratio
         num_elements = int(round(size_set / 2))
-        neg_property_num_elements_per_classes={0: num_elements, 1: num_elements}
+        neg_property_num_elements_per_classes = {0: num_elements, 1: num_elements}
 
-        #create balanced shadow classifiers (negation property)
-        shadow_classifiers_neg_property, accuracy_neg_property = self.create_shadow_classifier_from_training_set(neg_property_num_elements_per_classes)
-      
+        # create balanced shadow classifiers (negation property)
+        (
+            shadow_classifiers_neg_property,
+            accuracy_neg_property,
+        ) = self.create_shadow_classifier_from_training_set(
+            neg_property_num_elements_per_classes
+        )
+
         predictions = dict()
-        #iterate over ratios from 0.55 to 0.95 (means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
-        #TODO add more
-        for ratio in np.arange(0.55, 1, 0.05):#range(0.55, 0.95, 0.05):
+        # iterate over ratios from 0.55 to 0.95 (means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
+        # TODO add more
+        for ratio in np.arange(0.55, 1, 0.05):  # range(0.55, 0.95, 0.05):
 
-            predictions[round(ratio, 5)] = self.prediction_on_specific_property(feature_extraction_target_model, shadow_classifiers_neg_property,ratio, size_set)
+            predictions[round(ratio, 5)] = self.prediction_on_specific_property(
+                feature_extraction_target_model,
+                shadow_classifiers_neg_property,
+                ratio,
+                size_set,
+            )
 
-            predictions[round((1-ratio),5)] = self.prediction_on_specific_property(feature_extraction_target_model, shadow_classifiers_neg_property,(1-ratio), size_set)
-            
+            predictions[round((1 - ratio), 5)] = self.prediction_on_specific_property(
+                feature_extraction_target_model,
+                shadow_classifiers_neg_property,
+                (1 - ratio),
+                size_set,
+            )
+
         return predictions

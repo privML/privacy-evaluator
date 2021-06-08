@@ -4,8 +4,7 @@ from typing import Tuple, Union, Optional
 
 
 def ConvNet(
-    num_classes: int = 2,
-    input_shape: Tuple[int, ...] = (1, 28, 28)
+    num_classes: int = 2, input_shape: Tuple[int, ...] = (1, 28, 28)
 ) -> nn.Module:
     if input_shape in [(1, 28, 28), (28, 28, 1)]:
         input_shape = (1, 28, 28)
@@ -20,7 +19,8 @@ def ConvNet(
     else:
         raise ValueError(
             "The input_shape must be one of the followings: "
-            "(1, 28, 28), (28, 28, 1), (3, 32, 32), (32, 32, 3)")
+            "(1, 28, 28), (28, 28, 1), (3, 32, 32), (32, 32, 3)"
+        )
 
 
 class ConvNetMNIST(nn.Module):
@@ -28,7 +28,7 @@ class ConvNetMNIST(nn.Module):
         self,
         num_classes: int = 2,
         input_shape: Tuple[int, ...] = (1, 28, 28),
-        num_channels: Tuple[int, ...] = (1, 64, 128)
+        num_channels: Tuple[int, ...] = (1, 64, 128),
     ):
         super(ConvNetMNIST, self).__init__()
         self.num_classes = num_classes
@@ -37,21 +37,25 @@ class ConvNetMNIST(nn.Module):
 
         # define the architecture
         self.conv1 = nn.Sequential(
-            nn.Conv2d(in_channels=num_channels[0],
-                      out_channels=num_channels[1],
-                      kernel_size=(3, 3)),
+            nn.Conv2d(
+                in_channels=num_channels[0],
+                out_channels=num_channels[1],
+                kernel_size=(3, 3),
+            ),
             nn.BatchNorm2d(num_channels[1]),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2)
+            nn.MaxPool2d(kernel_size=2, stride=2),
         )
 
         self.conv2 = nn.Sequential(
-            nn.Conv2d(in_channels=num_channels[1],
-                      out_channels=num_channels[2],
-                      kernel_size=(3, 3)),
+            nn.Conv2d(
+                in_channels=num_channels[1],
+                out_channels=num_channels[2],
+                kernel_size=(3, 3),
+            ),
             nn.BatchNorm2d(num_channels[2]),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2)
+            nn.MaxPool2d(kernel_size=2, stride=2),
         )
 
         self.fc = nn.Sequential(
@@ -59,7 +63,7 @@ class ConvNetMNIST(nn.Module):
             nn.Linear(3200, 128),
             nn.ReLU(),
             nn.Linear(128, num_classes),
-            nn.Softmax(dim=1)
+            nn.Softmax(dim=1),
         )
 
     def forward(self, x):
@@ -74,7 +78,7 @@ class ConvNetCIFAR10(nn.Module):
         self,
         num_classes: int = 2,
         input_shape: Tuple[int, ...] = (3, 32, 32),
-        num_channels: Tuple[int, ...] = (3, 64, 128)
+        num_channels: Tuple[int, ...] = (3, 64, 128),
     ):
         super(ConvNetCIFAR10, self).__init__()
         self.num_classes = num_classes
@@ -83,21 +87,25 @@ class ConvNetCIFAR10(nn.Module):
 
         # define the architecture
         self.conv1 = nn.Sequential(
-            nn.Conv2d(in_channels=num_channels[0],
-                      out_channels=num_channels[1],
-                      kernel_size=(3, 3)),
+            nn.Conv2d(
+                in_channels=num_channels[0],
+                out_channels=num_channels[1],
+                kernel_size=(3, 3),
+            ),
             nn.BatchNorm2d(num_channels[1]),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2)
+            nn.MaxPool2d(kernel_size=2, stride=2),
         )
 
         self.conv2 = nn.Sequential(
-            nn.Conv2d(in_channels=num_channels[1],
-                      out_channels=num_channels[2],
-                      kernel_size=(3, 3)),
+            nn.Conv2d(
+                in_channels=num_channels[1],
+                out_channels=num_channels[2],
+                kernel_size=(3, 3),
+            ),
             nn.BatchNorm2d(num_channels[2]),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2)
+            nn.MaxPool2d(kernel_size=2, stride=2),
         )
 
         self.fc = nn.Sequential(
@@ -105,7 +113,7 @@ class ConvNetCIFAR10(nn.Module):
             nn.Linear(4608, 128),
             nn.ReLU(),
             nn.Linear(128, num_classes),
-            nn.Softmax(dim=1)
+            nn.Softmax(dim=1),
         )
 
     def forward(self, x):
