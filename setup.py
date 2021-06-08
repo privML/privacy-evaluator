@@ -15,7 +15,7 @@ setup(
         "torch",
         "torchvision",
         "tensorflow",
-        "adversarial-robustness-toolbox[pytorch,tensorflow]==1.6.1"
+        "adversarial-robustness-toolbox[pytorch,tensorflow]==1.6.1",
     ],
     include_package_data=True,
 )

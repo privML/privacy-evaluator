@@ -46,7 +46,7 @@ If you want to use `git clone` together with `pip`, you can run:
 ```
 git clone https://github.com/privML/privacy-evaluator.git
 cd privacy-evaluator
-pip install -e .
+pip install -r requirements.txt
 ```
 
 ## How to use the Privacy Evaluator?
