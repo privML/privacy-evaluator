@@ -32,4 +32,6 @@ def test_output_function_relative():
         show_diagram=False,
     )
     assert (labels == np.array(["green", "blue", "red", "orange", "white"])).all()
-    np.testing.assert_array_almost_equal(count ,np.array([0, 0.025, 0.33333333, 0.02857143, 0]))
+    np.testing.assert_array_almost_equal(
+        count, np.array([0, 0.025, 0.33333333, 0.02857143, 0])
+    )
