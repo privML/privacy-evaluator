@@ -18,6 +18,9 @@ class UserOutputPrivacyScore(UserOutput):
     ):
         """
         Initilaizes the Class with values
+        :param attack_data_y: An Array of the labels of the attck data
+        :param privacy_risk: the Privacy risk corresponding to the attack data
+        :param all_labels: All labels that are in the training set
         """
         self.attack_data_y = attack_data_y
         self.privacy_risk = privacy_risk
@@ -26,7 +29,7 @@ class UserOutputPrivacyScore(UserOutput):
         self, all_labels: np.ndarray, k: int = 10, show_diagram: bool = True
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Draws a historgam of the top k points with biggest Privacy score
+        Draw histogram of class distribution of the k points with highest privacy risk score
         :param all_labels: all the labels of the input data
         :param k: the number of points to consider, default 10
         :param show_diagram: determines if the diagram should be shown, default: True
@@ -65,7 +68,7 @@ class UserOutputPrivacyScore(UserOutput):
         show_diagram: bool = True,
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Draws a historgam of the top k points with biggest Privacy score
+        Draw histogram of class distribution of the k points with highest privacy risk score, raltive to the size of the classes
         :param label_counts: the amount of elements per label
         :param all_labels: all the labels of the input data
         :param k: the number of points to consider, default 10
@@ -90,10 +93,10 @@ class UserOutputPrivacyScore(UserOutput):
                 all_counts = np.append(all_counts, 0)
             else:
                 all_counts = np.append(all_counts, count[index[0]])
-        print(all_counts, label_counts)
+        # print(all_counts, label_counts)
         relative_values = np.divide(all_counts, label_counts)
         if show_diagram:
             plt.bar(all_labels, relative_values)
-            plt.title("Histogram for top {} points relative per label".format(k))
+            plt.title("Histogram for top {} points relative per class".format(k))
             plt.show()
         return all_labels, relative_values
