@@ -11,14 +11,15 @@ def test_output_priv_score_function():
     priv_risk = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
     user_output = UserOutputPrivacyScore(data_y, priv_risk)
     labels, count = user_output.histogram_top_k(
-        np.array(["green", "blue", "red", "orange", "white"]),
-        4,
-        show_diagram=False,
+        np.array(["green", "blue", "red", "orange", "white"]), 4, show_diagram=False
     )
     assert (labels == np.array(["green", "blue", "red", "orange", "white"])).all()
     assert (count == np.array([0, 1, 2, 1, 0])).all()
-    assert (user_output._to_json() == '[["blue", "orange", "red", "orange", "red", "red", "blue", "red", "orange"], [1, 2, 3, 4, 5, 6, 7, 8, 9]]')
-    assert (user_output._to_json(['privacy_risk']) == '[[1, 2, 3, 4, 5, 6, 7, 8, 9]]')
+    assert (
+        user_output._to_json()
+        == '[["blue", "orange", "red", "orange", "red", "red", "blue", "red", "orange"], [1, 2, 3, 4, 5, 6, 7, 8, 9]]'
+    )
+    assert user_output._to_json(["privacy_risk"]) == "[[1, 2, 3, 4, 5, 6, 7, 8, 9]]"
 
 
 def test_output_priv_score_function_relative():
@@ -38,7 +39,13 @@ def test_output_priv_score_function_relative():
         count, np.array([0, 0.025, 0.33333333, 0.02857143, 0])
     )
 
+
 def test_output_inference_attack_function():
-    user_output = UserOutputInferenceAttack(0.9,0.8,0.1,1.125,0.75)
-    assert (user_output._to_json() == '[0.9, 0.8, 0.1, 1.125, 0.75]')
-    assert (user_output._to_json(['target_model_train_accuracy', 'target_model_test_accuracy']) == '[0.9, 0.8]')
+    user_output = UserOutputInferenceAttack(0.9, 0.8, 0.1, 1.125, 0.75)
+    assert user_output._to_json() == "[0.9, 0.8, 0.1, 1.125, 0.75]"
+    assert (
+        user_output._to_json(
+            ["target_model_train_accuracy", "target_model_test_accuracy"]
+        )
+        == "[0.9, 0.8]"
+    )

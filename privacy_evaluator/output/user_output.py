@@ -11,7 +11,7 @@ class UserOutput:
         if filter is not None:
             ret = []
             for key in filter:
-                value = (self.__dict__.get(key))
+                value = self.__dict__.get(key)
                 ret.append(self._convertToListIfNeeded(value))
             return json.dumps(ret)
 
