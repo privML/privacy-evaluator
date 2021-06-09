@@ -43,23 +43,13 @@ def tester(
     test_set: Union[Tuple[np.ndarray, np.ndarray], torch.utils.data.Dataset],
     size_dict: Dict[int, int],
     model: Union[nn.Module, keras.Model],
-    batch_size: int = 500
+    batch_size: int = 500,
 ) -> float:
     "Return the accuracy of the model on the test set"
     if isinstance(model, keras.Model):
-        return _tester_tf(
-            test_set,
-            size_dict,
-            model,
-            batch_size
-        )
+        return _tester_tf(test_set, size_dict, model, batch_size)
     elif isinstance(model, nn.Module):
-        return _tester_torch(
-            test_set,
-            size_dict,
-            model,
-            batch_size
-        )
+        return _tester_torch(test_set, size_dict, model, batch_size)
 
 
 def _trainer_tf(
@@ -169,7 +159,7 @@ def _tester_tf(
     test_set: Union[Tuple[np.ndarray, np.ndarray], torch.utils.data.Dataset],
     size_dict: Dict[int, int],
     model: keras.Model,
-    batch_size: int = 500
+    batch_size: int = 500,
 ) -> float:
     # create test dataloader
     test_loader = tf.data.Dataset.from_tensor_slices(test_set)
@@ -191,7 +181,7 @@ def _tester_torch(
     test_set: Union[Tuple[np.ndarray, np.ndarray], torch.utils.data.Dataset],
     size_dict: Dict[int, int],
     model: nn.Module,
-    batch_size: int = 500
+    batch_size: int = 500,
 ) -> float:
     # convert np.array datasets into torch dataset
     if isinstance(test_set, tuple):

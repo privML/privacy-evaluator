@@ -11,11 +11,7 @@ class FCNeuralNet(tf.Model):
         dropout: Drop-out rate in the fully-connected layer.
     """
 
-    def __init__(
-            self,
-            num_classes: int = 2,
-            dropout: float = 0
-    ):
+    def __init__(self, num_classes: int = 2, dropout: float = 0):
         super(FCNeuralNet, self).__init__()
         self.flatten = Flatten()
         self.fc = keras.Sequential(

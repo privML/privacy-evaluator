@@ -68,10 +68,10 @@ class PropertyInferenceAttack(Attack):
         shadow_classifiers = []
         num_classes = len(num_elements_per_classes)
         for shadow_training_set in shadow_training_sets:
-            model = FCNeuralNet()  # TODO: infer model structure from the target model adaptively
-            trainer(
-                shadow_training_set, num_elements_per_classes, model
-            )
+            model = (
+                FCNeuralNet()
+            )  # TODO: infer model structure from the target model adaptively
+            trainer(shadow_training_set, num_elements_per_classes, model)
             shadow_training_X, shadow_training_y = shadow_training_set
             train_X, test_X, train_y, test_y = train_test_split(
                 shadow_training_X, shadow_training_y, test_size=0.3
@@ -91,13 +91,10 @@ class PropertyInferenceAttack(Attack):
         return shadow_classifiers
 
     def create_shadow_classifier_from_training_set(
-            self,
-            num_elements_per_classes:  Dict[int, int]
+        self, num_elements_per_classes: Dict[int, int]
     ) -> list:
         # create training sets
-        shadow_training_sets = self.create_shadow_training_set(
-            num_elements_per_classes
-        )
+        shadow_training_sets = self.create_shadow_training_set(num_elements_per_classes)
 
         # create classifiers with trained models based on given data set
         shadow_classifiers = self.train_shadow_classifiers(
@@ -105,7 +102,6 @@ class PropertyInferenceAttack(Attack):
             num_elements_per_classes,
         )
         return shadow_classifiers
-
 
     def feature_extraction(self, model):
         """
@@ -136,7 +132,8 @@ class PropertyInferenceAttack(Attack):
         else:
             raise TypeError(
                 "Expected model to be an instance of {} or {}, received {} instead.".format(
-                    str(torch.nn.Module), str(tf.keras.Model), str(type(model.model)))
+                    str(torch.nn.Module), str(tf.keras.Model), str(type(model.model))
+                )
             )
 
     def create_meta_training_set(
@@ -195,8 +192,7 @@ class PropertyInferenceAttack(Attack):
         classifier = SklearnClassifier(model=model)
 
         # shuffle the data and train the art classifier
-        meta_training_X, meta_training_y = shuffle(
-            meta_training_X, meta_training_y)
+        meta_training_X, meta_training_y = shuffle(meta_training_X, meta_training_y)
         classifier.fit(meta_training_X, meta_training_y)
         return classifier
 
@@ -276,18 +272,27 @@ class PropertyInferenceAttack(Attack):
         neg_property_num_elements_per_class = {0: num_elements, 1: num_elements}
 
         # create balanced shadow classifiers (negation property)
-        shadow_classifiers_neg_property = self.create_shadow_classifier_from_training_set(
-            neg_property_num_elements_per_class
+        shadow_classifiers_neg_property = (
+            self.create_shadow_classifier_from_training_set(
+                neg_property_num_elements_per_class
+            )
         )
-      
+
         predictions = {}
         # iterate over ratios from 0.55 to 0.95 (means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
         # TODO add more
         for ratio in np.arange(0.55, 1, 0.05):
             predictions[round(ratio, 5)] = self.prediction_on_specific_property(
-                feature_extraction_target_model, shadow_classifiers_neg_property, ratio, size_set
+                feature_extraction_target_model,
+                shadow_classifiers_neg_property,
+                ratio,
+                size_set,
             )
-            predictions[round((1-ratio), 5)] = self.prediction_on_specific_property(
-                feature_extraction_target_model, shadow_classifiers_neg_property, (1-ratio), size_set)
-            
+            predictions[round((1 - ratio), 5)] = self.prediction_on_specific_property(
+                feature_extraction_target_model,
+                shadow_classifiers_neg_property,
+                (1 - ratio),
+                size_set,
+            )
+
         return predictions

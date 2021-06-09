@@ -17,17 +17,11 @@ def test_property_inference_attack():
     num_elements_per_class = {0: 1000, 1: 1000}
     num_classes = len(num_elements_per_class)
 
-    train_set = new_dataset_from_size_dict(
-        train_dataset, num_elements_per_class
-    )
-    test_set = new_dataset_from_size_dict(
-        test_dataset, num_elements_per_class
-    )
+    train_set = new_dataset_from_size_dict(train_dataset, num_elements_per_class)
+    test_set = new_dataset_from_size_dict(test_dataset, num_elements_per_class)
 
     model = FCNeuralNet()
-    trainer(
-        test_set, num_elements_per_class, model
-    )
+    trainer(test_set, num_elements_per_class, model)
 
     # change pytorch classifier to art classifier
     target_model = Classifier._to_art_classifier(model, num_classes, input_shape)
