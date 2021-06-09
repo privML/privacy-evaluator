@@ -5,7 +5,7 @@ import privacy_evaluator.utils.data_utils as data_utils
 from privacy_evaluator.utils.trainer import trainer
 from privacy_evaluator.models.torch.fc_neural_net import FCNeuralNet
 from privacy_evaluator.models.tf.conv_net_meta_classifier import ConvNetMetaClassifier
-
+from privacy_evaluator.models.tf.cnn import ConvNet
 
 import numpy as np
 import torch
@@ -35,7 +35,7 @@ class PropertyInferenceAttack(Attack):
         """
         self.dataset = dataset
         # count of shadow training sets, must be eval
-        self.amount_sets = 2
+        self.amount_sets = 6
         self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
         super().__init__(target_model, None, None, None, None)
 
@@ -88,8 +88,10 @@ class PropertyInferenceAttack(Attack):
             train_set = (train_X, train_y)
             test_set = (test_X, test_y)
 
-            model = FCNeuralNet()
-            trainer(train_set, num_elements_per_classes, model)
+            model = ConvNet(num_classes, self.input_shape)
+            accuracy = trainer(
+                train_set, num_elements_per_classes, model
+            )
 
             # change pytorch classifier to art classifier
             art_model = Classifier._to_art_classifier(

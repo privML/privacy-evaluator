@@ -83,6 +83,7 @@ def _trainer_tf(
             labels = np.vectorize(lambda id: class_encoding[id])(labels)
             with tf.GradientTape() as g:
                 # forward pass
+
                 preds = model(images, training=True)
                 loss = cross_entropy_loss(preds, labels)
                 l2_loss = weight_decay * tf.add_n(

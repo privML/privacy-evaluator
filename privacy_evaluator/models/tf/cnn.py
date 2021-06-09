@@ -1,7 +1,5 @@
 import numpy as np
-import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import layers
 from tensorflow.keras.layers import (
     Dense,
     Conv2D,
@@ -14,14 +12,14 @@ from typing import Tuple
 
 def ConvNet(
     num_classes: int = 2, input_shape: Tuple[int, ...] = (1, 28, 28)
-) -> nn.Module:
+) -> keras.Model:
     if input_shape in [(1, 28, 28), (28, 28, 1)]:
         num_channels = (1, 64, 128)
         return ConvNetMNIST(num_classes, num_channels)
 
     elif input_shape in [(3, 32, 32), (32, 32, 3)]:
         num_channels = (3, 64, 128)
-        return ConvNetMNIST(num_classes, num_channels)
+        return ConvNetCIFAR10(num_classes, num_channels)
 
     else:
         raise ValueError(
