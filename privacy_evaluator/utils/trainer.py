@@ -25,7 +25,7 @@ def trainer(
             batch_size,
             num_epochs,
             learning_rate,
-            weight_decay
+            weight_decay,
         )
     elif isinstance(model, nn.Module):
         return _trainer_torch(
@@ -35,7 +35,7 @@ def trainer(
             batch_size,
             num_epochs,
             learning_rate,
-            weight_decay
+            weight_decay,
         )
 
 
@@ -69,8 +69,8 @@ def _trainer_tf(
     batch_size: int = 500,
     num_epochs: int = 20,
     learning_rate: float = 0.001,
-    weight_decay: float = 0
-):
+    weight_decay: float = 0,
+) -> float:
     """
     Train the given model on the given dataset.
     """
@@ -112,8 +112,8 @@ def _trainer_torch(
     batch_size: int = 500,
     num_epochs: int = 20,
     learning_rate: float = 0.001,
-    weight_decay: float = 0
-):
+    weight_decay: float = 0,
+) -> float:
     """
     Train the given model on the given dataset.
     """
