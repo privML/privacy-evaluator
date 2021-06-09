@@ -89,7 +89,7 @@ class PropertyInferenceAttack(Attack):
             test_set = (test_X, test_y)
 
             model = ConvNet(num_classes, self.input_shape)
-            accuracy = trainer(
+            trainer(
                 train_set, num_elements_per_classes, model
             )
 
