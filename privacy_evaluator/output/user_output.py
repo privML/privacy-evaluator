@@ -9,8 +9,16 @@ class UserOutput:
         :param filter: if needed this filters the output for the given keys
         """
         if filter is not None:
-            return json.dumps([self.__dict__.get(key) for key in filter])
-        return json.dumps(self.__dict__)
+            ret = []
+            for key in filter:
+                value = (self.__dict__.get(key))
+                ret.append(self._convertToListIfNeeded(value))
+            return json.dumps(ret)
+
+        ret = []
+        for key, value in self.__dict__.items():
+            ret.append(self._convertToListIfNeeded(value))
+        return json.dumps(ret)
 
     def _to_dict(self, filter: np.ndarray = None) -> dict:
         """
@@ -26,3 +34,11 @@ class UserOutput:
         Overwrite the String method so the output looks nicer
         """
         return self._to_json()
+
+    def _convertToListIfNeeded(self, obj):
+        """
+        Use internally to convert ndarray to list in order to turn it to json
+        """
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return obj
