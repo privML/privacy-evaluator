@@ -22,10 +22,10 @@ class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
         """Initializes a MembershipInferenceBlackBoxRuleBasedAttack class.
 
         :param target_model: Target model to be attacked.
-        :param x_train: Data that was used to train the target model.
-        :param y_train: Labels for the data that was used to train the target model.
+        :param x_train: Data which was used to train the target model.
+        :param y_train: True, one-hot encoded labels for `x_train`.
         :param x_test: Data that was not used to train the target model.
-        :param y_test: Labels for the data that was not used to train the target model.
+        :param y_test: True, one-hot encoded labels for `x_test`.
         """
         super().__init__(target_model, x_train, y_train, x_test, y_test)
         self._art_attack_model_fitted = True

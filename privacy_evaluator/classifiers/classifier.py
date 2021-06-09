@@ -21,6 +21,9 @@ class Classifier:
         :param nb_classes: Number of classes that were used to train the classifier.
         :param input_shape: Input shape of a data point of the classifier.
         """
+        self.loss = loss
+        self.nb_classes = nb_classes
+        self.input_shape = input_shape
         self.art_classifier = self._to_art_classifier(
             classifier, loss, nb_classes, input_shape
         )
