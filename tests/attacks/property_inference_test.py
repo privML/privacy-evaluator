@@ -28,3 +28,7 @@ def test_property_inference_attack():
 
     attack = PropertyInferenceAttack(target_model, train_dataset)
     attack.attack()
+    res = attack.attack()
+    f = open('test.txt', 'a')
+    f.write(str(res))
+    f.close()

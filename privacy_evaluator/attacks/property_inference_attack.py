@@ -4,16 +4,23 @@ from privacy_evaluator.classifiers.classifier import Classifier
 import privacy_evaluator.utils.data_utils as data_utils
 from privacy_evaluator.utils.trainer import trainer
 from privacy_evaluator.models.torch.fc_neural_net import FCNeuralNet
+from privacy_evaluator.models.tf.conv_net_meta_classifier import ConvNetMetaClassifier
+
 
 import numpy as np
 import torch
 import tensorflow as tf
-from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeRegressor
+from torch import nn
+import torch.nn.functional as F
+import torch.optim as optim
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from art.attacks.evasion import FastGradientMethod
-from art.estimators.classification import SklearnClassifier
-from typing import Tuple, Any, Dict, List, Optional
+from art.estimators.classification.scikitlearn import ScikitlearnDecisionTreeRegressor
+from typing import Tuple, Any, Dict, List
+from art.estimators.classification import TensorFlowV2Classifier
+from art.estimators.classification import PyTorchClassifier
 
 
 class PropertyInferenceAttack(Attack):
@@ -23,12 +30,12 @@ class PropertyInferenceAttack(Attack):
         """
         Initialize the Property Inference Attack Class.
         :param target_model: the target model to be attacked
-        :param dataset: dataset for training of shadow classifiers, test_data from dataset 
+        :param dataset: dataset for training of shadow classifiers, test_data from dataset
         with concatenation [test_features, test_labels]
         """
         self.dataset = dataset
         # count of shadow training sets, must be eval
-        self.amount_sets = 6
+        self.amount_sets = 2
         self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
         super().__init__(target_model, None, None, None, None)
 
@@ -38,7 +45,7 @@ class PropertyInferenceAttack(Attack):
     ) -> List[Tuple[np.ndarray, np.ndarray]]:
         """
         Create the shadow training sets with given ratio.
-        The function works for the specific binary case that the ratio is a fixed distribution 
+        The function works for the specific binary case that the ratio is a fixed distribution
         specified in the input.
         :param num_elements_per_class: number of elements per class
         :return: shadow training sets for given ratio
@@ -110,7 +117,7 @@ class PropertyInferenceAttack(Attack):
         """
         Extract the features of a given model.
         :param model: a model from which the features should be extracted
-        :type model: :class:`.art.estimators.estimator.BaseEstimator` 
+        :type model: :class:`.art.estimators.estimator.BaseEstimator`
             # BaseEstimator is very general and could be specified to art.classifier
         :return: feature extraction
         :rtype: np.ndarray
@@ -146,14 +153,14 @@ class PropertyInferenceAttack(Attack):
     ):
         """
         Create meta training set out of shadow classifiers.
-        :param classifier_list_with_property: 
+        :param classifier_list_with_property:
             list of all shadow classifiers that were trained on a dataset which fulfills the property
-        :type classifier_list_with_property: 
+        :type classifier_list_with_property:
             iterable object of :class:`.art.estimators.estimator.BaseEstimator`
-        :param classifier_list_without_property: 
-            list of all shadow classifiers that were trained on a dataset which does NOT fulfill the 
+        :param classifier_list_without_property:
+            list of all shadow classifiers that were trained on a dataset which does NOT fulfill the
             property
-        :type classifier_list_without_property: 
+        :type classifier_list_without_property:
             iterable object of :class:`.art.estimators.estimator.BaseEstimator`
         :return: tuple (Meta-training set, label set)
         :rtype: tuple (np.ndarray, np.ndarray)
@@ -176,40 +183,63 @@ class PropertyInferenceAttack(Attack):
             [feature_list_with_property, feature_list_without_property]
         )
         # Create corresponding labels
-        # meta_labels = np.concatenate([np.ones(len(feature_list_with_property)),
-        #     np.zeros(len(feature_list_without_property))])
-        # For scikit-learn SVM classifier we need one hot encoded labels, therefore:
         meta_labels = np.concatenate(
             [
-                np.array([[1, 0]] * len(feature_list_with_property)),
-                np.array([[0, 1]] * len(feature_list_without_property)),
+                np.ones(len(feature_list_with_property), dtype=int),
+                np.zeros(len(feature_list_without_property), dtype=int),
             ]
         )
+
         return meta_features, meta_labels
 
-    @staticmethod
-    def train_meta_classifier(meta_training_X, meta_training_y):
+    def train_meta_classifier(
+        self, meta_training_X: np.ndarray, meta_training_y: np.ndarray
+    ) -> TensorFlowV2Classifier:
         """
         Train meta-classifier with the meta-training set.
         :param meta_training_X: Set of feature representation of each shadow classifier.
-        :type meta_training_X: np.ndarray
-        :param meta_training_y: Set of (one-hot-encoded) labels for each shadow classifier,
-                                according to whether property is fullfilled ([1, 0]) or not ([0, 1]).
-        :type meta_training_y: np.ndarray
-        :return: Meta classifier
-        :rtype: "CLASSIFIER_TYPE" (to be found in `.art.utils`)
-
-        Note: classifier.predict is an one-hot-encoded label vector:
-            [1, 0] means target model has the property, [0, 1] means it does not.
+        :param meta_training_y: Set of labels for each shadow classifier,
+                                according to whether property is fullfilled (1) or not (0)
+        :return: Art Meta classifier
         """
-        # Create a scikit SVM model, which will be trained on meta_training
-        model = SVC(C=1.0, kernel="rbf")
-        classifier = SklearnClassifier(model=model)
+        # reshaping train data to fit models input
+        meta_training_X = meta_training_X.reshape(
+            (meta_training_X.shape[0], meta_training_X[0].shape[0], 1)
+        )
+        meta_training_y = meta_training_y.reshape((meta_training_y.shape[0], 1))
+        meta_input_shape = meta_training_X[0].shape
 
-        # shuffle the data and train the art classifier
-        meta_training_X, meta_training_y = shuffle(meta_training_X, meta_training_y)
-        classifier.fit(meta_training_X, meta_training_y)
-        return classifier
+        # currently there are just 2 classes
+        nb_classes = 2
+
+        inputs = tf.keras.Input(shape=meta_input_shape)
+
+        # create model according to model from https://arxiv.org/pdf/2002.05688.pdf
+        cnmc = ConvNetMetaClassifier(inputs=inputs, num_classes=nb_classes)
+
+        cnmc.model.compile(
+            loss="sparse_categorical_crossentropy",
+            optimizer="adam",
+            metrics=["accuracy"],
+        )
+
+        cnmc.model.fit(
+            x=meta_training_X,
+            y=meta_training_y,
+            epochs=2,
+            batch_size=128,
+            # If enough shadow classifiers are available, one could split the training set 
+            # and create an additional validation set as input:
+            # validation_data = (validation_X, validation_y),
+        )
+
+        # model has .evaluate(test_X,test_y) function
+        # convert model to ART classifier
+        art_meta_classifier = Classifier._to_art_classifier(
+            cnmc.model, nb_classes=nb_classes, input_shape=meta_input_shape
+        )
+
+        return art_meta_classifier
 
     @staticmethod
     def perform_prediction(
@@ -227,6 +257,11 @@ class PropertyInferenceAttack(Attack):
         fulfilled for target data set
         :rtype: np.ndarray with shape (1, 2)
         """
+
+        feature_extraction_target_model = feature_extraction_target_model.reshape(
+            (feature_extraction_target_model.shape[0], 1)
+        )
+
         assert meta_classifier.input_shape == tuple(
             feature_extraction_target_model.shape
         )
@@ -268,6 +303,7 @@ class PropertyInferenceAttack(Attack):
         prediction = self.perform_prediction(
             meta_classifier, feature_extraction_target_model
         )
+
         return prediction
 
     def attack(self):
@@ -275,7 +311,7 @@ class PropertyInferenceAttack(Attack):
         Perform Property Inference attack.
         :param params: Example data to run through target model for feature extraction
         :type params: np.ndarray
-        :return: prediction about property of target data set 
+        :return: prediction about property of target data set
             [[1, 0]]-> property; [[0, 1]]-> negation property
         :rtype: np.ndarray with shape (1, 2)
         """
