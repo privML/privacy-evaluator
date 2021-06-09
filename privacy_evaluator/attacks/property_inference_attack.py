@@ -34,9 +34,9 @@ class PropertyInferenceAttack(Attack):
         with concatenation [test_features, test_labels]
         """
         self.dataset = dataset
-        # count of shadow training sets, must be eval
+        # count of shadow training sets, must be even
         self.amount_sets = 2
-        self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
+        self.input_shape = self.dataset[0][0].shape  # e.g. [32, 32, 3] for CIFAR10
         super().__init__(target_model, None, None, None, None)
 
     def create_shadow_training_set(
