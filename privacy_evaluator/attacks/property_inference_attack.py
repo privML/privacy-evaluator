@@ -31,8 +31,7 @@ class PropertyInferenceAttack(Attack):
         super().__init__(target_model, None, None, None, None)
 
     def create_shadow_training_set(
-        self,
-        num_elements_per_class: Dict[int, int],
+        self, num_elements_per_class: Dict[int, int],
     ) -> List[Tuple[np.ndarray, np.ndarray]]:
         """
         Create the shadow training sets with given ratio.
@@ -45,6 +44,8 @@ class PropertyInferenceAttack(Attack):
         training_sets = []
 
         # Creation of shadow training sets with the size dictionaries
+        # amount_sets divided by 2 because amount_sets describes the total amount of shadow training sets.
+        # In this function however only all shadow training sets of one type (follow property OR negation of property) are created, hence amount_sets / 2.
         for _ in range(int(self.amount_sets / 2)):
             shadow_training_sets = data_utils.new_dataset_from_size_dict(
                 self.dataset, num_elements_per_class
@@ -55,7 +56,7 @@ class PropertyInferenceAttack(Attack):
     def train_shadow_classifiers(
         self,
         shadow_training_sets: List[Tuple[np.ndarray, np.ndarray]],
-        num_elements_per_classes: Dict[int, int]
+        num_elements_per_classes: Dict[int, int],
     ):
         """
         Train shadow classifiers with each shadow training set (follows property or negation of property).
@@ -79,9 +80,7 @@ class PropertyInferenceAttack(Attack):
             test_set = (test_X, test_y)
 
             model = ConvNet(num_classes, self.input_shape)
-            trainer(
-                train_set, num_elements_per_classes, model
-            )
+            trainer(train_set, num_elements_per_classes, model)
 
             # change pytorch classifier to art classifier
             art_model = Classifier._to_art_classifier(
@@ -99,8 +98,7 @@ class PropertyInferenceAttack(Attack):
 
         # create classifiers with trained models based on given data set
         shadow_classifiers = self.train_shadow_classifiers(
-            shadow_training_sets,
-            num_elements_per_classes,
+            shadow_training_sets, num_elements_per_classes,
         )
         return shadow_classifiers
 
@@ -221,7 +219,7 @@ class PropertyInferenceAttack(Attack):
             y=meta_training_y,
             epochs=2,
             batch_size=128,
-            # If enough shadow classifiers are available, one could split the training set 
+            # If enough shadow classifiers are available, one could split the training set
             # and create an additional validation set as input:
             # validation_data = (validation_X, validation_y),
         )
@@ -263,25 +261,30 @@ class PropertyInferenceAttack(Attack):
         return predictions
 
     @staticmethod
-    def output_attack(predictions_ratios:Dict[float,np.ndarray]
-    ) -> string:
+    def output_attack(predictions_ratios: Dict[float, np.ndarray]) -> string:
         """
         Determination of prediction with highest probability. 
         :param predictions_ratios: Prediction values from meta-classifier for different subattacks (different properties)
         :return: Output message for the attack
         """
 
-        #get key & value of ratio with highest property probability
-        max_property = max(predictions_ratios.items(), key=lambda item: item[1][0][0]) 
-        #get average of neg property probabilities of 0.05, 0.95 (most unbalanced datasets --> highest probability for correctness of neg probability)
-        average_unbalanced_cases_neg_property = (predictions_ratios[0.95][0][1] + predictions_ratios[0.05][0][1]) / 2
+        # get key & value of ratio with highest property probability
+        max_property = max(predictions_ratios.items(), key=lambda item: item[1][0][0])
+        # get average of neg property probabilities of 0.05, 0.95 (most unbalanced datasets --> highest probability for correctness of neg probability)
+        average_unbalanced_cases_neg_property = (
+            predictions_ratios[0.95][0][1] + predictions_ratios[0.05][0][1]
+        ) / 2
 
         if max_property[1][0][0] > average_unbalanced_cases_neg_property:
-            return "The property inference attack predicts that the target model is unbalanced with a ratio of {}.".format(max_property[0])
+            return "The property inference attack predicts that the target model is unbalanced with a ratio of {}.".format(
+                max_property[0]
+            )
         elif max_property[1][0][0] < average_unbalanced_cases_neg_property:
             return "The property inference attack predicts that the target model is balanced."
         else:
-            raise ValueError("Wrong input. Property inference attack cannot predict balanced and unbalanced.")
+            raise ValueError(
+                "Wrong input. Property inference attack cannot predict balanced and unbalanced."
+            )
 
     def prediction_on_specific_property(
         self,
@@ -289,7 +292,7 @@ class PropertyInferenceAttack(Attack):
         shadow_classifiers_neg_property: list,
         ratio: float,
         size_set: int,
-    )-> np.ndarray:
+    ) -> np.ndarray:
         """
         Perform prediction for a subattack (specific property)
         :param feature_extraction_target_model: extracted features of target model
@@ -339,35 +342,35 @@ class PropertyInferenceAttack(Attack):
         feature_extraction_target_model = self.feature_extraction(self.target_model)
 
         # set ratio and size for unbalanced data sets
-        size_set = 1000  # TODO get size of one class of dataset
+        size_set = 1000
 
         # balanced ratio
         num_elements = int(round(size_set / 2))
         neg_property_num_elements_per_class = {0: num_elements, 1: num_elements}
 
         # create balanced shadow classifiers negation property
-        shadow_classifiers_neg_property = (
-            self.create_shadow_classifier_from_training_set(
-                neg_property_num_elements_per_class
-            )
+        shadow_classifiers_neg_property = self.create_shadow_classifier_from_training_set(
+            neg_property_num_elements_per_class
         )
 
         predictions = {}
-        # iterate over ratios from 0.55 to 0.95
-        # (means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
+        # iterate over unbalanced ratios in 0.05 steps (0.05-0.45, 0.55-0.95)
+        # (e.g. 0.55 means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
+
         for ratio in np.arange(0.55, 1, 0.05):
-            predictions[round(ratio, 5)] = self.prediction_on_specific_property(
+            # goes through ratios 0.55 - 0.95
+            predictions[ratio] = self.prediction_on_specific_property(
                 feature_extraction_target_model,
                 shadow_classifiers_neg_property,
                 ratio,
                 size_set,
             )
-            predictions[round((1 - ratio), 5)] = self.prediction_on_specific_property(
+            # goes through ratios 0.05 - 0.45 (because of 1-ratio)
+            predictions[(1 - ratio)] = self.prediction_on_specific_property(
                 feature_extraction_target_model,
                 shadow_classifiers_neg_property,
                 (1 - ratio),
                 size_set,
             )
-        
 
         return self.output_attack(predictions)
