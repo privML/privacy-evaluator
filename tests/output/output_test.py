@@ -37,3 +37,8 @@ def test_output_priv_score_function_relative():
     np.testing.assert_array_almost_equal(
         count, np.array([0, 0.025, 0.33333333, 0.02857143, 0])
     )
+
+def test_output_inference_attack_function():
+    user_output = UserOutputInferenceAttack(0.9,0.8,0.1,1.125,0.75)
+    assert (user_output._to_json() == '[0.9, 0.8, 0.1, 1.125, 0.75]')
+    assert (user_output._to_json(['target_model_train_accuracy', 'target_model_test_accuracy']) == '[0.9, 0.8]')
