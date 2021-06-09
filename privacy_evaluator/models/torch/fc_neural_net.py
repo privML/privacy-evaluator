@@ -16,7 +16,14 @@ def FCNeuralNet(
     """
     if input_shape == (32, 32, 3):
         return FCNeuralNet32X32X3(num_classes, dropout)
-    elif input_shape in [(28, 28), (28, 28,), (28, 28, 1),]:
+    elif input_shape in [
+        (28, 28),
+        (
+            28,
+            28,
+        ),
+        (28, 28, 1),
+    ]:
         return FCNeuralNet28X28X1(num_classes, dropout)
 
 

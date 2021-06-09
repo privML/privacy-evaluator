@@ -1,15 +1,21 @@
 import tensorflow as tf
-from tensorflow.keras.layers import Conv1D, BatchNormalization, ReLU, MaxPool1D, Dense, Dropout, Input, Flatten
-
+from tensorflow.keras.layers import (
+    Conv1D,
+    BatchNormalization,
+    ReLU,
+    MaxPool1D,
+    Dense,
+    Dropout,
+    Input,
+    Flatten,
+)
 
 
 class ConvNetMetaClassifier(tf.keras.Model):
-    def __init__(self, inputs: Input, num_classes: int=2):
+    def __init__(self, inputs: Input, num_classes: int = 2):
         super().__init__()
 
         self.model = self.DeepMetaClassifier(inputs, num_classes)
-
-
 
     def ConvBlock(self, inputs, filters, pool=True):
         x = Conv1D(filters, 5)(inputs)
@@ -29,9 +35,9 @@ class ConvNetMetaClassifier(tf.keras.Model):
 
         return x
 
-    def DeepMetaClassifier(self, inputs: Input, num_classes: int=2):
-    # This is the Deep Meta-Classifier (DMC) taken from https://arxiv.org/pdf/2002.05688.pdf
-    # I think there is one layer more here than in the paper.
+    def DeepMetaClassifier(self, inputs: Input, num_classes: int = 2):
+        # This is the Deep Meta-Classifier (DMC) taken from https://arxiv.org/pdf/2002.05688.pdf
+        # I think there is one layer more here than in the paper.
 
         x = inputs
         for filters in [8, 16, 32, 64]:
