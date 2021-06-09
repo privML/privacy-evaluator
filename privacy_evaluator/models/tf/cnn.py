@@ -34,7 +34,7 @@ class ConvNetMNIST(keras.Model):
     def __init__(
         self, num_classes: int = 2, num_channels: Tuple[int, ...] = (1, 64, 128)
     ):
-        super(ConvNet, self).__init__()
+        super(ConvNetMNIST, self).__init__()
         self.num_classes = num_classes
         self.num_channels = num_channels
 
@@ -83,7 +83,7 @@ class ConvNetCIFAR10(keras.Model):
     def __init__(
         self, num_classes: int = 2, num_channels: Tuple[int, ...] = (3, 64, 128)
     ):
-        super(ConvNet, self).__init__()
+        super(ConvNetCIFAR10, self).__init__()
         self.num_classes = num_classes
         self.num_channels = num_channels
 

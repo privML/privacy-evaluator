@@ -1,7 +1,6 @@
 import torch
 from torch import nn
 from typing import Tuple, Optional
-import math
 
 
 def FCNeuralNet(
@@ -27,7 +26,7 @@ class FCNeuralNet32X32X3(nn.Module):
         num_classes: int = 2,
         dropout: float = 0,
     ):
-        super(FCNeuralNet, self).__init__()
+        super(FCNeuralNet32X32X3, self).__init__()
         self.flatten = nn.Flatten()
         self.fc = nn.Sequential(
             nn.Linear(32 * 32 * 3, 512),  # TODO: retrieve later
@@ -51,7 +50,7 @@ class FCNeuralNet28X28X1(nn.Module):
         num_classes: int = 2,
         dropout: float = 0,
     ):
-        super(FCNeuralNet, self).__init__()
+        super(FCNeuralNet28X28X1, self).__init__()
         self.flatten = nn.Flatten()
         self.fc = nn.Sequential(
             nn.Linear(28 * 28 * 1, 512),  # TODO: retrieve later
