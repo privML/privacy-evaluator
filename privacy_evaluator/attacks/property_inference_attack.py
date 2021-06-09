@@ -23,7 +23,8 @@ class PropertyInferenceAttack(Attack):
         """
         Initialize the Property Inference Attack Class.
         :param target_model: the target model to be attacked
-        :param dataset: dataset for training of shadow classifiers, test_data from dataset with concatenation [test_features, test_labels]
+        :param dataset: dataset for training of shadow classifiers, test_data from dataset 
+        with concatenation [test_features, test_labels]
         """
         self.dataset = dataset
         # count of shadow training sets, must be eval
@@ -37,7 +38,8 @@ class PropertyInferenceAttack(Attack):
     ) -> List[Tuple[np.ndarray, np.ndarray]]:
         """
         Create the shadow training sets with given ratio.
-        The function works for the specific binary case that the ratio is a fixed distribution specified in the input.
+        The function works for the specific binary case that the ratio is a fixed distribution 
+        specified in the input.
         :param num_elements_per_class: number of elements per class
         :return: shadow training sets for given ratio
         """
@@ -107,7 +109,8 @@ class PropertyInferenceAttack(Attack):
         """
         Extract the features of a given model.
         :param model: a model from which the features should be extracted
-        :type model: :class:`.art.estimators.estimator.BaseEstimator` # BaseEstimator is very general and could be specified to art.classifier
+        :type model: :class:`.art.estimators.estimator.BaseEstimator` 
+            # BaseEstimator is very general and could be specified to art.classifier
         :return: feature extraction
         :rtype: np.ndarray
         """
@@ -141,10 +144,15 @@ class PropertyInferenceAttack(Attack):
     ):
         """
         Create meta training set out of shadow classifiers.
-        :param classifier_list_with_property: list of all shadow classifiers that were trained on a dataset which fulfills the property
-        :type classifier_list_with_property: iterable object of :class:`.art.estimators.estimator.BaseEstimator`
-        :param classifier_list_without_property: list of all shadow classifiers that were trained on a dataset which does NOT fulfill the property
-        :type classifier_list_without_property: iterable object of :class:`.art.estimators.estimator.BaseEstimator`
+        :param classifier_list_with_property: 
+            list of all shadow classifiers that were trained on a dataset which fulfills the property
+        :type classifier_list_with_property: 
+            iterable object of :class:`.art.estimators.estimator.BaseEstimator`
+        :param classifier_list_without_property: 
+            list of all shadow classifiers that were trained on a dataset which does NOT fulfill the 
+            property
+        :type classifier_list_without_property: 
+            iterable object of :class:`.art.estimators.estimator.BaseEstimator`
         :return: tuple (Meta-training set, label set)
         :rtype: tuple (np.ndarray, np.ndarray)
         """
@@ -257,7 +265,8 @@ class PropertyInferenceAttack(Attack):
         Perform Property Inference attack.
         :param params: Example data to run through target model for feature extraction
         :type params: np.ndarray
-        :return: prediction about property of target data set [[1, 0]]-> property; [[0, 1]]-> negation property
+        :return: prediction about property of target data set 
+            [[1, 0]]-> property; [[0, 1]]-> negation property
         :rtype: np.ndarray with shape (1, 2)
         """
 
