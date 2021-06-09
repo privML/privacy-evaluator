@@ -67,6 +67,9 @@ class ConvNetMNIST(nn.Module):
         )
 
     def forward(self, x):
+        # if the input is in the form "BHWC", make channel the second dimension
+        if x.shape[-1] == 1:
+            x = x.permute(0,3,1,2)
         out = self.conv1(x)
         out = self.conv2(out)
         out = self.fc(out)
@@ -117,6 +120,9 @@ class ConvNetCIFAR10(nn.Module):
         )
 
     def forward(self, x):
+        # if the input is in the form "BHWC", make channel the second dimension
+        if x.shape[-1] == 3:
+            x = x.permute(0,3,1,2)
         out = self.conv1(x)
         out = self.conv2(out)
         out = self.fc(out)
