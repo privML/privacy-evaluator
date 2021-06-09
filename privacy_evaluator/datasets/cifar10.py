@@ -15,7 +15,7 @@ class CIFAR10(Dataset):
 
     TRAIN_SET_SIZE = 50000
     TEST_SET_SIZE = 10000
-    INPUT_SHAPE = (3, 32, 32)
+    INPUT_SHAPE = {"tf": (32, 32, 3), "torch": (3, 32, 32)}
     N_CLASSES = 10
 
     @classmethod
