@@ -12,7 +12,7 @@ def trainer(
     train_set: Union[Tuple[np.ndarray, np.ndarray], torch.utils.data.Dataset],
     size_dict: Dict[int, int],
     model: Union[nn.Module, keras.Model],
-    batch_size: int = 500,
+    batch_size: int = 250,
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
@@ -64,6 +64,12 @@ def _trainer_tf(
     """
     Train the given model on the given dataset.
     """
+
+    # set device
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    if gpus:
+        tf.config.experimental.set_visible_devices(gpus[0], 'GPU')
+
     # create dataloader
     train_loader = tf.data.Dataset.from_tensor_slices(train_set)
     train_loader = train_loader.shuffle(

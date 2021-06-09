@@ -64,7 +64,7 @@ class PropertyInferenceAttack(Attack):
     def train_shadow_classifiers(
         self,
         shadow_training_sets: List[Tuple[np.ndarray, np.ndarray]],
-        num_elements_per_classes: Dict[int, int],
+        num_elements_per_classes: Dict[int, int]
     ):
         """
         Train shadow classifiers with each shadow training set (follows property or negation of property).
@@ -72,15 +72,14 @@ class PropertyInferenceAttack(Attack):
         :param num_elements_per_classes: specific class distribution
         :return: list of shadow classifiers,
                  accuracies for the classifiers
-        :rtype: List[:class:`.art.estimators.estimator.BaseEstimator`]
+        :rtype: Tuple[  List[:class:.art.estimators.estimator.BaseEstimator]
         """
+
         shadow_classifiers = []
+
         num_classes = len(num_elements_per_classes)
+
         for shadow_training_set in shadow_training_sets:
-            model = (
-                FCNeuralNet()
-            )  # TODO: infer model structure from the target model adaptively
-            trainer(shadow_training_set, num_elements_per_classes, model)
             shadow_training_X, shadow_training_y = shadow_training_set
             train_X, test_X, train_y, test_y = train_test_split(
                 shadow_training_X, shadow_training_y, test_size=0.3
@@ -194,8 +193,9 @@ class PropertyInferenceAttack(Attack):
 
         return meta_features, meta_labels
 
+    @staticmethod
     def train_meta_classifier(
-        self, meta_training_X: np.ndarray, meta_training_y: np.ndarray
+        meta_training_X: np.ndarray, meta_training_y: np.ndarray
     ) -> TensorFlowV2Classifier:
         """
         Train meta-classifier with the meta-training set.
@@ -286,10 +286,7 @@ class PropertyInferenceAttack(Attack):
         }
 
         # create shadow classifiers with trained models with unbalanced data set
-        (
-            shadow_classifiers_property,
-            accuracy_property,
-        ) = self.create_shadow_classifier_from_training_set(
+        shadow_classifiers_property = self.create_shadow_classifier_from_training_set(
             property_num_elements_per_classes
         )
 
