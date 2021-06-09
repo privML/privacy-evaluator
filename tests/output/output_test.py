@@ -2,6 +2,9 @@ import numpy as np
 
 from privacy_evaluator.metrics.basics import *
 from privacy_evaluator.output.user_output_privacy_score import UserOutputPrivacyScore
+from privacy_evaluator.output.user_output_inference_attack import (
+    UserOutputInferenceAttack,
+)
 
 
 def test_output_priv_score_function():
@@ -17,9 +20,12 @@ def test_output_priv_score_function():
     assert (count == np.array([0, 1, 2, 1, 0])).all()
     assert (
         user_output._to_json()
-        == '[["blue", "orange", "red", "orange", "red", "red", "blue", "red", "orange"], [1, 2, 3, 4, 5, 6, 7, 8, 9]]'
+        == '{"attack_data_y": ["blue", "orange", "red", "orange", "red", "red", "blue", "red", "orange"], "privacy_risk": [1, 2, 3, 4, 5, 6, 7, 8, 9]}'
     )
-    assert user_output._to_json(["privacy_risk"]) == "[[1, 2, 3, 4, 5, 6, 7, 8, 9]]"
+    assert (
+        user_output._to_json(["privacy_risk"])
+        == '{"privacy_risk": [1, 2, 3, 4, 5, 6, 7, 8, 9]}'
+    )
 
 
 def test_output_priv_score_function_relative():
@@ -42,10 +48,13 @@ def test_output_priv_score_function_relative():
 
 def test_output_inference_attack_function():
     user_output = UserOutputInferenceAttack(0.9, 0.8, 0.1, 1.125, 0.75)
-    assert user_output._to_json() == "[0.9, 0.8, 0.1, 1.125, 0.75]"
+    assert (
+        user_output._to_json()
+        == '{"target_model_train_accuracy": 0.9, "target_model_test_accuracy": 0.8, "target_model_train_to_test_accuracy_gap": 0.1, "target_model_train_to_test_accuracy_ratio": 1.125, "attack_model_accuracy": 0.75}'
+    )
     assert (
         user_output._to_json(
             ["target_model_train_accuracy", "target_model_test_accuracy"]
         )
-        == "[0.9, 0.8]"
+        == '{"target_model_train_accuracy": 0.9, "target_model_test_accuracy": 0.8}'
     )

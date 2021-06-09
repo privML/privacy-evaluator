@@ -77,18 +77,6 @@ class MembershipInferenceAttack(Attack):
             accuracy(y_attack, y_attack_prediction),
         )
 
-        return {
-            "target_model_train_accuracy": train_accuracy,
-            "target_model_test_accuracy": test_accuracy,
-            "target_model_train_to_test_accuracy_gap": train_to_test_accuracy_gap(
-                train_accuracy, test_accuracy
-            ),
-            "target_model_train_to_test_accuracy_ratio": train_to_test_accuracy_ratio(
-                train_accuracy, test_accuracy
-            ),
-            "attack_model_accuracy": accuracy(y_attack, y_attack_prediction),
-        }
-
     def fit(self, **kwargs):
         """Fits the attack model.
 

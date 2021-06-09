@@ -8,16 +8,13 @@ class UserOutput:
         output function for JSON
         :param filter: if needed this filters the output for the given keys
         """
+        ret = {}
         if filter is not None:
-            ret = []
             for key in filter:
-                value = self.__dict__.get(key)
-                ret.append(self._convertToListIfNeeded(value))
-            return json.dumps(ret)
-
-        ret = []
-        for key, value in self.__dict__.items():
-            ret.append(self._convertToListIfNeeded(value))
+                ret[key] = self._convertToListIfNeeded(self.__dict__.get(key))
+        else:
+            for key, value in self.__dict__.items():
+                ret[key] = self._convertToListIfNeeded(value)
         return json.dumps(ret)
 
     def _to_dict(self, filter: np.ndarray = None) -> dict:
@@ -26,7 +23,9 @@ class UserOutput:
         :param filter: if needed this filters the output for the given keys
         """
         if filter is not None:
-            return [self.__dict__.get(key) for key in filter]
+            ret = {}
+            for key in filter:
+                ret[key] = self.__dict__.get(key)
         return self.__dict__
 
     def __str__(self) -> str:
