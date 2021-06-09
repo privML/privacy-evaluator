@@ -37,7 +37,8 @@ def trainer(
             learning_rate,
             weight_decay,
         )
-
+    else:
+        raise TypeError("Only torch and tensorflow models are accepted inputs.")
 
 def tester(
     test_set: Union[Tuple[np.ndarray, np.ndarray], torch.utils.data.Dataset],

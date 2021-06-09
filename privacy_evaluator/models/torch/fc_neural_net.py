@@ -36,7 +36,7 @@ class FCNeuralNet32X32X3(nn.Module):
         super(FCNeuralNet32X32X3, self).__init__()
         self.flatten = nn.Flatten()
         self.fc = nn.Sequential(
-            nn.Linear(32 * 32 * 3, 512),  # TODO: retrieve later
+            nn.Linear(32 * 32 * 3, 512),
             nn.ReLU(),
             nn.Dropout(dropout),
             nn.Linear(512, 64),
@@ -60,7 +60,7 @@ class FCNeuralNet28X28X1(nn.Module):
         super(FCNeuralNet28X28X1, self).__init__()
         self.flatten = nn.Flatten()
         self.fc = nn.Sequential(
-            nn.Linear(28 * 28 * 1, 512),  # TODO: retrieve later
+            nn.Linear(28 * 28 * 1, 512),
             nn.ReLU(),
             nn.Dropout(dropout),
             nn.Linear(512, 64),
