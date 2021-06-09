@@ -1,26 +1,17 @@
-from sklearn.base import clone
 from privacy_evaluator.attacks.attack import Attack
 from privacy_evaluator.classifiers.classifier import Classifier
 import privacy_evaluator.utils.data_utils as data_utils
 from privacy_evaluator.utils.trainer import trainer
-from privacy_evaluator.models.torch.fc_neural_net import FCNeuralNet
 from privacy_evaluator.models.tf.conv_net_meta_classifier import ConvNetMetaClassifier
 from privacy_evaluator.models.tf.cnn import ConvNet
 
 import numpy as np
 import torch
 import tensorflow as tf
-from sklearn.tree import DecisionTreeRegressor
-from torch import nn
-import torch.nn.functional as F
-import torch.optim as optim
 from sklearn.model_selection import train_test_split
-from sklearn.utils import shuffle
-from art.attacks.evasion import FastGradientMethod
-from art.estimators.classification.scikitlearn import ScikitlearnDecisionTreeRegressor
-from typing import Tuple, Any, Dict, List
+from typing import Tuple, Dict, List
 from art.estimators.classification import TensorFlowV2Classifier
-from art.estimators.classification import PyTorchClassifier
+import string
 
 
 class PropertyInferenceAttack(Attack):
@@ -271,13 +262,42 @@ class PropertyInferenceAttack(Attack):
         predictions = meta_classifier.predict(x=[feature_extraction_target_model])
         return predictions
 
+    @staticmethod
+    def output_attack(predictions_ratios:Dict[float,np.ndarray]
+    ) -> string:
+        """
+        Determination of prediction with highest probability. 
+        :param predictions_ratios: Prediction values from meta-classifier for different subattacks (different properties)
+        :return: Output message for the attack
+        """
+
+        #get key & value of ratio with highest property probability
+        max_property = max(predictions_ratios.items(), key=lambda item: item[1][0][0]) 
+        #get average of neg property probabilities of 0.05, 0.95 (most unbalanced datasets --> highest probability for correctness of neg probability)
+        average_unbalanced_cases_neg_property = (predictions_ratios[0.95][0][1] + predictions_ratios[0.05][0][1]) / 2
+
+        if max_property[1][0][0] > average_unbalanced_cases_neg_property:
+            return "The property inference attack predicts that the target model is unbalanced with a ratio of {}.".format(max_property[0])
+        elif max_property[1][0][0] < average_unbalanced_cases_neg_property:
+            return "The property inference attack predicts that the target model is balanced."
+        else:
+            raise ValueError("Wrong input. Property inference attack cannot predict balanced and unbalanced.")
+
     def prediction_on_specific_property(
         self,
         feature_extraction_target_model: np.ndarray,
         shadow_classifiers_neg_property: list,
         ratio: float,
         size_set: int,
-    ):
+    )-> np.ndarray:
+        """
+        Perform prediction for a subattack (specific property)
+        :param feature_extraction_target_model: extracted features of target model
+        :param shadow_classifiers_neg_property: balanced shadow classifiers negation property
+        :param ratio: distribution for the property
+        :param size_set: size of one class from data set
+        :return: Prediction of meta-classifier for property and negation property
+        """
 
         # property of given ratio, only on class 0 and 1 at the moment
         property_num_elements_per_classes = {
@@ -325,7 +345,7 @@ class PropertyInferenceAttack(Attack):
         num_elements = int(round(size_set / 2))
         neg_property_num_elements_per_class = {0: num_elements, 1: num_elements}
 
-        # create balanced shadow classifiers (negation property)
+        # create balanced shadow classifiers negation property
         shadow_classifiers_neg_property = (
             self.create_shadow_classifier_from_training_set(
                 neg_property_num_elements_per_class
@@ -335,7 +355,6 @@ class PropertyInferenceAttack(Attack):
         predictions = {}
         # iterate over ratios from 0.55 to 0.95
         # (means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
-        # TODO add more
         for ratio in np.arange(0.55, 1, 0.05):
             predictions[round(ratio, 5)] = self.prediction_on_specific_property(
                 feature_extraction_target_model,
@@ -349,5 +368,6 @@ class PropertyInferenceAttack(Attack):
                 (1 - ratio),
                 size_set,
             )
+        
 
-        return predictions
+        return self.output_attack(predictions)
