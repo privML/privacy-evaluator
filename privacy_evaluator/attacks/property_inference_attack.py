@@ -82,7 +82,7 @@ class PropertyInferenceAttack(Attack):
             test_set = (test_X, test_y)
 
             model = FCNeuralNet()
-            trainer(train_set, test_set, num_elements_per_classes, model)
+            trainer(train_set, num_elements_per_classes, model)
 
             # change pytorch classifier to art classifier
             art_model = Classifier._to_art_classifier(
@@ -105,7 +105,8 @@ class PropertyInferenceAttack(Attack):
         )
         return shadow_classifiers
 
-    def feature_extraction(self, model):
+    @staticmethod
+    def feature_extraction(model):
         """
         Extract the features of a given model.
         :param model: a model from which the features should be extracted
@@ -116,7 +117,8 @@ class PropertyInferenceAttack(Attack):
         """
 
         # Filter out all trainable parameters (from every layer)
-        # This works differently for PyTorch and TensorFlow. Raise TypeError if model is neither of both.
+        # This works differently for PyTorch and TensorFlow. Raise TypeError if model is
+        # neither of both.
         if isinstance(model.model, torch.nn.Module):
             model_parameters = list(
                 filter(lambda p: p.requires_grad, model.model.parameters())
@@ -156,7 +158,8 @@ class PropertyInferenceAttack(Attack):
         :return: tuple (Meta-training set, label set)
         :rtype: tuple (np.ndarray, np.ndarray)
         """
-        # Apply self.feature_extraction on each shadow classifier and concatenate all features into one array
+        # Apply self.feature_extraction on each shadow classifier and concatenate all features
+        # into one array
         feature_list_with_property = np.array(
             [
                 self.feature_extraction(classifier)
@@ -173,7 +176,8 @@ class PropertyInferenceAttack(Attack):
             [feature_list_with_property, feature_list_without_property]
         )
         # Create corresponding labels
-        # meta_labels = np.concatenate([np.ones(len(feature_list_with_property)), np.zeros(len(feature_list_without_property))])
+        # meta_labels = np.concatenate([np.ones(len(feature_list_with_property)),
+        #     np.zeros(len(feature_list_without_property))])
         # For scikit-learn SVM classifier we need one hot encoded labels, therefore:
         meta_labels = np.concatenate(
             [
@@ -183,7 +187,8 @@ class PropertyInferenceAttack(Attack):
         )
         return meta_features, meta_labels
 
-    def train_meta_classifier(self, meta_training_X, meta_training_y):
+    @staticmethod
+    def train_meta_classifier(meta_training_X, meta_training_y):
         """
         Train meta-classifier with the meta-training set.
         :param meta_training_X: Set of feature representation of each shadow classifier.
@@ -192,8 +197,10 @@ class PropertyInferenceAttack(Attack):
                                 according to whether property is fullfilled ([1, 0]) or not ([0, 1]).
         :type meta_training_y: np.ndarray
         :return: Meta classifier
-        :rtype: "CLASSIFIER_TYPE" (to be found in `.art.utils`) # classifier.predict is an one-hot-encoded label vector:
-                                                    [1, 0] means target model has the property, [0, 1] means it does not.
+        :rtype: "CLASSIFIER_TYPE" (to be found in `.art.utils`)
+
+        Note: classifier.predict is an one-hot-encoded label vector:
+            [1, 0] means target model has the property, [0, 1] means it does not.
         """
         # Create a scikit SVM model, which will be trained on meta_training
         model = SVC(C=1.0, kernel="rbf")
@@ -204,16 +211,19 @@ class PropertyInferenceAttack(Attack):
         classifier.fit(meta_training_X, meta_training_y)
         return classifier
 
+    @staticmethod
     def perform_prediction(
-        self, meta_classifier, feature_extraction_target_model
+        meta_classifier, feature_extraction_target_model
     ) -> np.ndarray:
         """
-        "Actual" attack: Meta classifier gets feature extraction of target model as input, outputs property prediction.
+        "Actual" attack: Meta classifier gets feature extraction of target model as input, outputs
+        property prediction.
         :param meta_classifier: A classifier
         :type meta_classifier: "CLASSIFIER_TYPE" (to be found in .art.estimators)
         :param feature_extraction_target_model: extracted features of target model
         :type feature_extraction_target_model: np.ndarray
-        :return: Prediction given as probability distribution vector whether property or negation of property is
+        :return: Prediction given as probability distribution vector whether property or negation
+            of property is
         fulfilled for target data set
         :rtype: np.ndarray with shape (1, 2)
         """
@@ -288,7 +298,8 @@ class PropertyInferenceAttack(Attack):
         )
 
         predictions = {}
-        # iterate over ratios from 0.55 to 0.95 (means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
+        # iterate over ratios from 0.55 to 0.95
+        # (means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
         # TODO add more
         for ratio in np.arange(0.55, 1, 0.05):
             predictions[round(ratio, 5)] = self.prediction_on_specific_property(
