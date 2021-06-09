@@ -5,7 +5,7 @@ import privacy_evaluator.utils.data_utils as data_utils
 from privacy_evaluator.utils.trainer import trainer
 from privacy_evaluator.models.torch.fc_neural_net import FCNeuralNet
 from privacy_evaluator.models.tf.conv_net_meta_classifier import ConvNetMetaClassifier
-
+from privacy_evaluator.models.tf.cnn import ConvNet
 
 import math
 import numpy as np
@@ -23,16 +23,19 @@ from art.estimators.classification import TensorFlowV2Classifier
 from art.estimators.classification import PyTorchClassifier
 
 class PropertyInferenceAttack(Attack):
-    def __init__(self, target_model: Classifier, dataset: Tuple[np.ndarray,np.ndarray]):
+    def __init__(
+            self, target_model: Classifier, dataset: Tuple[np.ndarray, np.ndarray]
+    ):
         """
         Initialize the Property Inference Attack Class.
         :param target_model: the target model to be attacked
-        :param dataset: dataset for training of shadow classifiers, test_data from dataset with concatenation [test_features, test_labels]
+        :param dataset: dataset for training of shadow classifiers, test_data from dataset
+        with concatenation [test_features, test_labels]
         """
-        self.dataset=dataset
+        self.dataset = dataset
         # count of shadow training sets, must be eval
-        self.amount_sets = 2
-        self.input_shape =  self.dataset[0].shape #[32, 32, 3]
+        self.amount_sets = 6
+        self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
         super().__init__(target_model, None, None, None, None)
 
     def create_shadow_training_set(
@@ -96,9 +99,9 @@ class PropertyInferenceAttack(Attack):
             train_set = (train_X, train_y)
             test_set = (test_X, test_y)
 
-            model = FCNeuralNet()
+            model = ConvNet(num_classes, self.input_shape)
             accuracy = trainer(
-                train_set, test_set, num_elements_per_classes, model
+                train_set, num_elements_per_classes, model
             )
 
             # change pytorch classifier to art classifier

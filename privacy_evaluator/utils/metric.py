@@ -17,6 +17,7 @@ def cross_entropy_loss(outputs: tf.Tensor, labels: np.ndarray) -> tf.Tensor:
     Returns:
         The mean loss for this batch.
     """
+    labels = labels.squeeze()
     labels = tf.cast(labels, tf.int64)
     loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels, logits=outputs)
     return tf.reduce_mean(loss)

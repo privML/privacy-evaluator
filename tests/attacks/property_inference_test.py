@@ -5,14 +5,16 @@ from privacy_evaluator.classifiers.classifier import Classifier
 from privacy_evaluator.utils.data_utils import dataset_downloader, new_dataset_from_size_dict
 from privacy_evaluator.utils.trainer import trainer
 from privacy_evaluator.models.torch.fc_neural_net import FCNeuralNet
+from privacy_evaluator.models.tf.cnn import ConvNet
+
 
 
 def test_property_inference_attack():
-    train_dataset, test_dataset = dataset_downloader()
-    input_shape =  test_dataset[0].shape
+    train_dataset, test_dataset = dataset_downloader("CIFAR10")
+    input_shape = test_dataset[0][0].shape
     num_classes = 2
     num_elements_per_classes = {0: 1000, 1: 1000}
-   
+
     train_set = new_dataset_from_size_dict(
             train_dataset, num_elements_per_classes
     )
@@ -20,9 +22,9 @@ def test_property_inference_attack():
             test_dataset, num_elements_per_classes
     )
 
-    model = FCNeuralNet()
+    model = ConvNet(num_classes, input_shape)
     trainer(
-        train_set, test_set, num_elements_per_classes, model
+        train_set, num_elements_per_classes, model
     )
 
     # change pytorch classifier to art classifier
@@ -34,3 +36,5 @@ def test_property_inference_attack():
     f = open('test.txt', 'a')
     f.write(str(res))
     f.close()
+
+test_property_inference_attack()

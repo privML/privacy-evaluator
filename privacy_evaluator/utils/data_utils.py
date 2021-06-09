@@ -16,9 +16,9 @@ def dataset_downloader(
     if dataset_name == "CIFAR10":
         train_dataset, test_dataset = cifar10.load_data()
     elif dataset_name == "MNIST":
-        (x_train, y_train), (x_test, y_test) = mnist.load_data()
-        train_dataset = (x_train, y_train)
-        test_dataset = (x_test, y_test)
+        (X_train, y_train), (X_test, y_test) = mnist.load_data()
+        train_dataset = (X_train, y_train)
+        test_dataset = (X_test, y_test)
     return train_dataset, test_dataset
 
 
@@ -80,7 +80,7 @@ def new_dataset_from_size_dict(
         new_data_x.append(subset(dataset, class_id, size)[0])
         new_data_y.append(subset(dataset, class_id, size)[1])
     new_data_x = np.vstack(new_data_x)
-    new_data_y = np.vstack(new_data_y).flatten()
+    new_data_y = np.concatenate(new_data_y, axis=0)
     new_dataset = (new_data_x, new_data_y)
 
     return new_dataset
