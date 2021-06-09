@@ -37,6 +37,8 @@ def trainer(
             learning_rate,
             weight_decay,
         )
+    else:
+        raise TypeError("Only torch and tensorflow models are accepted inputs.")
 
 
 def tester(
@@ -66,9 +68,9 @@ def _trainer_tf(
     """
 
     # set device
-    gpus = tf.config.experimental.list_physical_devices('GPU')
+    gpus = tf.config.experimental.list_physical_devices("GPU")
     if gpus:
-        tf.config.experimental.set_visible_devices(gpus[0], 'GPU')
+        tf.config.experimental.set_visible_devices(gpus[0], "GPU")
 
     # create dataloader
     train_loader = tf.data.Dataset.from_tensor_slices(train_set)
