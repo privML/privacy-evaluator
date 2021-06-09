@@ -1,4 +1,5 @@
 import pytest
+import tensorflow as tf
 
 from privacy_evaluator.attacks.property_inference_attack import PropertyInferenceAttack
 from privacy_evaluator.classifiers.classifier import Classifier
@@ -18,11 +19,13 @@ def test_property_inference_attack():
     num_elements_per_classes = {0: 1000, 1: 1000}
     num_classes = len(num_elements_per_classes)
 
+    # set device
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    if gpus:
+        tf.config.experimental.set_visible_devices(gpus[0], 'GPU')
+
     train_set = new_dataset_from_size_dict(
             train_dataset, num_elements_per_classes
-    )
-    test_set = new_dataset_from_size_dict(
-            test_dataset, num_elements_per_classes
     )
 
     model = ConvNet(num_classes, input_shape)
@@ -39,5 +42,3 @@ def test_property_inference_attack():
     f = open('test.txt', 'a')
     f.write(str(res))
     f.close()
-
-test_property_inference_attack()

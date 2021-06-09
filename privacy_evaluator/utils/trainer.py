@@ -60,7 +60,7 @@ def _trainer_tf(
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
-) -> float:
+):
     """
     Train the given model on the given dataset.
     """
@@ -104,7 +104,7 @@ def _trainer_torch(
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
-) -> float:
+):
     """
     Train the given model on the given dataset.
     """
