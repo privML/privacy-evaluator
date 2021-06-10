@@ -52,4 +52,3 @@ def test_output_inference_attack_function():
         )
         == '{"target_model_train_accuracy": 0.9, "target_model_test_accuracy": 0.8}'
     )
-
