@@ -26,9 +26,6 @@ def test_output_priv_score_function():
         user_output._to_json(["privacy_risk"])
         == '{"privacy_risk": [1, 2, 3, 4, 5, 6, 7, 8, 9]}'
     )
-
-
-def test_output_priv_score_function_relative():
     data_y = np.array(
         ["blue", "orange", "red", "orange", "red", "red", "blue", "red", "orange"]
     )
@@ -55,3 +52,4 @@ def test_output_inference_attack_function():
         )
         == '{"target_model_train_accuracy": 0.9, "target_model_test_accuracy": 0.8}'
     )
+
