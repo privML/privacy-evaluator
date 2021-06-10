@@ -11,7 +11,7 @@ class AttackInputData:
 
     # Labels for the data samples from the training set.
     y_train: np.ndarray
-    
+
     # Data samples from the test set.
     x_test: np.ndarray
 
