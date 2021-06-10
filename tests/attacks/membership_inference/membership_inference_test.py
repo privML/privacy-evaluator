@@ -12,11 +12,13 @@ import torch.nn as nn
 
 def test_membership_inference_attack():
     x_train, y_train, x_test, y_test = CIFAR10.numpy(model_type="torch")
+
     target_model = Classifier(
         load_dcti(),
         nb_classes=CIFAR10.N_CLASSES,
         input_shape=CIFAR10.INPUT_SHAPE,
         loss=nn.CrossEntropyLoss(reduction="none"),
     )
+
     with pytest.raises(AttributeError):
         MembershipInferenceAttack(target_model, x_train, y_train, x_test, y_test)

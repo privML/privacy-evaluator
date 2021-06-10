@@ -1,3 +1,5 @@
+import torch
+
 from privacy_evaluator.attacks.membership_inference.black_box_rule_based import (
     MembershipInferenceBlackBoxRuleBasedAttack,
 )
@@ -5,18 +7,20 @@ from privacy_evaluator.models.torch.dcti.dcti import load_dcti
 from privacy_evaluator.datasets.cifar10 import CIFAR10
 from privacy_evaluator.classifiers.classifier import Classifier
 
-import torch.nn as nn
-
 
 def test_membership_inference_black_box_rule_based_attack():
     x_train, y_train, x_test, y_test = CIFAR10.numpy(model_type="torch")
+
     target_model = Classifier(
-        load_dcti(),
+        load_dcti(device=torch.device("cpu")),
         nb_classes=CIFAR10.N_CLASSES,
         input_shape=CIFAR10.INPUT_SHAPE,
-        loss=nn.CrossEntropyLoss(reduction="none"),
+        loss=torch.nn.CrossEntropyLoss(reduction="none"),
     )
+
     attack = MembershipInferenceBlackBoxRuleBasedAttack(
         target_model, x_train, y_train, x_test, y_test
     )
-    attack.attack(x_train, y_train)
+
+    assert (attack.attack(x_train[100:200], y_train[100:200]).sum() == 92)
+    assert (attack.attack(x_test[100:200], y_test[100:200]).sum() == 88)

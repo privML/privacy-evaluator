@@ -24,12 +24,14 @@ class CIFAR10(Dataset):
         train_batch_size: int = 128,
         test_batch_size: int = 128,
         one_hot_encode: bool = True,
+        shuffle: bool = True,
     ) -> Tuple[DataLoader, DataLoader]:
         """Loads the dataset as pytorch train and test data loader.
 
         :param train_batch_size: Batch size of the train data loader.
         :param test_batch_size: Batch size of the test data loader.
         :param one_hot_encode: If data should be one-hot-encoded.
+        :param shuffle: If data should be shuffled.
         :return: Train and test data loaders.
         """
         transform_train = transforms.Compose(
@@ -72,10 +74,10 @@ class CIFAR10(Dataset):
 
         return (
             DataLoader(
-                train_set, batch_size=train_batch_size, shuffle=True, num_workers=4
+                train_set, batch_size=train_batch_size, shuffle=shuffle, num_workers=4
             ),
             DataLoader(
-                test_set, batch_size=test_batch_size, shuffle=False, num_workers=4
+                test_set, batch_size=test_batch_size, shuffle=shuffle, num_workers=4
             ),
         )
 
@@ -105,6 +107,7 @@ class CIFAR10(Dataset):
             train_batch_size=cls.TRAIN_SET_SIZE,
             test_batch_size=cls.TEST_SET_SIZE,
             one_hot_encode=one_hot_encode,
+            shuffle=False,
         )
 
         x_train, y_train = next(iter(train_loader))
