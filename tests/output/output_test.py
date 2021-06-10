@@ -35,15 +35,12 @@ def test_output_priv_score_function_relative():
     priv_risk = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
     user_output = UserOutputPrivacyScore(data_y, priv_risk)
     labels, count = user_output.histogram_top_k_relative(
-        np.array([5, 40, 6, 35, 4]),
         np.array(["green", "blue", "red", "orange", "white"]),
         4,
         show_diagram=False,
     )
     assert (labels == np.array(["green", "blue", "red", "orange", "white"])).all()
-    np.testing.assert_array_almost_equal(
-        count, np.array([0, 0.025, 0.33333333, 0.02857143, 0])
-    )
+    np.testing.assert_array_almost_equal(count, np.array([0, 0.5, 0.5, 0.333333, 0]))
 
 
 def test_output_inference_attack_function():
