@@ -60,18 +60,16 @@ class UserOutput:
 
     def histogram_top_k_relative(
         self,
-        label_counts: np.ndarray,
         all_labels: np.ndarray,
         k: int = 10,
         show_diagram: bool = True,
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Draw histogram of class distribution of the k points with highest privacy risk score, raltive to the size of the classes
-        :param label_counts: the amount of elements per label
+        Draw histogram of class distribution of the k points with highest privacy risk score, relative to the size of the classes
         :param all_labels: all the labels of the input data
         :param k: the number of points to consider, default 10
         :param show_diagram: determines if the diagram should be shown, default: True
-        :return: All lables of the data with the number of points that are in the top k
+        :return: All lables of the data with the number of points that are in the top k, relative to the size of the classes
         """
         sorting = np.argsort(self.privacy_risk)
         sorting = np.flip(sorting)
@@ -85,14 +83,19 @@ class UserOutput:
         labels = df.index.to_numpy()
         count = df["count"].to_numpy()
         all_counts = np.array([])
+        label_counts = np.array([])
         for label in all_labels:
+            label_count = (self.attack_data_y == label).sum()
+            label_counts = np.append(label_counts, label_count)
             index = np.where(labels == label)
             if len(index[0]) == 0:
                 all_counts = np.append(all_counts, 0)
             else:
                 all_counts = np.append(all_counts, count[index[0]])
-        # print(all_counts, label_counts)
         relative_values = np.divide(all_counts, label_counts)
+        relative_values = np.nan_to_num(
+            relative_values, copy=True, nan=0.0, posinf=None, neginf=None
+        )
         if show_diagram:
             plt.bar(all_labels, relative_values)
             plt.title("Histogram for top {} points relative per class".format(k))
