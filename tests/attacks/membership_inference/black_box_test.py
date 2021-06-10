@@ -23,5 +23,5 @@ def test_membership_inference_black_box_attack():
     )
 
     attack.fit()
-    assert (attack.attack(x_train[100:200], y_train[100:200]).sum() in [58, 59])
-    assert (attack.attack(x_test[100:200], y_test[100:200]).sum() == 52)
+    assert attack.attack(x_train[100:200], y_train[100:200]).sum() in [58, 59]
+    assert attack.attack(x_test[100:200], y_test[100:200]).sum() == 52

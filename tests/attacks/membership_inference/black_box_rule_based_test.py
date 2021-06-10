@@ -22,5 +22,5 @@ def test_membership_inference_black_box_rule_based_attack():
         target_model, x_train, y_train, x_test, y_test
     )
 
-    assert (attack.attack(x_train[100:200], y_train[100:200]).sum() == 92)
-    assert (attack.attack(x_test[100:200], y_test[100:200]).sum() == 88)
+    assert attack.attack(x_train[100:200], y_train[100:200]).sum() == 92
+    assert attack.attack(x_test[100:200], y_test[100:200]).sum() == 88
