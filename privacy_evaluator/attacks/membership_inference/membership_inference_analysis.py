@@ -72,8 +72,6 @@ class MembershipInferenceAttackAnalysis:
             x_test=self.input_data.x_test,
             y_test=self.input_data.y_test,
         )
-
-        # TODO: fit on the whole thing or should we fit for each slice?
         attack.fit()
 
         results = []
