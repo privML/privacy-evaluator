@@ -9,11 +9,11 @@ class Slicing:
     # If true, the analysis will produce a slice of the whole dataset.
     entire_dataset: bool = True
 
-    # If true, the analysis will produce two slices. 
+    # If true, the analysis will produce two slices.
     # First for the correct classified data and second for incorrect classified data.
     by_classification_correctness: bool = False
 
-    # If true, a slice will be created for each class/label. 
+    # If true, a slice will be created for each class/label.
     by_class: bool = False
 
 
@@ -29,10 +29,13 @@ class Slice:
 
     def __str__(self):
         """Returns a humand-readable representation of the slice."""
-        
-        return "\n".join((
-            "Slice(",
-            "  indices: " + np.array2string(self.indices, threshold=10, edgeitems=2),
-            "  desc: " + self.desc,
-            ")",
-        ))
+
+        return "\n".join(
+            (
+                "Slice(",
+                "  indices: "
+                + np.array2string(self.indices, threshold=10, edgeitems=2),
+                "  desc: " + self.desc,
+                ")",
+            )
+        )

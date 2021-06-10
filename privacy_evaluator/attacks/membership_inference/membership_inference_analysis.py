@@ -23,23 +23,24 @@ class MembershipInferenceAttackAnalysisSliceResult:
     def __str__(self):
         """Human-readable representation of the result."""
 
-        return "\n".join((
-            "MembershipInferenceAttackAnalysisSliceResult(",
-            indent(str(self.slice), "  "),
-            f"  advantage: {self.advantage:.4f}",
-            ")",
-        ))
+        return "\n".join(
+            (
+                "MembershipInferenceAttackAnalysisSliceResult(",
+                indent(str(self.slice), "  "),
+                f"  advantage: {self.advantage:.4f}",
+                ")",
+            )
+        )
 
 
 class MembershipInferenceAttackAnalysis:
     """Represents the membership inference attack analysis class."""
 
     def __init__(
-            self, 
-            attack_type: Type[MembershipInferenceAttack], 
-            input_data: AttackInputData) -> None:
+        self, attack_type: Type[MembershipInferenceAttack], input_data: AttackInputData
+    ) -> None:
         """Initializes a MembershipInferenceAttackAnalysis class.
-        
+
         :param attack_type: Type of membership inference attack to analyse.
         :param input_data: Data for the membership inference attack.
         """
@@ -47,15 +48,15 @@ class MembershipInferenceAttackAnalysis:
         self.input_data = input_data
 
     def analyse(
-            self,
-            target_model: Classifier, 
-            x: np.ndarray, 
-            y: np.ndarray, 
-            membership: np.ndarray,
-            slicing: Slicing = Slicing(entire_dataset=True)) \
-                -> Iterable[MembershipInferenceAttackAnalysisSliceResult]:
+        self,
+        target_model: Classifier,
+        x: np.ndarray,
+        y: np.ndarray,
+        membership: np.ndarray,
+        slicing: Slicing = Slicing(entire_dataset=True),
+    ) -> Iterable[MembershipInferenceAttackAnalysisSliceResult]:
         """Runs the membership inference attack and calculates attacker's advantage for each slice.
-        
+
         :param target_model: Target model to attack.
         :param x: Input data to attack.
         :param y: True labels for `x`.
@@ -65,11 +66,12 @@ class MembershipInferenceAttackAnalysis:
 
         # Instantiate an object of the given attack type.
         attack = self.attack_type(
-            target_model=target_model, 
-            x_train=self.input_data.x_train, 
-            y_train=self.input_data.y_train, 
+            target_model=target_model,
+            x_train=self.input_data.x_train,
+            y_train=self.input_data.y_train,
             x_test=self.input_data.x_test,
-            y_test=self.input_data.y_test)
+            y_test=self.input_data.y_test,
+        )
 
         # TODO: fit on the whole thing or should we fit for each slice?
         attack.fit()
@@ -80,7 +82,10 @@ class MembershipInferenceAttackAnalysis:
 
             # Calculate the advantage score as in tensorflow privacy package.
             tpr, fpr, _ = metrics.roc_curve(
-                membership[slice.indices], membership_prediction, drop_intermediate=False)
+                membership[slice.indices],
+                membership_prediction,
+                drop_intermediate=False,
+            )
             advantage = max(np.abs(tpr - fpr))
 
             results.append(
@@ -93,13 +98,9 @@ class MembershipInferenceAttackAnalysis:
         return results
 
 
-def slices(
-        x: np.ndarray, 
-        y: np.ndarray,
-        target_model: Classifier, 
-        slicing: Slicing):
+def slices(x: np.ndarray, y: np.ndarray, target_model: Classifier, slicing: Slicing):
     """Generates slices according to the specification.
-    
+
     :param x: Input data to attack.
     :param y: True labels for `x`.
     :param target_model: Target model to attack.
@@ -107,28 +108,24 @@ def slices(
     """
 
     if slicing.entire_dataset:
-        yield Slice(
-            indices=np.arange(len(x)),
-            desc="Entire dataset"
-        )
+        yield Slice(indices=np.arange(len(x)), desc="Entire dataset")
 
     if slicing.by_classification_correctness:
         # Use the target model to predict the classes for given samples
         prediction = target_model.predict(x).argmax(axis=1)
-        result = (prediction == y.argmax(axis=1))
+        result = prediction == y.argmax(axis=1)
         yield Slice(
-            indices=np.argwhere(result == True).flatten(),
-            desc="Correctly classified"
+            indices=np.argwhere(result == True).flatten(), desc="Correctly classified"
         )
 
         yield Slice(
             indices=np.argwhere(result == False).flatten(),
-            desc="Incorrectly classified"
+            desc="Incorrectly classified",
         )
-    
+
     if slicing.by_class:
         for label in range(target_model.to_art_classifier().nb_classes):
             yield Slice(
                 indices=np.argwhere((label == y.argmax(axis=1)) == True).flatten(),
-                desc=f"Class={label}"
+                desc=f"Class={label}",
             )
