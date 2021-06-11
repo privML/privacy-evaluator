@@ -31,7 +31,8 @@ class PropertyInferenceAttack(Attack):
         super().__init__(target_model, None, None, None, None)
 
     def create_shadow_training_set(
-        self, num_elements_per_class: Dict[int, int],
+        self,
+        num_elements_per_class: Dict[int, int],
     ) -> List[Tuple[np.ndarray, np.ndarray]]:
         """
         Create the shadow training sets with given ratio.
@@ -98,7 +99,8 @@ class PropertyInferenceAttack(Attack):
 
         # create classifiers with trained models based on given data set
         shadow_classifiers = self.train_shadow_classifiers(
-            shadow_training_sets, num_elements_per_classes,
+            shadow_training_sets,
+            num_elements_per_classes,
         )
         return shadow_classifiers
 
@@ -262,7 +264,7 @@ class PropertyInferenceAttack(Attack):
     @staticmethod
     def output_attack(predictions_ratios: Dict[float, np.ndarray]) -> string:
         """
-        Determination of prediction with highest probability. 
+        Determination of prediction with highest probability.
         :param predictions_ratios: Prediction values from meta-classifier for different subattacks (different properties)
         :return: Output message for the attack
         """
@@ -348,8 +350,10 @@ class PropertyInferenceAttack(Attack):
         neg_property_num_elements_per_class = {0: num_elements, 1: num_elements}
 
         # create balanced shadow classifiers negation property
-        shadow_classifiers_neg_property = self.create_shadow_classifier_from_training_set(
-            neg_property_num_elements_per_class
+        shadow_classifiers_neg_property = (
+            self.create_shadow_classifier_from_training_set(
+                neg_property_num_elements_per_class
+            )
         )
 
         predictions = {}
