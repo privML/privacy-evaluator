@@ -9,6 +9,8 @@ from ...metrics.basics import (
 from ..attack import Attack
 from ...classifiers.classifier import Classifier
 
+from ...output.user_output_inference_attack import UserOutputInferenceAttack
+
 
 class MembershipInferenceAttack(Attack):
     """MembershipInferenceAttack base class."""
@@ -67,17 +69,13 @@ class MembershipInferenceAttack(Attack):
         test_accuracy = accuracy(self.y_test, self.target_model.predict(self.x_test))
         y_attack_prediction = self.attack(x, y)
 
-        return {
-            "target_model_train_accuracy": train_accuracy,
-            "target_model_test_accuracy": test_accuracy,
-            "target_model_train_to_test_accuracy_gap": train_to_test_accuracy_gap(
-                train_accuracy, test_accuracy
-            ),
-            "target_model_train_to_test_accuracy_ratio": train_to_test_accuracy_ratio(
-                train_accuracy, test_accuracy
-            ),
-            "attack_model_accuracy": accuracy(y_attack, y_attack_prediction),
-        }
+        return UserOutputInferenceAttack(
+            train_accuracy,
+            test_accuracy,
+            train_to_test_accuracy_gap(train_accuracy, test_accuracy),
+            train_to_test_accuracy_ratio(train_accuracy, test_accuracy),
+            accuracy(y_attack, y_attack_prediction),
+        )
 
     def fit(self, **kwargs):
         """Fits the attack model.
