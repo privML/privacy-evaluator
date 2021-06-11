@@ -244,8 +244,7 @@ class PropertyInferenceAttack(Attack):
         :param feature_extraction_target_model: extracted features of target model
         :type feature_extraction_target_model: np.ndarray
         :return: Prediction given as probability distribution vector whether property or negation
-            of property is
-        fulfilled for target data set
+            of property is fulfilled for target data set
         :rtype: np.ndarray with shape (1, 2)
         """
 
