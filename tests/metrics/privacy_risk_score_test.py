@@ -18,6 +18,7 @@ import json
 
 
 def test_privacy_risk_score(download_models):
+    # check weather all the model files are where they're supposed to be
     def _rel_path(path):
         return os.path.join(os.path.dirname(__file__), path)
 
@@ -123,9 +124,11 @@ def test_privacy_risk_score(download_models):
     low_risk_train_probs, low_risk_test_probs = compute_privacy_risk_score(
         low_risk_classifier, x_train[:100], y_train[:100], x_test[:100], y_test[:100]
     )
+    # assert that the low privacy model has a lower privacy risk score on the training then on the test data
     assert high_risk_train_probs.sum() / len(
         high_risk_train_probs
     ) > high_risk_test_probs.sum() / len(high_risk_test_probs)
+    # assert that the score difference (train - test data) is higher for the low privacy model
     assert high_risk_train_probs.sum() / len(
         high_risk_train_probs
     ) - high_risk_test_probs.sum() / len(
