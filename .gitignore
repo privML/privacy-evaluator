@@ -9,7 +9,6 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
-data/
 develop-eggs/
 dist/
 downloads/
@@ -131,3 +130,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+# model data
+data/
+CIFAR10/
+tests/model_data/
