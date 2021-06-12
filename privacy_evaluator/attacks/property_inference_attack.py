@@ -362,14 +362,14 @@ class PropertyInferenceAttack(Attack):
 
         for ratio in np.arange(0.55, 1, 0.05):
             # goes through ratios 0.55 - 0.95
-            predictions[ratio] = self.prediction_on_specific_property(
+            predictions[round(ratio,5)] = self.prediction_on_specific_property(
                 feature_extraction_target_model,
                 shadow_classifiers_neg_property,
                 ratio,
                 size_set,
             )
             # goes through ratios 0.05 - 0.45 (because of 1-ratio)
-            predictions[(1 - ratio)] = self.prediction_on_specific_property(
+            predictions[round((1 - ratio),5)] = self.prediction_on_specific_property(
                 feature_extraction_target_model,
                 shadow_classifiers_neg_property,
                 (1 - ratio),
