@@ -88,8 +88,8 @@ def test_privacy_risk_score(download_models):
 
     high_risk_classifier = Classifier(
         high_risk_model,
-        nb_classes=high_risk_model.output_shape[1],
-        input_shape=high_risk_model.input_shape,
+        nb_classes=CIFAR10.N_CLASSES,
+        input_shape=CIFAR10.INPUT_SHAPE,
         loss=tf.keras.losses.CategoricalCrossentropy(),
     )
 
@@ -106,14 +106,32 @@ def test_privacy_risk_score(download_models):
     low_risk_model = tf.keras.models.model_from_json(json_config)
     low_risk_model.load_weights(low_risk_model_base_path)
 
+    low_risk_classifier = Classifier(
+        low_risk_model,
+        nb_classes=CIFAR10.N_CLASSES,
+        input_shape=CIFAR10.INPUT_SHAPE,
+        loss=tf.keras.losses.CategoricalCrossentropy(),
+    )
+
     # run risk evaluation on high risk model
-    (x_train, y_train), (x_test, y_test) = high_risk_model.load_data()
-    high_risk_score = compute_privacy_risk_score(
+    x_train, y_train, x_test, y_test = CIFAR10.numpy(model_type="tf")
+    high_risk_train_probs, high_risk_test_probs = compute_privacy_risk_score(
         high_risk_classifier, x_train[:100], y_train[:100], x_test[:100], y_test[:100]
     )
     # run risk evaluation on low risk model
-    """
-    score = compute_privacy_risk_score(
-        classifier, x_train[:100], y_train[:100], x_test[:100], y_test[:100]
+    x_train, y_train, x_test, y_test = CIFAR10.load_data()
+    low_risk_train_probs, low_risk_test_probs = compute_privacy_risk_score(
+        low_risk_classifier, x_train[:100], y_train[:100], x_test[:100], y_test[:100]
     )
-    assert bool(score)"""
+    assert high_risk_train_probs.sum() / len(
+        high_risk_train_probs
+    ) > high_risk_test_probs.sum() / len(high_risk_test_probs)
+    assert high_risk_train_probs.sum() / len(
+        high_risk_train_probs
+    ) - high_risk_test_probs.sum() / len(
+        high_risk_test_probs
+    ) > high_risk_train_probs.sum() / len(
+        high_risk_train_probs
+    ) - low_risk_test_probs.sum() / len(
+        low_risk_test_probs
+    )
