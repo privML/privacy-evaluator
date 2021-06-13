@@ -10,17 +10,20 @@ class Classifier:
 
     def __init__(
         self,
-        classifier: Union[tf.keras.Model, torch.nn.Module],
-        loss: Union[tf.keras.losses.Loss, torch.nn.modules.loss._Loss],
+        classifier: Union[tf.Module, torch.nn.Module],
+        loss: Union[tf.losses.Loss, torch.nn.modules.loss._Loss],
         nb_classes: int,
         input_shape: Tuple[int, ...],
     ):
         """Initializes a Classifier class.
 
-        :param classifier: The classifier. Either a Pytorch or Tensorflow classifier.
+        :param classifier: The classifier. Either a Pytorch or TensorFlow classifier.
         :param nb_classes: Number of classes that were used to train the classifier.
         :param input_shape: Input shape of a data point of the classifier.
         """
+        self.loss = loss
+        self.nb_classes = nb_classes
+        self.input_shape = input_shape
         self.art_classifier = self._to_art_classifier(
             classifier, loss, nb_classes, input_shape
         )
@@ -42,14 +45,14 @@ class Classifier:
 
     @staticmethod
     def _to_art_classifier(
-        classifier: Union[tf.keras.Model, torch.nn.Module],
-        loss: Union[tf.keras.losses.Loss, torch.nn.modules.loss._Loss],
+        classifier: Union[tf.Module, torch.nn.Module],
+        loss: Union[tf.losses.Loss, torch.nn.modules.loss._Loss],
         nb_classes: int,
         input_shape: Tuple[int, ...],
     ) -> Union[TensorFlowV2Classifier, PyTorchClassifier]:
         """Initializes an ART classifier.
 
-        :param classifier: Original classifier, either Pytorch or Tensorflow.
+        :param classifier: Original classifier, either Pytorch or TensorFlow.
         :param nb_classes: Number of classes that were used to train the classifier.
         :param input_shape: Shape of a input data point of the classifier.
         :return: Instance of an ART classifier.
@@ -62,7 +65,7 @@ class Classifier:
                 nb_classes=nb_classes,
                 input_shape=input_shape,
             )
-        if isinstance(classifier, tf.keras.Model):
+        if isinstance(classifier, tf.Module):
             return TensorFlowV2Classifier(
                 model=classifier,
                 loss_object=loss,
@@ -71,5 +74,5 @@ class Classifier:
             )
         else:
             raise TypeError(
-                f"Expected `classifier` to be an instance of {str(torch.nn.Module)} or {str(tf.keras.Model)}, received {str(type(classifier))} instead."
+                f"Expected `classifier` to be an instance of {str(torch.nn.Module)} or {str(tf.Module)}, received {str(type(classifier))} instead."
             )
