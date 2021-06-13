@@ -18,9 +18,9 @@ class Attack:
 
         :param target_model: Target model to be attacked.
         :param x_train: Data which was used to train the target model.
-        :param y_train: True labels for `x_train`.
+        :param y_train: True, one-hot encoded labels for `x_train`.
         :param x_test: Data that was not used to train the target model.
-        :param y_test: True labels for `x_test`.
+        :param y_test: True, one-hot encoded labels for `x_test`.
         """
         self.target_model = target_model
         self.x_train = x_train
@@ -32,7 +32,7 @@ class Attack:
         """Performs the attack on the target model.
 
         :param x: Data to be attacked.
-        :param y: True labels for `x`.
+        :param y: True, one-hot encoded labels for `x`.
         :param kwargs: Keyword arguments of the attack.
         :return: An array holding the results of the attack.
         """

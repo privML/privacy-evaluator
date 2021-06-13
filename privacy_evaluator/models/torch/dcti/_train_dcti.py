@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 from .dcti import DCTI
-from ....datasets.cifar10 import CIFAR10
+from ....datasets.torch.cifar10 import TorchCIFAR10
 from ....metrics.basics import accuracy
 
 
@@ -43,8 +43,10 @@ def test(net, loader):
 
 
 def main():
-    train_loader, test_loader = CIFAR10.pytorch_loader()
-    _, _, _, y_test = CIFAR10.numpy("torch")
+    train_loader, test_loader = TorchCIFAR10.data_loader(transformers="training")
+    _, y_test = next(iter(test_loader))
+    y_test = y_test.numpy()
+
     net = DCTI().to(device)
     optimizer = optim.Adam(net.parameters(), lr=0.0001)
     criterion = nn.CrossEntropyLoss()

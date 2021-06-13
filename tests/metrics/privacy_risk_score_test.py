@@ -1,26 +1,130 @@
-import pytest
+import json
+import os
+import tensorflow as tf
 
-import numpy as np
-
-import torch
-import torch.nn as nn
-
-from privacy_evaluator.models.torch.dcti.dcti import load_dcti
-from privacy_evaluator.datasets.cifar10 import CIFAR10
-
-from privacy_evaluator.metrics import compute_privacy_risk_score
 from privacy_evaluator.classifiers.classifier import Classifier
+from privacy_evaluator.datasets.tf.mnist import TFMNIST
+from privacy_evaluator.metrics import compute_privacy_risk_score
+
+from ..fixtures import tests_tmp_path, models_path
 
 
-def test_privacy_risk_score():
-    x_train, y_train, x_test, y_test = CIFAR10.numpy(model_type="torch")
-    classifier = Classifier(
-        load_dcti(),
-        nb_classes=CIFAR10.N_CLASSES,
-        input_shape=CIFAR10.INPUT_SHAPE,
-        loss=nn.CrossEntropyLoss(reduction="none"),
+def test_privacy_risk_score(models_path):
+    try:
+        assert os.path.exists(models_path)
+        assert os.path.exists(
+            os.path.join(models_path, "01_well-generalized-model(low-privacy-risk)")
+        )
+        assert os.path.exists(
+            os.path.join(
+                models_path, "02_especially_for_privacy_trained_model(no-privacy-risk)"
+            )
+        )
+        assert set(
+            os.listdir(
+                os.path.join(
+                    models_path, "01_well-generalized-model(low-privacy-risk)/"
+                )
+            )
+        ) == set(
+            [
+                "architecture.json",
+                "dp_001-10.h5",
+                "dp_001-20.h5",
+                "dp_001-40.h5",
+                "dp_001-30.h5",
+                "stats.csv",
+                "dp_001-50.h5",
+            ]
+        )
+        assert set(
+            os.listdir(
+                os.path.join(
+                    models_path,
+                    "02_especially_for_privacy_trained_model(no-privacy-risk)",
+                )
+            )
+        ) == set(
+            [
+                "architecture.json",
+                "dp_016-10.h5",
+                "dp_016-50.h5",
+                "dp_016-20.h5",
+                "dp_016-30.h5",
+                "dp_016-40.h5",
+                "stats.csv",
+            ]
+        )
+    except AssertionError:
+        raise FileNotFoundError(
+            "Model data not complete (might not have been correctly downloaded)"
+        )
+
+    # initialize high risk model
+    high_risk_model_base_path = os.path.join(
+        models_path, "01_well-generalized-model(low-privacy-risk)/dp_001-50.h5"
     )
-    score = compute_privacy_risk_score(
-        classifier, x_train[:100], y_train[:100], x_test[:100], y_test[:100]
+    high_risk_model_json_path = os.path.join(
+        models_path, "01_well-generalized-model(low-privacy-risk)/architecture.json"
     )
-    assert bool(score)
+
+    with open(high_risk_model_json_path, "r") as read_file:
+        json_config = json.load(read_file)
+
+    high_risk_model = tf.keras.models.model_from_json(json_config)
+    high_risk_model.load_weights(high_risk_model_base_path)
+
+    high_risk_classifier = Classifier(
+        high_risk_model,
+        nb_classes=TFMNIST.N_CLASSES,
+        input_shape=TFMNIST.INPUT_SHAPE,
+        loss=tf.keras.losses.CategoricalCrossentropy(),
+    )
+
+    # initialize low risk model
+    low_risk_model_base_path = os.path.join(
+        models_path,
+        "02_especially_for_privacy_trained_model(no-privacy-risk)/dp_016-40.h5",
+    )
+    low_risk_model_json_path = os.path.join(
+        models_path,
+        "02_especially_for_privacy_trained_model(no-privacy-risk)/architecture.json",
+    )
+
+    with open(low_risk_model_json_path, "r") as read_file:
+        json_config = json.load(read_file)
+
+    low_risk_model = tf.keras.models.model_from_json(json_config)
+    low_risk_model.load_weights(low_risk_model_base_path)
+
+    low_risk_classifier = Classifier(
+        low_risk_model,
+        nb_classes=TFMNIST.N_CLASSES,
+        input_shape=TFMNIST.INPUT_SHAPE,
+        loss=tf.keras.losses.CategoricalCrossentropy(),
+    )
+
+    # run risk evaluation on high risk model
+    x_train, y_train, x_test, y_test = TFMNIST.numpy()
+    high_risk_train_probs, high_risk_test_probs = compute_privacy_risk_score(
+        high_risk_classifier, x_train[:100], y_train[:100], x_test[:100], y_test[:100]
+    )
+    # run risk evaluation on low risk model
+    x_train, y_train, x_test, y_test = TFMNIST.numpy()
+    low_risk_train_probs, low_risk_test_probs = compute_privacy_risk_score(
+        low_risk_classifier, x_train[:100], y_train[:100], x_test[:100], y_test[:100]
+    )
+    # assert that the low privacy model has a lower privacy risk score on the training then on the test data
+    assert high_risk_train_probs.sum() / len(
+        high_risk_train_probs
+    ) > high_risk_test_probs.sum() / len(high_risk_test_probs)
+    # assert that the score difference (train - test data) is higher for the low privacy model
+    assert high_risk_train_probs.sum() / len(
+        high_risk_train_probs
+    ) - high_risk_test_probs.sum() / len(
+        high_risk_test_probs
+    ) > high_risk_train_probs.sum() / len(
+        high_risk_train_probs
+    ) - low_risk_test_probs.sum() / len(
+        low_risk_test_probs
+    )
