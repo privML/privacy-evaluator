@@ -12,4 +12,7 @@ def test_classifier():
         input_shape=TorchCIFAR10.INPUT_SHAPE,
         loss=nn.CrossEntropyLoss(reduction="none"),
     )
-    assert classifier.predict(x_train).shape == (x_train.shape[0], TorchCIFAR10.N_CLASSES)
+    assert classifier.predict(x_train).shape == (
+        x_train.shape[0],
+        TorchCIFAR10.N_CLASSES,
+    )

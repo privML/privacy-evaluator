@@ -7,7 +7,9 @@ class TFDataset:
     """TensorFlow Dataset base class."""
 
     @classmethod
-    def numpy(cls, one_hot_encode: bool = True, normalize: bool = True) -> Tuple[np.ndarray, ...]:
+    def numpy(
+        cls, one_hot_encode: bool = True, normalize: bool = True
+    ) -> Tuple[np.ndarray, ...]:
         """Loads train and test dataset for given model type as a numpy arrays.
 
         :param one_hot_encode: If data should be one-hot-encoded.

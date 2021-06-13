@@ -13,4 +13,3 @@ def test_cifar10():
 
     assert actual.shape == expected.shape
     assert (actual == expected).sum() == 100
-
