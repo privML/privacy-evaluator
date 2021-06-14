@@ -1,6 +1,7 @@
 from privacy_evaluator.attacks.attack import Attack
 from privacy_evaluator.classifiers.classifier import Classifier
 import privacy_evaluator.utils.data_utils as data_utils
+from privacy_evaluator.utils.model_utils import copy_and_reset_model
 from privacy_evaluator.utils.trainer import trainer
 from privacy_evaluator.models.tf.conv_net_meta_classifier import ConvNetMetaClassifier
 from privacy_evaluator.utils.model_utils import copy_and_reset_model
@@ -25,13 +26,14 @@ class PropertyInferenceAttack(Attack):
         with concatenation [test_features, test_labels]
         """
         self.dataset = dataset
-        # count of shadow training sets, must be even
+        # count of shadow training sets, must be eval
         self.amount_sets = 2
-        self.input_shape = self.dataset[0][0].shape  # e.g. [32, 32, 3] for CIFAR10
+        self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
         super().__init__(target_model, None, None, None, None)
 
     def create_shadow_training_set(
-        self, num_elements_per_class: Dict[int, int],
+        self,
+        num_elements_per_class: Dict[int, int],
     ) -> List[Tuple[np.ndarray, np.ndarray]]:
         """
         Create the shadow training sets with given ratio.
@@ -98,7 +100,8 @@ class PropertyInferenceAttack(Attack):
 
         # create classifiers with trained models based on given data set
         shadow_classifiers = self.train_shadow_classifiers(
-            shadow_training_sets, num_elements_per_classes,
+            shadow_training_sets,
+            num_elements_per_classes,
         )
         return shadow_classifiers
 
@@ -244,8 +247,7 @@ class PropertyInferenceAttack(Attack):
         :param feature_extraction_target_model: extracted features of target model
         :type feature_extraction_target_model: np.ndarray
         :return: Prediction given as probability distribution vector whether property or negation
-            of property is
-        fulfilled for target data set
+            of property is fulfilled for target data set
         :rtype: np.ndarray with shape (1, 2)
         """
 
@@ -263,7 +265,7 @@ class PropertyInferenceAttack(Attack):
     @staticmethod
     def output_attack(predictions_ratios: Dict[float, np.ndarray]) -> string:
         """
-        Determination of prediction with highest probability. 
+        Determination of prediction with highest probability.
         :param predictions_ratios: Prediction values from meta-classifier for different subattacks (different properties)
         :return: Output message for the attack
         """
@@ -349,8 +351,10 @@ class PropertyInferenceAttack(Attack):
         neg_property_num_elements_per_class = {0: num_elements, 1: num_elements}
 
         # create balanced shadow classifiers negation property
-        shadow_classifiers_neg_property = self.create_shadow_classifier_from_training_set(
-            neg_property_num_elements_per_class
+        shadow_classifiers_neg_property = (
+            self.create_shadow_classifier_from_training_set(
+                neg_property_num_elements_per_class
+            )
         )
 
         predictions = {}
@@ -359,14 +363,14 @@ class PropertyInferenceAttack(Attack):
 
         for ratio in np.arange(0.55, 1, 0.05):
             # goes through ratios 0.55 - 0.95
-            predictions[ratio] = self.prediction_on_specific_property(
+            predictions[round(ratio, 5)] = self.prediction_on_specific_property(
                 feature_extraction_target_model,
                 shadow_classifiers_neg_property,
                 ratio,
                 size_set,
             )
             # goes through ratios 0.05 - 0.45 (because of 1-ratio)
-            predictions[(1 - ratio)] = self.prediction_on_specific_property(
+            predictions[round((1 - ratio), 5)] = self.prediction_on_specific_property(
                 feature_extraction_target_model,
                 shadow_classifiers_neg_property,
                 (1 - ratio),

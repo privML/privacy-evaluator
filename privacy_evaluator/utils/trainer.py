@@ -12,7 +12,7 @@ def trainer(
     train_set: Union[Tuple[np.ndarray, np.ndarray], torch.utils.data.Dataset],
     size_dict: Dict[int, int],
     model: Union[nn.Module, keras.Model],
-    batch_size: int = 500,
+    batch_size: int = 250,
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
@@ -101,6 +101,7 @@ def _trainer_tf(
             labels = np.vectorize(lambda id: class_encoding[id])(labels)
             with tf.GradientTape() as g:
                 # forward pass
+
                 preds = model(images, training=True)
                 loss = cross_entropy_loss(preds, labels)
                 l2_loss = weight_decay * tf.add_n(

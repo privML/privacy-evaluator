@@ -12,29 +12,23 @@ from copy import deepcopy
 from typing import Union
 
 
-def copy_and_reset_model(
-    target_model: Union[nn.Module, keras.Model, BaseEstimator]
-) -> Union[nn.Module, keras.Model]:
-    """Copy the architechture of a given tf or torch model and reset the weights.
-
-    :param target_model: the model to be copied
-    :return: the clone of it with newly initialized weights on the same platform
-    """
-    if isinstance(target_model, BaseEstimator):
-        return copy_and_reset_model(target_model.model)
-    
-    elif isinstance(target_model, nn.Module):
-        return _copy_and_reset_torch_model(target_model)
-    elif isinstance(target_model, keras.Model):
-        return _copy_and_reset_tf_model(target_model)
+def copy_and_reset_model(model: Union[keras.Model, nn.Module, BaseEstimator])-> Union[nn.Module, keras.Model]:
+    if isinstance(model, nn.Module):
+        return _copy_and_reset_torch_model(model)
+    if isinstance(model, keras.Model):
+        return _copy_and_reset_tf_model(model)
+    if isinstance(model, BaseEstimator):
+        return copy_and_reset_model(model.model)
     else:
-        raise TypeError("Unsupported model type!")
+        raise TypeError(
+            f"Unxpected model type {str(type(model))} received."
+        )
 
 
-def _copy_and_reset_torch_model(target_model: nn.Module) -> nn.Module:
+def _copy_and_reset_torch_model(target_model):
     model = deepcopy(target_model)
     for layers in model.children():
-        if hasattr(layers, "__iter__"):
+        if hasattr(layers, "iter"):
             for layer in layers:
                 if hasattr(layer, "reset_parameters"):
                     layer.reset_parameters()
@@ -51,7 +45,6 @@ def _copy_and_reset_tf_model(target_model: keras.Model) -> keras.Model:
         layer_shape = layer.numpy().shape
         layer.assign(np.random.normal(0, 1, layer_shape))
     return model
-
 
 
 if __name__ == "__main__":
