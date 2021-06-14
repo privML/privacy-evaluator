@@ -3,7 +3,7 @@ from tensorflow import keras
 from tensorflow.keras.layers import Dense, Dropout, Flatten
 
 
-class FCNeuralNet(tf.Model):
+class FCNeuralNet(keras.Model):
     """A simple fully-connected network for multi-classification.
 
     Args:
