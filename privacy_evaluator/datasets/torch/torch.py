@@ -93,7 +93,13 @@ class TorchDataset:
         return y_one_hot_encoded
 
     @classmethod
-    def validate(cls, x: np.ndarray, y: np.ndarray, dataset: str = "train", one_hot_encoded: bool = True):
+    def validate(
+        cls,
+        x: np.ndarray,
+        y: np.ndarray,
+        dataset: str = "train",
+        one_hot_encoded: bool = True,
+    ):
         """Validates the data.
 
         :param x: Data to be validated.
