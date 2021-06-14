@@ -45,7 +45,7 @@ def accuracy(
     Returns:
         The accuracy for this batch.
     """
-    outputs, labels = to_numpy(outputs), to_numpy(labels)
+    outputs, labels = to_numpy(outputs), to_numpy(labels).squeeze()
     assert outputs.shape[0] == labels.shape[0]
 
     pred = np.argmax(outputs, axis=1)

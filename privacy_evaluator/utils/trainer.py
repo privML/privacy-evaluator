@@ -12,7 +12,7 @@ def trainer(
     train_set: Union[Tuple[np.ndarray, np.ndarray], torch.utils.data.Dataset],
     size_dict: Dict[int, int],
     model: Union[nn.Module, keras.Model],
-    batch_size: int = 250,
+    batch_size: int = 500,
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
@@ -28,6 +28,10 @@ def trainer(
             weight_decay,
         )
     elif isinstance(model, nn.Module):
+        # for torch, convert [0, 255] scale to [0, 1] (float)
+        if np.issubdtype(train_set[0].dtype, np.integer):
+            train_X, train_y = train_set[0] / 255.0, train_set[1]           
+            train_set = (train_X, train_y)
         return _trainer_torch(
             train_set,
             size_dict,
@@ -51,7 +55,13 @@ def tester(
     if isinstance(model, keras.Model):
         return _tester_tf(test_set, size_dict, model, batch_size)
     elif isinstance(model, nn.Module):
+        # for torch, convert [0, 255] scale to [0, 1] (float)
+        if np.issubdtype(test_set[0].dtype, np.integer):
+            test_X, test_y = test_set[0] / 255.0, test_set[1]           
+            test_set = (test_X, test_y)
         return _tester_torch(test_set, size_dict, model, batch_size)
+    else:
+        raise TypeError("Only torch and tensorflow models are accepted inputs.")
 
 
 def _trainer_tf(
@@ -91,7 +101,6 @@ def _trainer_tf(
             labels = np.vectorize(lambda id: class_encoding[id])(labels)
             with tf.GradientTape() as g:
                 # forward pass
-
                 preds = model(images, training=True)
                 loss = cross_entropy_loss(preds, labels)
                 l2_loss = weight_decay * tf.add_n(
@@ -149,10 +158,9 @@ def _trainer_torch(
     for _ in range(num_epochs):
         model.train()
         for images, labels in train_loader:
-            labels = labels.apply_(lambda id: class_encoding[id])
-            images = images / 255.0
-            labels = labels.to(torch.long)
-            images, labels = images.to(device), labels.to(device)
+            labels = labels.apply_(lambda id: class_encoding[id]).flatten()
+            images = images.to(device=device, dtype=torch.float)
+            labels = labels.to(device=device, dtype=torch.long)
 
             # forward pass
             pred = model(images)
@@ -212,8 +220,9 @@ def _tester_torch(
     model.eval()
     with torch.no_grad():
         for images, labels in test_loader:
-            labels = labels.apply_(lambda id: class_encoding[id])
-            images, labels = images.to(device), labels.to(device)
+            labels = labels.apply_(lambda id: class_encoding[id]).flatten()
+            images = images.to(device=device, dtype=torch.float)
+            labels = labels.to(device=device, dtype=torch.long)
 
             # forward pass
             pred = model(images)
