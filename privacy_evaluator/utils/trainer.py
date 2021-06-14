@@ -30,7 +30,7 @@ def trainer(
     elif isinstance(model, nn.Module):
         # for torch, convert [0, 255] scale to [0, 1] (float)
         if np.issubdtype(train_set[0].dtype, np.integer):
-            train_X, train_y = train_set[0] / 255.0, train_set[1]           
+            train_X, train_y = train_set[0] / 255.0, train_set[1]
             train_set = (train_X, train_y)
         return _trainer_torch(
             train_set,
@@ -57,7 +57,7 @@ def tester(
     elif isinstance(model, nn.Module):
         # for torch, convert [0, 255] scale to [0, 1] (float)
         if np.issubdtype(test_set[0].dtype, np.integer):
-            test_X, test_y = test_set[0] / 255.0, test_set[1]           
+            test_X, test_y = test_set[0] / 255.0, test_set[1]
             test_set = (test_X, test_y)
         return _tester_torch(test_set, size_dict, model, batch_size)
     else:

@@ -18,7 +18,9 @@ def dataset_downloader(
     elif dataset_name == "MNIST":
         (X_train, y_train), (X_test, y_test) = mnist.load_data()
         # convert image shape from (28, 28) to (28, 28, 1)
-        X_train, X_test = np.expand_dims(X_train, axis=-1), np.expand_dims(X_test, axis=-1)
+        X_train, X_test = np.expand_dims(X_train, axis=-1), np.expand_dims(
+            X_test, axis=-1
+        )
         train_dataset = (X_train, y_train)
         test_dataset = (X_test, y_test)
     else:

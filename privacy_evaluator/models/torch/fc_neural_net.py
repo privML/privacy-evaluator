@@ -31,7 +31,7 @@ class FCNeuralNet32X32X3(nn.Module):
     def __init__(
         self,
         num_classes: int = 2,
-        dropout: float = 0, 
+        dropout: float = 0,
     ):
         super(FCNeuralNet32X32X3, self).__init__()
         self.flatten = nn.Flatten()

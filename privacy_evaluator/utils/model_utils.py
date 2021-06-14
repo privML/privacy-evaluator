@@ -1,7 +1,10 @@
 from tensorflow.keras import layers
 from privacy_evaluator.models.tf.cnn import ConvNetMNIST, ConvNetCIFAR10
 from privacy_evaluator.models.tf.fc_neural_net import FCNeuralNet
-from privacy_evaluator.utils.data_utils import dataset_downloader, new_dataset_from_size_dict
+from privacy_evaluator.utils.data_utils import (
+    dataset_downloader,
+    new_dataset_from_size_dict,
+)
 from privacy_evaluator.utils.trainer import trainer, tester
 
 from tensorflow import keras
@@ -12,7 +15,9 @@ from copy import deepcopy
 from typing import Union
 
 
-def copy_and_reset_model(model: Union[keras.Model, nn.Module, BaseEstimator])-> Union[nn.Module, keras.Model]:
+def copy_and_reset_model(
+    model: Union[keras.Model, nn.Module, BaseEstimator]
+) -> Union[nn.Module, keras.Model]:
     if isinstance(model, nn.Module):
         return _copy_and_reset_torch_model(model)
     if isinstance(model, keras.Model):
@@ -20,9 +25,7 @@ def copy_and_reset_model(model: Union[keras.Model, nn.Module, BaseEstimator])-> 
     if isinstance(model, BaseEstimator):
         return copy_and_reset_model(model.model)
     else:
-        raise TypeError(
-            f"Unxpected model type {str(type(model))} received."
-        )
+        raise TypeError(f"Unxpected model type {str(type(model))} received.")
 
 
 def _copy_and_reset_torch_model(target_model):
@@ -38,8 +41,8 @@ def _copy_and_reset_torch_model(target_model):
 
 
 def _copy_and_reset_tf_model(target_model: keras.Model) -> keras.Model:
-    target_model.save('./target_model')
-    model = keras.models.load_model('./target_model')
+    target_model.save("./target_model")
+    model = keras.models.load_model("./target_model")
     for layer in model.trainable_variables:
         # the default kernel initializer used by Keras is normal distribution
         layer_shape = layer.numpy().shape
@@ -51,7 +54,7 @@ if __name__ == "__main__":
     train_set, _ = dataset_downloader("CIFAR10")
     size_dict = {0: 1000, 1: 1000}
     train_set = new_dataset_from_size_dict(train_set, size_dict)
-    
+
     target_model = FCNeuralNet()
     trainer(train_set, size_dict, target_model)
     print(tester(train_set, size_dict, target_model))
