@@ -14,7 +14,7 @@ from typing import Tuple, Dict, List
 from art.estimators.classification import TensorFlowV2Classifier
 import string
 from tqdm import tqdm
-
+import sys
 
 class PropertyInferenceAttack(Attack):
     def __init__(
@@ -50,7 +50,9 @@ class PropertyInferenceAttack(Attack):
         # Creation of shadow training sets with the size dictionaries
         # amount_sets divided by 2 because amount_sets describes the total amount of shadow training sets.
         # In this function however only all shadow training sets of one type (follow property OR negation of property) are created, hence amount_sets / 2.
-        for _ in range(int(self.amount_sets / 2)):
+        if self.verbose>0:
+            print("Creating shadow training sets")
+        for _ in tqdm(range(int(self.amount_sets / 2)), file=sys.stdout, disable=(self.verbose<2)):
             shadow_training_sets = data_utils.new_dataset_from_size_dict(
                 self.dataset, num_elements_per_class
             )
@@ -74,8 +76,9 @@ class PropertyInferenceAttack(Attack):
         shadow_classifiers = []
 
         num_classes = len(num_elements_per_classes)
-
-        for shadow_training_set in shadow_training_sets:
+        if self.verbose>0:
+            print("Training shadow classifiers")
+        for shadow_training_set in tqdm(shadow_training_sets, file=sys.stdout, disable=(self.verbose<2)):
             shadow_training_X, shadow_training_y = shadow_training_set
             train_X, test_X, train_y, test_y = train_test_split(
                 shadow_training_X, shadow_training_y, test_size=0.3
@@ -373,7 +376,7 @@ class PropertyInferenceAttack(Attack):
         if(self.verbose>0):
             print("Performing PIA for various ratios ... ")
 
-        for ratio in tqdm(np.arange(0.55, 1, 0.05), disable= (self.verbose==0) ):
+        for ratio in tqdm(np.arange(0.55, 1, 0.05), file=sys.stdout, disable= (self.verbose==0) ):
             # goes through ratios 0.55 - 0.95
             predictions[round(ratio, 5)] = self.prediction_on_specific_property(
                 feature_extraction_target_model,
