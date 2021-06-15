@@ -12,6 +12,7 @@ import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from typing import Tuple, Dict, List, Union
 from art.estimators.classification import TensorFlowV2Classifier,PyTorchClassifier
+from collections import OrderedDict
 
 
 class PropertyInferenceAttack(Attack):
@@ -273,30 +274,25 @@ class PropertyInferenceAttack(Attack):
         return predictions
 
     @staticmethod
-    def output_attack(predictions_ratios: Dict[float, np.ndarray]) -> str:
+    def output_attack(predictions_ratios) -> Tuple[str,Dict[str, float]]:
         """
         Determination of prediction with highest probability.
-        :param predictions_ratios: Prediction values from meta-classifier for different subattacks (different properties)
+        :param predictions_ratios: Prediction values from meta-classifier for different subattacks (different properties) 
+        :type predictions_ratios: OrderedDict[float, np.ndarray]
         :return: Output message for the attack
         """
 
         # get key & value of ratio with highest property probability
         max_property = max(predictions_ratios.items(), key=lambda item: item[1][0][0])
-        # get average of neg property probabilities of 0.05, 0.95 (most unbalanced datasets --> highest probability for correctness of neg probability)
-        average_unbalanced_cases_neg_property = (
-            predictions_ratios[0.95][0][1] + predictions_ratios[0.05][0][1]
-        ) / 2
 
-        if max_property[1][0][0] > average_unbalanced_cases_neg_property:
-            return "The property inference attack predicts that the target model is unbalanced with a ratio of {}.".format(
-                max_property[0]
-            )
-        elif max_property[1][0][0] < average_unbalanced_cases_neg_property:
-            return "The property inference attack predicts that the target model is balanced."
-        else:
-            raise ValueError(
-                "Wrong input. Property inference attack cannot predict balanced and unbalanced."
-            )
+        output = dict()
+        #rounding because calculation of 1-ratio creates values like 0.499999999 when we expected 0.5
+        for ratio in predictions_ratios:
+            output[f"class 0: {round(1-ratio,5)}, class 1: {ratio}"] = predictions_ratios[ratio][0][0]
+
+        max_message = f"The most probable property is class 0: {round(1-max_property[0],5)}, class 1: {max_property[0]} with a probability of {predictions_ratios[max_property[0]][0][0]}."
+
+        return (max_message,output)
 
     def prediction_on_specific_property(
         self,
@@ -340,13 +336,12 @@ class PropertyInferenceAttack(Attack):
 
         return prediction
 
-    def attack(self)-> str:
+    def attack(self)-> Tuple[str,Dict[str, float]]:
         """
         Perform Property Inference attack.
         :param params: Example data to run through target model for feature extraction
         :type params: np.ndarray
-        :return: prediction about property of target data set
-            [[1, 0]]-> property; [[0, 1]]-> negation property
+        :return: message with most probable property, dictionary with all properties
         """
 
         # extract features of target model
@@ -366,23 +361,16 @@ class PropertyInferenceAttack(Attack):
             )
         )
 
-        predictions = {}
+        ratios = np.concatenate([np.arange(0.55, 1, 0.05), np.arange(0.45, 0, -0.05)])
+        ratios.sort()
+        predictions = OrderedDict.fromkeys(ratios, 0)
         # iterate over unbalanced ratios in 0.05 steps (0.05-0.45, 0.55-0.95)
         # (e.g. 0.55 means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
-
-        for ratio in np.arange(0.55, 1, 0.05):
-            # goes through ratios 0.55 - 0.95
-            predictions[round(ratio, 5)] = self.prediction_on_specific_property(
+        for ratio in ratios:
+            predictions[ratio] = self.prediction_on_specific_property(
                 feature_extraction_target_model,
                 shadow_classifiers_neg_property,
                 ratio,
-                size_set,
-            )
-            # goes through ratios 0.05 - 0.45 (because of 1-ratio)
-            predictions[round((1 - ratio), 5)] = self.prediction_on_specific_property(
-                feature_extraction_target_model,
-                shadow_classifiers_neg_property,
-                (1 - ratio),
                 size_set,
             )
 

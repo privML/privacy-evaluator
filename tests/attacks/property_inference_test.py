@@ -26,5 +26,5 @@ def test_property_inference_attack():
     assert attack.amount_sets >= 2 and attack.amount_sets % 2 == 0, "Number of shadow classifiers must be even and greater than 2."
     output = attack.attack()
 
-    assert isinstance(output, str) #TODO adapt when update the output
+    assert isinstance(output, tuple) and list(map(type, output)) == [str, dict]
     #TODO adapt when update the output: check if all properties are present, most probable property
