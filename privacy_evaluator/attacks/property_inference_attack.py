@@ -13,11 +13,12 @@ from sklearn.model_selection import train_test_split
 from typing import Tuple, Dict, List
 from art.estimators.classification import TensorFlowV2Classifier
 import string
+from tqdm import tqdm
 
 
 class PropertyInferenceAttack(Attack):
     def __init__(
-        self, target_model: Classifier, dataset: Tuple[np.ndarray, np.ndarray]
+        self, target_model: Classifier, dataset: Tuple[np.ndarray, np.ndarray], verbose: int = 0
     ):
         """
         Initialize the Property Inference Attack Class.
@@ -29,6 +30,7 @@ class PropertyInferenceAttack(Attack):
         # count of shadow training sets, must be eval
         self.amount_sets = 2
         self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
+        self.verbose = verbose
         super().__init__(target_model, None, None, None, None)
 
     def create_shadow_training_set(
@@ -339,9 +341,14 @@ class PropertyInferenceAttack(Attack):
             [[1, 0]]-> property; [[0, 1]]-> negation property
         :rtype: np.ndarray with shape (1, 2)
         """
-
+        if(self.verbose>0):
+            print("Initiating Property Inference Attack ... ")
+            print("Extracting features from target model ... ")
         # extract features of target model
         feature_extraction_target_model = self.feature_extraction(self.target_model)
+
+        if(self.verbose>0):
+            print(feature_extraction_target_model.shape, " --- features extracted from the target model.")
 
         # set ratio and size for unbalanced data sets
         size_set = 1000
@@ -350,6 +357,8 @@ class PropertyInferenceAttack(Attack):
         num_elements = int(round(size_set / 2))
         neg_property_num_elements_per_class = {0: num_elements, 1: num_elements}
 
+        if(self.verbose>0):
+            print("Creating set of balanced shadow classifiers ... ")
         # create balanced shadow classifiers negation property
         shadow_classifiers_neg_property = (
             self.create_shadow_classifier_from_training_set(
@@ -360,8 +369,11 @@ class PropertyInferenceAttack(Attack):
         predictions = {}
         # iterate over unbalanced ratios in 0.05 steps (0.05-0.45, 0.55-0.95)
         # (e.g. 0.55 means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
+        
+        if(self.verbose>0):
+            print("Performing PIA for various ratios ... ")
 
-        for ratio in np.arange(0.55, 1, 0.05):
+        for ratio in tqdm(np.arange(0.55, 1, 0.05), disable= (self.verbose==0) ):
             # goes through ratios 0.55 - 0.95
             predictions[round(ratio, 5)] = self.prediction_on_specific_property(
                 feature_extraction_target_model,
