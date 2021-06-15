@@ -10,9 +10,8 @@ import numpy as np
 import torch
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
-from typing import Tuple, Dict, List
-from art.estimators.classification import TensorFlowV2Classifier
-import string
+from typing import Tuple, Dict, List, Union
+from art.estimators.classification import TensorFlowV2Classifier,PyTorchClassifier
 
 
 class PropertyInferenceAttack(Attack):
@@ -26,12 +25,18 @@ class PropertyInferenceAttack(Attack):
         with concatenation [test_features, test_labels]
         """
 
-        assert isinstance(dataset, tuple) and list(map(type, dataset)) == [np.ndarray, np.ndarray], \
-            "Dataset type should be of shape (np.ndarray, np.ndarray)."
+        if not (isinstance(dataset, tuple) and list(map(type, dataset)) == [np.ndarray, np.ndarray]):
+            raise TypeError("Dataset type should be of shape (np.ndarray, np.ndarray).")
+            
         self.dataset = dataset
 
-        # count of shadow training sets, must be eval
+        if not(isinstance(target_model, TensorFlowV2Classifier) or isinstance(target_model,PyTorchClassifier)):
+            raise TypeError("Target model must be of type Classifier.")
+
+        # count of shadow training sets, must be even
         self.amount_sets = 2
+        if self.amount_sets % 2 != 0 or self.amount_sets < 2:
+            raise ValueError("Number of shadow classifiers must be even and greater than 2.")
 
         self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
         super().__init__(target_model, None, None, None, None)
@@ -268,7 +273,7 @@ class PropertyInferenceAttack(Attack):
         return predictions
 
     @staticmethod
-    def output_attack(predictions_ratios: Dict[float, np.ndarray]) -> string:
+    def output_attack(predictions_ratios: Dict[float, np.ndarray]) -> str:
         """
         Determination of prediction with highest probability.
         :param predictions_ratios: Prediction values from meta-classifier for different subattacks (different properties)
@@ -335,14 +340,13 @@ class PropertyInferenceAttack(Attack):
 
         return prediction
 
-    def attack(self):
+    def attack(self)-> str:
         """
         Perform Property Inference attack.
         :param params: Example data to run through target model for feature extraction
         :type params: np.ndarray
         :return: prediction about property of target data set
             [[1, 0]]-> property; [[0, 1]]-> negation property
-        :rtype: np.ndarray with shape (1, 2)
         """
 
         # extract features of target model
