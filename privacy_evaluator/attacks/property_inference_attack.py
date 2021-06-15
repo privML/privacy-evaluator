@@ -25,9 +25,14 @@ class PropertyInferenceAttack(Attack):
         :param dataset: dataset for training of shadow classifiers, test_data from dataset
         with concatenation [test_features, test_labels]
         """
+
+        assert isinstance(dataset, tuple) and list(map(type, dataset)) == [np.ndarray, np.ndarray], \
+            "Dataset type should be of shape (np.ndarray, np.ndarray)."
         self.dataset = dataset
+
         # count of shadow training sets, must be eval
         self.amount_sets = 2
+
         self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
         super().__init__(target_model, None, None, None, None)
 
