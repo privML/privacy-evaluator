@@ -93,12 +93,22 @@ class TorchDataset:
         return y_one_hot_encoded
 
     @classmethod
-    def validate(cls, x, y, dataset: str = "train"):
+    def validate(
+        cls,
+        x: np.ndarray,
+        y: np.ndarray,
+        dataset: str = "train",
+        one_hot_encoded: bool = True,
+    ):
         """Validates the data.
 
         :param x: Data to be validated.
         :param y: Labels for `x` to be validated.
+        :param one_hot_encoded: If data is one-hot-encoded or not.
         :param dataset: Dataset to be validated; either `train` or `test`.
         """
         assert x.shape == (cls.DATASET_SIZE[dataset], *cls.INPUT_SHAPE)
-        assert y.shape == (cls.DATASET_SIZE[dataset], cls.N_CLASSES)
+        if one_hot_encoded:
+            assert y.shape == (cls.DATASET_SIZE[dataset], cls.N_CLASSES)
+        else:
+            assert y.shape == (cls.DATASET_SIZE[dataset])
