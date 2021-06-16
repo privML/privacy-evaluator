@@ -280,8 +280,8 @@ class PropertyInferenceAttack(Attack):
         predictions = meta_classifier.predict(x=[feature_extraction_target_model])
         return predictions
 
-    @staticmethod
-    def output_attack(predictions_ratios) -> Tuple[str,Dict[str, float]]:
+
+    def output_attack(self, predictions_ratios) -> Tuple[str,Dict[str, float]]:
         """
         Determination of prediction with highest probability.
         :param predictions_ratios: Prediction values from meta-classifier for different subattacks (different properties) 
@@ -295,7 +295,7 @@ class PropertyInferenceAttack(Attack):
         output = dict()
         #rounding because calculation creates values like 0.499999999 when we expected 0.5
         for ratio in predictions_ratios:
-            output[f"class {self.classes[0]}: {round(1-ratio,5)}, class {self.classes[1]}: {round(ratio,5)}"] = predictions_ratios[ratio][0]
+            output[f"class {self.classes[0]}: {round(1-ratio,5)}, class {self.classes[1]}: {round(ratio,5)}"] = predictions_ratios[ratio][0][0]
 
         max_message = f"The most probable property is class {self.classes[0]}: {round(1-max_property[0],5)}, class {self.classes[1]}: {round(max_property[0],5)} with a probability of {predictions_ratios[max_property[0]][0][0]}."
 
