@@ -40,6 +40,13 @@ class PropertyInferenceAttack(Attack):
             raise ValueError("Number of shadow classifiers must be even and greater than 2.")
 
         self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
+        self.classes = [0,1]
+        if len(self.classes) != 2:
+            raise ValueError("Currently attack only works with two classes.")
+        for class_number in self.classes:
+            if class_number not in dataset[1]:
+                raise ValueError(f"Class {class_number} does not exist in dataset.")
+
         super().__init__(target_model, None, None, None, None)
 
     def create_shadow_training_set(
@@ -196,8 +203,8 @@ class PropertyInferenceAttack(Attack):
 
         return meta_features, meta_labels
 
-    @staticmethod
-    def train_meta_classifier(
+
+    def train_meta_classifier(self,
         meta_training_X: np.ndarray, meta_training_y: np.ndarray
     ) -> TensorFlowV2Classifier:
         """
@@ -215,7 +222,7 @@ class PropertyInferenceAttack(Attack):
         meta_input_shape = meta_training_X[0].shape
 
         # currently there are just 2 classes
-        nb_classes = 2
+        nb_classes = len(self.classes)
 
         inputs = tf.keras.Input(shape=meta_input_shape)
 
@@ -286,11 +293,11 @@ class PropertyInferenceAttack(Attack):
         max_property = max(predictions_ratios.items(), key=lambda item: item[1][0][0])
 
         output = dict()
-        #rounding because calculation of 1-ratio creates values like 0.499999999 when we expected 0.5
+        #rounding because calculation creates values like 0.499999999 when we expected 0.5
         for ratio in predictions_ratios:
-            output[f"class 0: {round(1-ratio,5)}, class 1: {ratio}"] = predictions_ratios[ratio][0][0]
+            output[f"class {self.classes[0]}: {round(1-ratio,5)}, class {self.classes[1]}: {round(ratio,5)}"] = predictions_ratios[ratio][0]
 
-        max_message = f"The most probable property is class 0: {round(1-max_property[0],5)}, class 1: {max_property[0]} with a probability of {predictions_ratios[max_property[0]][0][0]}."
+        max_message = f"The most probable property is class {self.classes[0]}: {round(1-max_property[0],5)}, class {self.classes[1]}: {round(max_property[0],5)} with a probability of {predictions_ratios[max_property[0]][0][0]}."
 
         return (max_message,output)
 
@@ -310,10 +317,10 @@ class PropertyInferenceAttack(Attack):
         :return: Prediction of meta-classifier for property and negation property
         """
 
-        # property of given ratio, only on class 0 and 1 at the moment
+        # property of given ratio, only two classes allowed right now
         property_num_elements_per_classes = {
-            0: int((1 - ratio) * size_set),
-            1: int(ratio * size_set),
+            self.classes[0]: int((1 - ratio) * size_set),
+            self.classes[1]: int(ratio * size_set),
         }
 
         # create shadow classifiers with trained models with unbalanced data set
@@ -351,8 +358,9 @@ class PropertyInferenceAttack(Attack):
         size_set = 1000
 
         # balanced ratio
-        num_elements = int(round(size_set / 2))
-        neg_property_num_elements_per_class = {0: num_elements, 1: num_elements}
+        num_elements = int(round(size_set / len(self.classes)))
+        neg_property_num_elements_per_class = {i:num_elements for i in self.classes}
+
 
         # create balanced shadow classifiers negation property
         shadow_classifiers_neg_property = (
