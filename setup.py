@@ -13,6 +13,7 @@ install_requires = [
 
 development_requires = [
     "black",
+    "googledrivedownloader",
     "pytest",
 ]
 

@@ -1,7 +1,7 @@
 import pytest
 import os
 import shutil
-from privacy_evaluator.helpers import GoogleDriveDownloader
+from google_drive_downloader import GoogleDriveDownloader
 
 TESTS_TMP_PATH = "./tests/tmp"
 GOOGLE_DRIVE_MODELS_FILE_ID = "1w8xiZINqCzVlwfzXqMfFC3-NDNDr2kvu"
@@ -23,7 +23,7 @@ def tests_tmp_path(autouse=True):
 def models_path(tests_tmp_path, autouse=True):
     GoogleDriveDownloader.download_file_from_google_drive(
         file_id=GOOGLE_DRIVE_MODELS_FILE_ID,
-        output_path=os.path.join(tests_tmp_path, GOOGLE_DRIVE_MODELS_ZIP_OUTPUT_FILE),
+        dest_path=os.path.join(tests_tmp_path, GOOGLE_DRIVE_MODELS_ZIP_OUTPUT_FILE),
         unzip=True,
     )
 
