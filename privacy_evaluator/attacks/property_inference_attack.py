@@ -14,20 +14,30 @@ from typing import Tuple, Dict, List
 from art.estimators.classification import TensorFlowV2Classifier
 import string
 
+# count of shadow training sets, must be even
+AMOUNT_SETS = 2
+# ratio and size for unbalanced data sets
+SIZE_SET = 1000
+# ratios for different properties in sub-attacks
+RATIOS_FOR_ATTACK = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
 
 class PropertyInferenceAttack(Attack):
     def __init__(
-        self, target_model: Classifier, dataset: Tuple[np.ndarray, np.ndarray]
+        self, target_model: Classifier, dataset: Tuple[np.ndarray, np.ndarray], amount_sets: int = AMOUNT_SETS, size_set: int = SIZE_SET, ratios_for_attack: [int] = RATIOS_FOR_ATTACK
     ):
         """
         Initialize the Property Inference Attack Class.
         :param target_model: the target model to be attacked
         :param dataset: dataset for training of shadow classifiers, test_data from dataset
+        :param amount_sets: count of shadow training sets, must be even
+        :param size_set: ratio and size for unbalanced data sets
+        :param ratios_for_attack: ratios for different properties in sub-attacks
         with concatenation [test_features, test_labels]
         """
         self.dataset = dataset
-        # count of shadow training sets, must be eval
-        self.amount_sets = 2
+        self.amount_sets = amount_sets
+        self.size_set = size_set
+        self.ratios_for_attack = ratios_for_attack
         self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
         super().__init__(target_model, None, None, None, None)
 
@@ -293,21 +303,19 @@ class PropertyInferenceAttack(Attack):
         feature_extraction_target_model: np.ndarray,
         shadow_classifiers_neg_property: list,
         ratio: float,
-        size_set: int,
     ) -> np.ndarray:
         """
         Perform prediction for a subattack (specific property)
         :param feature_extraction_target_model: extracted features of target model
         :param shadow_classifiers_neg_property: balanced shadow classifiers negation property
         :param ratio: distribution for the property
-        :param size_set: size of one class from data set
         :return: Prediction of meta-classifier for property and negation property
         """
 
         # property of given ratio, only on class 0 and 1 at the moment
         property_num_elements_per_classes = {
-            0: int((1 - ratio) * size_set),
-            1: int(ratio * size_set),
+            0: int((1 - ratio) * self.size_set),
+            1: int(ratio * self.size_set),
         }
 
         # create shadow classifiers with trained models with unbalanced data set
@@ -343,11 +351,11 @@ class PropertyInferenceAttack(Attack):
         # extract features of target model
         feature_extraction_target_model = self.feature_extraction(self.target_model)
 
-        # set ratio and size for unbalanced data sets
-        size_set = 1000
+
+
 
         # balanced ratio
-        num_elements = int(round(size_set / 2))
+        num_elements = int(round(self.size_set / 2))
         neg_property_num_elements_per_class = {0: num_elements, 1: num_elements}
 
         # create balanced shadow classifiers negation property
@@ -358,23 +366,14 @@ class PropertyInferenceAttack(Attack):
         )
 
         predictions = {}
-        # iterate over unbalanced ratios in 0.05 steps (0.05-0.45, 0.55-0.95)
+        # iterate over unbalanced ratios
         # (e.g. 0.55 means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
 
-        for ratio in np.arange(0.55, 1, 0.05):
+        for ratio in self.ratios_for_attack:
             # goes through ratios 0.55 - 0.95
             predictions[round(ratio, 5)] = self.prediction_on_specific_property(
                 feature_extraction_target_model,
                 shadow_classifiers_neg_property,
-                ratio,
-                size_set,
+                ratio
             )
-            # goes through ratios 0.05 - 0.45 (because of 1-ratio)
-            predictions[round((1 - ratio), 5)] = self.prediction_on_specific_property(
-                feature_extraction_target_model,
-                shadow_classifiers_neg_property,
-                (1 - ratio),
-                size_set,
-            )
-
         return self.output_attack(predictions)
