@@ -8,15 +8,27 @@ class TFDataset:
 
     @classmethod
     def numpy(
-        cls, one_hot_encode: bool = True, normalize: bool = True
+        cls,
+        one_hot_encode: bool = True,
+        normalize: bool = True,
+        take: int = 100,
     ) -> Tuple[np.ndarray, ...]:
         """Loads train and test dataset for given model type as a numpy arrays.
 
         :param one_hot_encode: If data should be one-hot-encoded.
         :param normalize: If data should be normalized.
+        :param take: Percentage of the data set to use.
         :return: Train and Test data and labels as numpy arrays.
         """
         (x_train, y_train), (x_test, y_test) = cls.TF_MODULE.load_data()
+
+        n_train = round(cls.DATASET_SIZE["train"] / 100 * take)
+        n_test = round(cls.DATASET_SIZE["test"] / 100 * take)
+
+        x_train = x_train[:n_train]
+        y_train = y_train[:n_train]
+        x_test = x_test[:n_test]
+        y_test = y_test[:n_test]
 
         if normalize:
             x_train = cls.normalize(x_train)
@@ -26,8 +38,8 @@ class TFDataset:
             y_train = cls.one_hot_encode(y_train)
             y_test = cls.one_hot_encode(y_test)
 
-        cls.validate(x_train, y_train, one_hot_encoded=one_hot_encode)
-        cls.validate(x_test, y_test, dataset="test", one_hot_encoded=one_hot_encode)
+        cls.validate(x_train, y_train, n_train, one_hot_encoded=one_hot_encode)
+        cls.validate(x_test, y_test, n_test, one_hot_encoded=one_hot_encode)
 
         return x_train, y_train, x_test, y_test
 
@@ -49,21 +61,21 @@ class TFDataset:
         cls,
         x: np.ndarray,
         y: np.ndarray,
-        dataset: str = "train",
+        n: int,
         one_hot_encoded: bool = True,
     ):
         """Validates the data.
 
         :param x: Data to be validated.
         :param y: Labels for `x` to be validated.
+        :param n: Expected number of data points.
         :param one_hot_encoded: If data is one-hot-encoded or not.
-        :param dataset: Dataset to be validated; either `train` or `test`.
         """
-        assert x.shape == (cls.DATASET_SIZE[dataset], *cls.INPUT_SHAPE)
+        assert x.shape == (n, *cls.INPUT_SHAPE)
         if one_hot_encoded:
-            assert y.shape == (cls.DATASET_SIZE[dataset], cls.N_CLASSES)
+            assert y.shape == (n, cls.N_CLASSES)
         else:
-            assert y.shape == (cls.DATASET_SIZE[dataset])
+            assert y.shape == (n)
 
     @staticmethod
     def normalize(x: np.ndarray) -> np.ndarray:
