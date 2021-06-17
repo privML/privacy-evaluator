@@ -8,9 +8,9 @@ def FCNeuralNet(
 ) -> Optional[nn.Module]:
     """Provide a simple fully-connected network for multi-classification in PyTorch.
 
-    Note: This method is just aimed at fetching a model for developers' test when 
-    a target model is required. Since only `MNIST` and `CIFAR10` datasets are 
-    our concern, this method is compatible only with these two corresponding 
+    Note: This method is just aimed at fetching a model for developers' test when
+    a target model is required. Since only `MNIST` and `CIFAR10` datasets are
+    our concern, this method is compatible only with these two corresponding
     image sizes (28*28 and 32*32*3)
 
     Args:
@@ -20,7 +20,7 @@ def FCNeuralNet(
             for CIFAR: [32, 32, 3], for MNIST [28, 28]
 
     Returns:
-        An 28X28X1-classifier if `input_shape` corresponds to 28*28 or a 
+        An 28X28X1-classifier if `input_shape` corresponds to 28*28 or a
         32X32X3-classifier if corresponds to 32*32*3. Otherwise raise an Error.
     """
     if input_shape == (32, 32, 3):

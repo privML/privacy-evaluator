@@ -6,9 +6,9 @@ from tensorflow.keras.layers import Dense, Dropout, Flatten
 class FCNeuralNet(tf.Model):
     """Provide a simple fully-connected network for multi-classification in TF.
 
-    Note: This method is just aimed at fetching a model for developers' test when 
-    a target model is required. Since only `MNIST` and `CIFAR10` datasets are 
-    our concern, this method is compatible only with these two corresponding 
+    Note: This method is just aimed at fetching a model for developers' test when
+    a target model is required. Since only `MNIST` and `CIFAR10` datasets are
+    our concern, this method is compatible only with these two corresponding
     image sizes (28*28 and 32*32*3)
 
     Args:
