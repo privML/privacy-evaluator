@@ -20,6 +20,9 @@ class MembershipInferenceAttackAnalysisSliceResult:
     # Advantage score calculated by the membership inference attack analysis.
     advantage: float
 
+    # Accuracy of the attack on the slice.
+    accuracy: float
+
     def __str__(self):
         """Human-readable representation of the result."""
 
@@ -28,6 +31,7 @@ class MembershipInferenceAttackAnalysisSliceResult:
                 "MembershipInferenceAttackAnalysisSliceResult(",
                 indent(str(self.slice), "  "),
                 f"  advantage: {self.advantage:.4f}",
+                f"  accuracy: {self.accuracy:.2f}",
                 ")",
             )
         )
@@ -86,10 +90,15 @@ class MembershipInferenceAttackAnalysis:
             )
             advantage = max(np.abs(tpr - fpr))
 
+            accuracy = (membership_prediction == membership[slice.indices]).sum() / len(
+                slice.indices
+            )
+
             results.append(
                 MembershipInferenceAttackAnalysisSliceResult(
                     slice=slice,
                     advantage=advantage,
+                    accuracy=accuracy,
                 )
             )
 
