@@ -6,6 +6,23 @@ from typing import Tuple, Union, Optional
 def ConvNet(
     num_classes: int = 2, input_shape: Tuple[int, ...] = (1, 28, 28)
 ) -> nn.Module:
+    """
+    Provide a convolutional neural network for image classification.
+
+    Note: This method is just aimed at fetching a model for developers' test when 
+    a target model is required. Since only `MNIST` and `CIFAR10` datasets are 
+    our concern, this method is compatible only with these two corresponding 
+    image sizes (28*28 and 32*32*3)
+
+    Args: 
+        num_classes: number of classes during prediction, serving as the size of 
+        the last fully-connected layer.
+        input_shape: either (28, 28) or (32, 32, 3) or their variations (because 
+        of position for channel-dimension).
+    Returns:
+        An MNIST-classifier if `input_shape` corresponds to 28*28 or a CIFAR10-classifier 
+        if corresponds to 32*32*3. Otherwise raise an Error.
+    """
     if input_shape in [(1, 28, 28), (28, 28, 1)]:
         input_shape = (1, 28, 28)
         num_channels = (1, 64, 128)
