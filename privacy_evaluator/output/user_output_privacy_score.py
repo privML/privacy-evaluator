@@ -22,7 +22,11 @@ class UserOutputPrivacyScore(UserOutput):
         self.privacy_risk = privacy_risk
 
     def histogram_top_k(
-        self, all_labels: np.ndarray, k: int = 10, show_diagram: bool = True
+        self,
+        all_labels: np.ndarray,
+        k: int = 10,
+        label_names: np.ndarray = None,
+        show_diagram: bool = True,
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Draw histogram of class distribution of the k points with highest privacy risk score
@@ -49,6 +53,16 @@ class UserOutputPrivacyScore(UserOutput):
             plt.bar(all_labels, all_counts)
             plt.title("Histogram for top {} points per label".format(k))
             plt.yticks(np.arange(0, np.int_(max(all_counts)) + 1, 1))
+            if (
+                label_names is not None
+                and type(label_names) is np.ndarray
+                and len(label_names) == len(all_labels)
+            ):
+                plt.xticks(all_labels, label_names)
+            else:
+                plt.xticks(all_labels)
+            plt.xlabel("Classes")
+            plt.ylabel("number of points")
             plt.show()
         return all_labels, all_counts
 
@@ -56,6 +70,7 @@ class UserOutputPrivacyScore(UserOutput):
         self,
         all_labels: np.ndarray,
         k: int = 10,
+        label_names: np.ndarray = None,
         show_diagram: bool = True,
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -93,5 +108,15 @@ class UserOutputPrivacyScore(UserOutput):
         if show_diagram:
             plt.bar(all_labels, relative_values)
             plt.title("Histogram for top {} points relative per class".format(k))
+            plt.xlabel("Classes")
+            plt.ylabel("proportion of points in top k")
+            if (
+                label_names is not None
+                and type(label_names) is np.ndarray
+                and len(label_names) == len(all_labels)
+            ):
+                plt.xticks(all_labels, label_names)
+            else:
+                plt.xticks(all_labels)
             plt.show()
         return all_labels, relative_values
