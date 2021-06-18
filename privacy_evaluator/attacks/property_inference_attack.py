@@ -37,7 +37,7 @@ class PropertyInferenceAttack(Attack):
         # count of shadow training sets, must be even
         self.amount_sets = 2
         if self.amount_sets % 2 != 0 or self.amount_sets < 2:
-            raise ValueError("Number of shadow classifiers must be even and greater than 2.")
+            raise ValueError("Number of shadow classifiers must be even and greater than 1.")
 
         self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
         self.classes = [0,1]
