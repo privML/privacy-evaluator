@@ -30,7 +30,7 @@ def ConvNet(
 
 
 class ConvBlock(nn.Module):
-    def __init__(self, in_channels, out_channels):
+    def __init__(self, in_channels: int, out_channels: int):
         super(ConvBlock, self).__init__()
         self.conv = nn.Sequential(
             nn.Conv2d(
