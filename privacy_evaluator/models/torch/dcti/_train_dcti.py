@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from privacy_evaluator.models.torch.dcti.dcti import DCTI
-from privacy_evaluator.datasets.cifar10 import CIFAR10
-from privacy_evaluator.metrics.basics import accuracy
+from .dcti import DCTI
+from ....datasets.torch.cifar10 import TorchCIFAR10
+from ....metrics.basics import accuracy
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -43,8 +43,10 @@ def test(net, loader):
 
 
 def main():
-    train_loader, test_loader = CIFAR10.pytorch_loader()
-    _, _, _, y_test = CIFAR10.numpy()
+    train_loader, test_loader = TorchCIFAR10.data_loader(transformers="training")
+    _, y_test = next(iter(test_loader))
+    y_test = y_test.numpy()
+
     net = DCTI().to(device)
     optimizer = optim.Adam(net.parameters(), lr=0.0001)
     criterion = nn.CrossEntropyLoss()
@@ -56,7 +58,7 @@ def main():
             f"Train epoch: {epoch:>3}\t Loss: {loss:.4f}\t Accuracy: {accuracy(y_test, y_prediction):.2f}"
         )
 
-    torch.save(net.state_dict(), "./model.pth")
+    torch.save(net.state_dict(), "./model/model.pth")
 
 
 if __name__ == "__main__":
