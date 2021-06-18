@@ -446,6 +446,7 @@ class PropertyInferenceAttack(Attack):
             )
         )
 
+        self.ratios_for_attack.sort()
         predictions = OrderedDict.fromkeys(self.ratios_for_attack, 0)
         # iterate over unbalanced ratios in 0.05 steps (0.05-0.45, 0.55-0.95)
         # (e.g. 0.55 means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
