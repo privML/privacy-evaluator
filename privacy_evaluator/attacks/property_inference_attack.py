@@ -13,6 +13,7 @@ from sklearn.model_selection import train_test_split
 from typing import Tuple, Dict, List
 from art.estimators.classification import TensorFlowV2Classifier
 import string
+import warnings
 
 # count of shadow training sets, must be even
 AMOUNT_SETS = 2
@@ -37,6 +38,17 @@ class PropertyInferenceAttack(Attack):
         self.dataset = dataset
         self.amount_sets = amount_sets
         self.size_set = size_set
+
+        for i in classes:
+            length_class = len((np.where(dataset[1] == i))[0])
+            if length_class < size_set:
+                size_set_old = size_set
+                size_set = length_class
+                warning_message = ("Warning: Number of samples for class {} is {}. "
+                                   "This is smaller than the given size set ({}). "
+                                   "{} is now the new size set.").format(i, length_class, size_set_old, size_set)
+                warnings.warn(warning_message)
+
         self.ratios_for_attack = ratios_for_attack
         self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
         super().__init__(target_model, None, None, None, None)
