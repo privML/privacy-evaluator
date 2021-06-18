@@ -19,15 +19,39 @@ AMOUNT_SETS = 2
 # ratio and size for unbalanced data sets
 SIZE_SET = 1000
 # ratios for different properties in sub-attacks
-RATIOS_FOR_ATTACK = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+RATIOS_FOR_ATTACK = [
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.25,
+    0.3,
+    0.35,
+    0.4,
+    0.45,
+    0.55,
+    0.6,
+    0.65,
+    0.7,
+    0.75,
+    0.8,
+    0.85,
+    0.9,
+    0.95,
+]
 # classes the attack should be performed on
-CLASSES = [0,1]
+CLASSES = [0, 1]
+
 
 class PropertyInferenceAttack(Attack):
-
     def __init__(
-            self, target_model: Classifier, dataset: Tuple[np.ndarray, np.ndarray], amount_sets: int = AMOUNT_SETS,
-            size_set: int = SIZE_SET, ratios_for_attack: [int] = RATIOS_FOR_ATTACK, classes: [int] = CLASSES,
+        self,
+        target_model: Classifier,
+        dataset: Tuple[np.ndarray, np.ndarray],
+        amount_sets: int = AMOUNT_SETS,
+        size_set: int = SIZE_SET,
+        ratios_for_attack: List[int] = RATIOS_FOR_ATTACK,
+        classes: List[int] = CLASSES,
     ):
         """
         Initialize the Property Inference Attack Class.
@@ -39,17 +63,25 @@ class PropertyInferenceAttack(Attack):
         with concatenation [test_features, test_labels]
         :param classes: classes the attack should be performed on
         """
-        if not (isinstance(dataset, tuple) and list(map(type, dataset)) == [np.ndarray, np.ndarray]):
+        if not (
+            isinstance(dataset, tuple)
+            and list(map(type, dataset)) == [np.ndarray, np.ndarray]
+        ):
             raise TypeError("Dataset type should be of shape (np.ndarray, np.ndarray).")
 
         self.dataset = dataset
-        if not(isinstance(target_model, TensorFlowV2Classifier) or isinstance(target_model, PyTorchClassifier)):
+        if not (
+            isinstance(target_model, TensorFlowV2Classifier)
+            or isinstance(target_model, PyTorchClassifier)
+        ):
             raise TypeError("Target model must be of type Classifier.")
 
         # count of shadow training sets, must be even
         self.amount_sets = amount_sets
         if self.amount_sets % 2 != 0 or self.amount_sets < 2:
-            raise ValueError("Number of shadow classifiers must be even and greater than 1.")
+            raise ValueError(
+                "Number of shadow classifiers must be even and greater than 1."
+            )
 
         self.size_set = size_set
         self.ratios_for_attack = ratios_for_attack
@@ -218,9 +250,8 @@ class PropertyInferenceAttack(Attack):
 
         return meta_features, meta_labels
 
-
-    def train_meta_classifier(self,
-        meta_training_X: np.ndarray, meta_training_y: np.ndarray
+    def train_meta_classifier(
+        self, meta_training_X: np.ndarray, meta_training_y: np.ndarray
     ) -> TensorFlowV2Classifier:
         """
         Train meta-classifier with the meta-training set.
@@ -295,8 +326,7 @@ class PropertyInferenceAttack(Attack):
         predictions = meta_classifier.predict(x=[feature_extraction_target_model])
         return predictions
 
-
-    def output_attack(self, predictions_ratios) -> Tuple[str,Dict[str, float]]:
+    def output_attack(self, predictions_ratios) -> Tuple[str, Dict[str, float]]:
         """
         Determination of prediction with highest probability.
         :param predictions_ratios: Prediction values from meta-classifier for different subattacks (different properties)
@@ -308,13 +338,23 @@ class PropertyInferenceAttack(Attack):
         max_property = max(predictions_ratios.items(), key=lambda item: item[1][0][0])
 
         output = dict()
-        #rounding because calculation creates values like 0.499999999 when we expected 0.5
+        # rounding because calculation creates values like 0.499999999 when we expected 0.5
         for ratio in predictions_ratios:
-            key = "class {}: {}, class {}: {}".format(self.classes[0], round(1-ratio,5), self.classes[1], round(ratio,5))
+            key = "class {}: {}, class {}: {}".format(
+                self.classes[0], round(1 - ratio, 5), self.classes[1], round(ratio, 5)
+            )
             output[key] = predictions_ratios[ratio][0][0]
 
-        max_message = "The most probable property is class {}: {}, " \
-                      "class {}: {} with a probability of {}.".format(self.classes[0], round(1-max_property[0],5), self.classes[1], round(max_property[0],5), predictions_ratios[max_property[0]][0][0])
+        max_message = (
+            "The most probable property is class {}: {}, "
+            "class {}: {} with a probability of {}.".format(
+                self.classes[0],
+                round(1 - max_property[0], 5),
+                self.classes[1],
+                round(max_property[0], 5),
+                predictions_ratios[max_property[0]][0][0],
+            )
+        )
         return (max_message, output)
 
     def prediction_on_specific_property(
@@ -357,7 +397,7 @@ class PropertyInferenceAttack(Attack):
 
         return prediction
 
-    def attack(self)-> Tuple[str,Dict[str, float]]:
+    def attack(self) -> Tuple[str, Dict[str, float]]:
         """
         Perform Property Inference attack.
         :param params: Example data to run through target model for feature extraction
@@ -368,11 +408,9 @@ class PropertyInferenceAttack(Attack):
         # extract features of target model
         feature_extraction_target_model = self.feature_extraction(self.target_model)
 
-
         # balanced ratio
         num_elements = int(round(self.size_set / len(self.classes)))
-        neg_property_num_elements_per_class = {i:num_elements for i in self.classes}
-
+        neg_property_num_elements_per_class = {i: num_elements for i in self.classes}
 
         # create balanced shadow classifiers negation property
         shadow_classifiers_neg_property = (
