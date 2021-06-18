@@ -1,4 +1,7 @@
 from dataclasses import dataclass
+from ...output.user_output_inference_attack_analysis import (
+    UserOutpurInferenceAttackAnalysis,
+)
 from typing import Iterable, Type
 import numpy as np
 from . import MembershipInferenceAttack
@@ -8,29 +11,6 @@ from .data_structures.slicing import Slicing
 from .data_structures.slicing import Slice
 from sklearn import metrics
 from textwrap import indent
-
-
-@dataclass
-class MembershipInferenceAttackAnalysisSliceResult:
-    """Result of the membership inference attack analysis for a single slice."""
-
-    # The slice for which this result was produced.
-    slice: Slice
-
-    # Advantage score calculated by the membership inference attack analysis.
-    advantage: float
-
-    def __str__(self):
-        """Human-readable representation of the result."""
-
-        return "\n".join(
-            (
-                "MembershipInferenceAttackAnalysisSliceResult(",
-                indent(str(self.slice), "  "),
-                f"  advantage: {self.advantage:.4f}",
-                ")",
-            )
-        )
 
 
 class MembershipInferenceAttackAnalysis:
@@ -54,7 +34,7 @@ class MembershipInferenceAttackAnalysis:
         y: np.ndarray,
         membership: np.ndarray,
         slicing: Slicing = Slicing(entire_dataset=True),
-    ) -> Iterable[MembershipInferenceAttackAnalysisSliceResult]:
+    ) -> Iterable[UserOutpurInferenceAttackAnalysis]:
         """Runs the membership inference attack and calculates attacker's advantage for each slice.
 
         :param target_model: Target model to attack.
@@ -87,9 +67,10 @@ class MembershipInferenceAttackAnalysis:
             advantage = max(np.abs(tpr - fpr))
 
             results.append(
-                MembershipInferenceAttackAnalysisSliceResult(
-                    slice=slice,
-                    advantage=advantage,
+                UserOutpurInferenceAttackAnalysis(
+                    slice.desc,
+                    slice.indices,
+                    advantage,
                 )
             )
 
