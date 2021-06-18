@@ -1,10 +1,11 @@
 from privacy_evaluator.attacks.attack import Attack
 from privacy_evaluator.classifiers.classifier import Classifier
 import privacy_evaluator.utils.data_utils as data_utils
-from privacy_evaluator.utils.model_utils import copy_and_reset_model
 from privacy_evaluator.utils.trainer import trainer
 from privacy_evaluator.models.tf.conv_net_meta_classifier import ConvNetMetaClassifier
+from privacy_evaluator.models.tf.cnn import ConvNet
 from privacy_evaluator.utils.model_utils import copy_and_reset_model
+
 
 import numpy as np
 import torch
@@ -15,6 +16,7 @@ import sys
 from typing import Tuple, Dict, List, Union
 from art.estimators.classification import TensorFlowV2Classifier, PyTorchClassifier
 from collections import OrderedDict
+import warnings
 
 # count of shadow training sets, must be even
 AMOUNT_SETS = 2
@@ -85,18 +87,28 @@ class PropertyInferenceAttack(Attack):
             raise ValueError(
                 "Number of shadow classifiers must be even and greater than 1."
             )
-
-        self.size_set = size_set
-        self.ratios_for_attack = ratios_for_attack
-        self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
-        self.verbose = verbose
-
         self.classes = classes
         if len(self.classes) != 2:
             raise ValueError("Currently attack only works with two classes.")
         for class_number in self.classes:
             if class_number not in dataset[1]:
                 raise ValueError(f"Class {class_number} does not exist in dataset.")
+
+        self.size_set = size_set
+        for i in classes:
+            length_class = len((np.where(dataset[1] == i))[0])
+            if length_class < size_set:
+                size_set_old = size_set
+                size_set = length_class
+                warning_message = (
+                    "Warning: Number of samples for class {} is {}. "
+                    "This is smaller than the given size set ({}). "
+                    "{} is now the new size set."
+                ).format(i, length_class, size_set_old, size_set)
+                warnings.warn(warning_message)
+        self.ratios_for_attack = ratios_for_attack
+        self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
+        self.verbose = verbose
 
         super().__init__(target_model, None, None, None, None)
 

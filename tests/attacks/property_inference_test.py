@@ -5,17 +5,25 @@ from privacy_evaluator.utils.data_utils import (
     new_dataset_from_size_dict,
 )
 from privacy_evaluator.utils.trainer import trainer
-from privacy_evaluator.models.tf.cnn import ConvNet
+from privacy_evaluator.models.torch.cnn import ConvNet
+from typing import Dict
 
-def test_property_inference_attack():
-    train_dataset, test_dataset = dataset_downloader("MNIST")
+
+NUM_ELEMENTS_PER_CLASSES = {0: 1000, 1: 1000}
+DATASET = "MNIST"
+
+
+def test_property_inference_attack(num_elements_per_classes: Dict[int, int] = NUM_ELEMENTS_PER_CLASSES,
+                                   dataset: str = DATASET):
+    train_dataset, test_dataset = dataset_downloader(dataset)
     input_shape = test_dataset[0][0].shape
-    num_elements_per_classes = {0: 500, 1: 500}
+
     num_classes = len(num_elements_per_classes)
 
     train_set = new_dataset_from_size_dict(train_dataset, num_elements_per_classes)
+    # num_channels and input_shape are optional in cnn.py
+    model = ConvNet(num_classes, input_shape, num_channels=(input_shape[-1], 16, 32, 64))
 
-    model = ConvNet(num_classes, input_shape)
     print("Start training target model ...\n")
     trainer(train_set, num_elements_per_classes, model, num_epochs=2)
 

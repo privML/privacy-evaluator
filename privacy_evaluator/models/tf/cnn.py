@@ -11,10 +11,12 @@ from typing import Tuple
 
 
 def ConvNet(
-    num_classes: int = 2, input_shape: Tuple[int, ...] = (1, 28, 28)
+    num_classes: int = 2,
+    input_shape: Tuple[int, ...] = (1, 28, 28),
+    num_channels: Tuple[int, ...] = (1, 16, 32, 64)
 ) -> keras.Model:
+
     if input_shape in [(1, 28, 28), (28, 28, 1)]:
-        num_channels = (1, 64, 128)
         return ConvNetMNIST(num_classes, num_channels)
 
     elif input_shape in [(3, 32, 32), (32, 32, 3)]:
@@ -30,7 +32,7 @@ def ConvNet(
 
 class ConvNetMNIST(keras.Model):
     def __init__(
-        self, num_classes: int = 2, num_channels: Tuple[int, ...] = (1, 64, 128)
+        self, num_classes: int = 2, num_channels: Tuple[int, ...] = (1, 16, 32, 64)
     ):
         super(ConvNetMNIST, self).__init__()
         self.num_classes = num_classes
@@ -62,6 +64,18 @@ class ConvNetMNIST(keras.Model):
             ]
         )
 
+        self.conv3 = keras.Sequential(
+            [
+                Conv2D(
+                    filters=num_channels[3],
+                    kernel_size=3,
+                    activation="relu",
+                ),
+                BatchNormalization(),
+                MaxPool2D(pool_size=(2, 2)),
+            ]
+        )
+
         self.fc = keras.Sequential(
             [
                 Flatten(),
@@ -73,13 +87,14 @@ class ConvNetMNIST(keras.Model):
     def call(self, x):
         out = self.conv1(x)
         out = self.conv2(out)
+        out = self.conv3(out)
         out = self.fc(out)
         return out
 
 
 class ConvNetCIFAR10(keras.Model):
     def __init__(
-        self, num_classes: int = 2, num_channels: Tuple[int, ...] = (3, 64, 128)
+        self, num_classes: int = 2, num_channels: Tuple[int, ...] = (3, 16, 32, 64)
     ):
         super(ConvNetCIFAR10, self).__init__()
         self.num_classes = num_classes
@@ -111,6 +126,18 @@ class ConvNetCIFAR10(keras.Model):
             ]
         )
 
+        self.conv3 = keras.Sequential(
+            [
+                Conv2D(
+                    filters=num_channels[3],
+                    kernel_size=3,
+                    activation="relu",
+                ),
+                BatchNormalization(),
+                MaxPool2D(pool_size=(2, 2)),
+            ]
+        )
+
         self.fc = keras.Sequential(
             [
                 Flatten(),
@@ -122,5 +149,6 @@ class ConvNetCIFAR10(keras.Model):
     def call(self, x):
         out = self.conv1(x)
         out = self.conv2(out)
+        out = self.conv3(out)
         out = self.fc(out)
         return out
