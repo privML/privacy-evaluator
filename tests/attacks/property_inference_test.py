@@ -24,10 +24,20 @@ def test_property_inference_attack(num_elements_per_classes: Dict[int, int] = NU
     # num_channels and input_shape are optional in cnn.py
     model = ConvNet(num_classes, input_shape, num_channels=(input_shape[-1], 16, 32, 64))
 
-    trainer(train_set, num_elements_per_classes, model)
+    print("Start training target model ...\n")
+    trainer(train_set, num_elements_per_classes, model, num_epochs=2)
 
     # change pytorch classifier to art classifier
     target_model = Classifier._to_art_classifier(model, num_classes, input_shape)
+    print("Start attack ...")
+    attack = PropertyInferenceAttack(target_model, train_dataset, verbose=1)
+    assert (
+        attack.input_shape == input_shape
+    ), f"Wrong input shape. Input shape should be {input_shape}."
+    assert (
+        attack.amount_sets >= 2 and attack.amount_sets % 2 == 0
+    ), "Number of shadow classifiers must be even and greater than 1."
+    output = attack.attack()
 
-    attack = PropertyInferenceAttack(target_model, train_dataset)
-    attack.attack()
+    assert isinstance(output, tuple) and list(map(type, output)) == [str, dict]
+    # TODO adapt when update the output: check if all properties are present, most probable property
