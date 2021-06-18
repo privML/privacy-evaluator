@@ -4,6 +4,8 @@ import privacy_evaluator.utils.data_utils as data_utils
 from privacy_evaluator.utils.trainer import trainer
 from privacy_evaluator.models.tf.conv_net_meta_classifier import ConvNetMetaClassifier
 from privacy_evaluator.models.tf.cnn import ConvNet
+from privacy_evaluator.utils.model_utils import copy_and_reset_model
+
 
 import numpy as np
 import torch
@@ -98,14 +100,15 @@ class PropertyInferenceAttack(Attack):
             if length_class < size_set:
                 size_set_old = size_set
                 size_set = length_class
-                warning_message = ("Warning: Number of samples for class {} is {}. "
-                                   "This is smaller than the given size set ({}). "
-                                   "{} is now the new size set.").format(i, length_class, size_set_old, size_set)
+                warning_message = (
+                    "Warning: Number of samples for class {} is {}. "
+                    "This is smaller than the given size set ({}). "
+                    "{} is now the new size set."
+                ).format(i, length_class, size_set_old, size_set)
                 warnings.warn(warning_message)
         self.ratios_for_attack = ratios_for_attack
         self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
         self.verbose = verbose
-
 
         super().__init__(target_model, None, None, None, None)
 
@@ -272,7 +275,6 @@ class PropertyInferenceAttack(Attack):
 
         return meta_features, meta_labels
 
-    @staticmethod
     def train_meta_classifier(
         self, meta_training_X: np.ndarray, meta_training_y: np.ndarray
     ) -> TensorFlowV2Classifier:
@@ -385,7 +387,6 @@ class PropertyInferenceAttack(Attack):
         feature_extraction_target_model: np.ndarray,
         shadow_classifiers_neg_property: list,
         ratio: float,
-        size_set: int,
     ) -> np.ndarray:
         """
         Perform prediction for a subattack (specific property)
@@ -469,9 +470,7 @@ class PropertyInferenceAttack(Attack):
             self.ratios_for_attack, file=sys.stdout, disable=(self.verbose == 0)
         ):
             predictions[ratio] = self.prediction_on_specific_property(
-                feature_extraction_target_model,
-                shadow_classifiers_neg_property,
-                ratio,
+                feature_extraction_target_model, shadow_classifiers_neg_property, ratio
             )
 
         return self.output_attack(predictions)
