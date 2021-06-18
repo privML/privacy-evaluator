@@ -6,6 +6,8 @@ from torch.utils.data import DataLoader
 import numpy as np
 from typing import Tuple, Dict, Union
 from privacy_evaluator.utils.metric import cross_entropy_loss, accuracy
+from tqdm import tqdm
+import sys
 
 
 def trainer(
@@ -16,6 +18,7 @@ def trainer(
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
+    verbose: int = 0,
 ):
     if isinstance(model, keras.Model):
         return _trainer_tf(
@@ -26,6 +29,7 @@ def trainer(
             num_epochs,
             learning_rate,
             weight_decay,
+            verbose,
         )
     elif isinstance(model, nn.Module):
         # for torch, convert [0, 255] scale to [0, 1] (float)
@@ -40,6 +44,7 @@ def trainer(
             num_epochs,
             learning_rate,
             weight_decay,
+            verbose,
         )
     else:
         raise TypeError("Only torch and tensorflow models are accepted inputs.")
@@ -72,6 +77,7 @@ def _trainer_tf(
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
+    verbose: int = 0,
 ):
     """
     Train the given model on the given dataset.
@@ -96,7 +102,9 @@ def _trainer_tf(
     class_encoding = {class_id: i for i, (class_id, _) in enumerate(size_dict.items())}
 
     # start training
-    for _ in range(num_epochs):
+    if verbose == 2:
+        print("Training TensorFlow model in", num_epochs, "epochs.")
+    for _ in tqdm(range(num_epochs), file=sys.stdout, disable=(verbose < 2)):
         for images, labels in train_loader:
             labels = np.vectorize(lambda id: class_encoding[id])(labels)
             with tf.GradientTape() as g:
@@ -122,6 +130,7 @@ def _trainer_torch(
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
+    verbose: int = 0,
 ):
     """
     Train the given model on the given dataset.
@@ -156,7 +165,9 @@ def _trainer_torch(
     class_encoding = {class_id: i for i, (class_id, _) in enumerate(size_dict.items())}
 
     # start training
-    for _ in range(num_epochs):
+    if verbose == 2:
+        print("Training PyTorch model in ", num_epochs, "epochs.")
+    for _ in tqdm(range(num_epochs), file=sys.stdout, disable=(verbose < 2)):
         model.train()
         for images, labels in train_loader:
             labels = labels.apply_(lambda id: class_encoding[id]).flatten()

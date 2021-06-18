@@ -10,6 +10,8 @@ import numpy as np
 import torch
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
+from tqdm import tqdm
+import sys
 from typing import Tuple, Dict, List, Union
 from art.estimators.classification import TensorFlowV2Classifier, PyTorchClassifier
 from collections import OrderedDict
@@ -52,6 +54,7 @@ class PropertyInferenceAttack(Attack):
         size_set: int = SIZE_SET,
         ratios_for_attack: List[int] = RATIOS_FOR_ATTACK,
         classes: List[int] = CLASSES,
+        verbose: int = 0,
     ):
         """
         Initialize the Property Inference Attack Class.
@@ -86,6 +89,7 @@ class PropertyInferenceAttack(Attack):
         self.size_set = size_set
         self.ratios_for_attack = ratios_for_attack
         self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
+        self.verbose = verbose
 
         self.classes = classes
         if len(self.classes) != 2:
@@ -113,7 +117,13 @@ class PropertyInferenceAttack(Attack):
         # Creation of shadow training sets with the size dictionaries
         # amount_sets divided by 2 because amount_sets describes the total amount of shadow training sets.
         # In this function however only all shadow training sets of one type (follow property OR negation of property) are created, hence amount_sets / 2.
-        for _ in range(int(self.amount_sets / 2)):
+        if self.verbose > 0:
+            print("Creating shadow training sets")
+        for _ in tqdm(
+            range(int(self.amount_sets / 2)),
+            file=sys.stdout,
+            disable=(self.verbose < 2),
+        ):
             shadow_training_sets = data_utils.new_dataset_from_size_dict(
                 self.dataset, num_elements_per_class
             )
@@ -137,8 +147,11 @@ class PropertyInferenceAttack(Attack):
         shadow_classifiers = []
 
         num_classes = len(num_elements_per_classes)
-
-        for shadow_training_set in shadow_training_sets:
+        if self.verbose > 0:
+            print("Training shadow classifiers")
+        for shadow_training_set in tqdm(
+            shadow_training_sets, file=sys.stdout, disable=(self.verbose < 2)
+        ):
             shadow_training_X, shadow_training_y = shadow_training_set
             train_X, test_X, train_y, test_y = train_test_split(
                 shadow_training_X, shadow_training_y, test_size=0.3
@@ -147,7 +160,7 @@ class PropertyInferenceAttack(Attack):
             test_set = (test_X, test_y)
 
             model = copy_and_reset_model(self.target_model)
-            trainer(train_set, num_elements_per_classes, model)
+            trainer(train_set, num_elements_per_classes, model, verbose=self.verbose)
 
             # change pytorch classifier to art classifier
             art_model = Classifier._to_art_classifier(
@@ -404,14 +417,28 @@ class PropertyInferenceAttack(Attack):
         :type params: np.ndarray
         :return: message with most probable property, dictionary with all properties
         """
-
+        if self.verbose > 0:
+            print("Initiating Property Inference Attack ... ")
+            print("Extracting features from target model ... ")
         # extract features of target model
         feature_extraction_target_model = self.feature_extraction(self.target_model)
+
+        if self.verbose > 0:
+            print(
+                feature_extraction_target_model.shape,
+                " --- features extracted from the target model.",
+            )
 
         # balanced ratio
         num_elements = int(round(self.size_set / len(self.classes)))
         neg_property_num_elements_per_class = {i: num_elements for i in self.classes}
 
+        if self.verbose > 0:
+            print(
+                "Creating set of",
+                int(self.amount_sets / 2),
+                "balanced shadow classifiers ... ",
+            )
         # create balanced shadow classifiers negation property
         shadow_classifiers_neg_property = (
             self.create_shadow_classifier_from_training_set(
@@ -422,7 +449,13 @@ class PropertyInferenceAttack(Attack):
         predictions = OrderedDict.fromkeys(self.ratios_for_attack, 0)
         # iterate over unbalanced ratios in 0.05 steps (0.05-0.45, 0.55-0.95)
         # (e.g. 0.55 means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
-        for ratio in self.ratios_for_attack:
+
+        if self.verbose > 0:
+            print("Performing PIA for various ratios ... ")
+
+        for ratio in tqdm(
+            self.ratios_for_attack, file=sys.stdout, disable=(self.verbose == 0)
+        ):
             predictions[ratio] = self.prediction_on_specific_property(
                 feature_extraction_target_model,
                 shadow_classifiers_neg_property,
