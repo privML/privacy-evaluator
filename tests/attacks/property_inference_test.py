@@ -18,14 +18,18 @@ def test_property_inference_attack():
 
     model = ConvNet(num_classes, input_shape)
     print("Start training target model ...\n")
-    trainer(train_set, num_elements_per_classes, model, num_epochs=2, verbose=2)
+    trainer(train_set, num_elements_per_classes, model, num_epochs=2)
 
     # change pytorch classifier to art classifier
     target_model = Classifier._to_art_classifier(model, num_classes, input_shape)
     print("Start attack ...")
     attack = PropertyInferenceAttack(target_model, train_dataset, verbose=1)
-    assert attack.input_shape == input_shape, f"Wrong input shape. Input shape should be {input_shape}."
-    assert attack.amount_sets >= 2 and attack.amount_sets % 2 == 0, "Number of shadow classifiers must be even and greater than 1."
+    assert (
+        attack.input_shape == input_shape
+    ), f"Wrong input shape. Input shape should be {input_shape}."
+    assert (
+        attack.amount_sets >= 2 and attack.amount_sets % 2 == 0
+    ), "Number of shadow classifiers must be even and greater than 1."
     output = attack.attack()
 
     assert isinstance(output, tuple) and list(map(type, output)) == [str, dict]

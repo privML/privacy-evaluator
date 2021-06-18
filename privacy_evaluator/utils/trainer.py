@@ -9,6 +9,7 @@ from privacy_evaluator.utils.metric import cross_entropy_loss, accuracy
 from tqdm import tqdm
 import sys
 
+
 def trainer(
     train_set: Union[Tuple[np.ndarray, np.ndarray], torch.utils.data.Dataset],
     size_dict: Dict[int, int],
@@ -101,9 +102,9 @@ def _trainer_tf(
     class_encoding = {class_id: i for i, (class_id, _) in enumerate(size_dict.items())}
 
     # start training
-    if verbose==2:
-        print("Training TensorFlow model in ", num_epochs, "epochs.")
-    for _ in tqdm(range(num_epochs), file=sys.stdout, disable=(verbose<2)):
+    if verbose == 2:
+        print("Training TensorFlow model in", num_epochs, "epochs.")
+    for _ in tqdm(range(num_epochs), file=sys.stdout, disable=(verbose < 2)):
         for images, labels in train_loader:
             labels = np.vectorize(lambda id: class_encoding[id])(labels)
             with tf.GradientTape() as g:
@@ -164,9 +165,9 @@ def _trainer_torch(
     class_encoding = {class_id: i for i, (class_id, _) in enumerate(size_dict.items())}
 
     # start training
-    if verbose==2:
+    if verbose == 2:
         print("Training PyTorch model in ", num_epochs, "epochs.")
-    for _ in tqdm(range(num_epochs), file=sys.stdout, disable=(verbose<2)):
+    for _ in tqdm(range(num_epochs), file=sys.stdout, disable=(verbose < 2)):
         model.train()
         for images, labels in train_loader:
             labels = labels.apply_(lambda id: class_encoding[id]).flatten()
