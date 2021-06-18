@@ -8,6 +8,7 @@ from privacy_evaluator.utils.trainer import trainer
 from privacy_evaluator.models.torch.cnn import ConvNet
 from typing import Dict
 
+
 NUM_ELEMENTS_PER_CLASSES = {0: 1000, 1: 1000}
 DATASET = "MNIST"
 
@@ -15,7 +16,6 @@ DATASET = "MNIST"
 def test_property_inference_attack(num_elements_per_classes: Dict[int, int] = NUM_ELEMENTS_PER_CLASSES,
                                    dataset: str = DATASET):
     train_dataset, test_dataset = dataset_downloader(dataset)
-
     input_shape = test_dataset[0][0].shape
 
     num_classes = len(num_elements_per_classes)
@@ -30,7 +30,14 @@ def test_property_inference_attack(num_elements_per_classes: Dict[int, int] = NU
     # change pytorch classifier to art classifier
     target_model = Classifier._to_art_classifier(model, num_classes, input_shape)
     print("Start attack ...")
-    attack = PropertyInferenceAttack(target_model, train_dataset, verbose=1)
+    #test parameters for PIA:
+    amount_sets = 2
+    size_set = 100
+    ratios_for_attack = [0.9,0.3]
+    classes = [4,5]
+
+    attack = PropertyInferenceAttack(target_model, train_dataset, verbose=1, size_set=size_set, \
+        ratios_for_attack=ratios_for_attack, classes=classes,amount_sets=amount_sets)
     assert (
         attack.input_shape == input_shape
     ), f"Wrong input shape. Input shape should be {input_shape}."
@@ -39,5 +46,15 @@ def test_property_inference_attack(num_elements_per_classes: Dict[int, int] = NU
     ), "Number of shadow classifiers must be even and greater than 1."
     output = attack.attack()
 
-    assert isinstance(output, tuple) and list(map(type, output)) == [str, dict]
-    # TODO adapt when update the output: check if all properties are present, most probable property
+    #we expect the ratios to be ordered 
+    ratios_for_attack.sort()
+
+    assert isinstance(output, tuple) and list(map(type, output)) == [str, dict], \
+        "Wrong output type of attack."
+    assert attack.ratios_for_attack == ratios_for_attack, \
+        "Ratios for properties are not equal to input."
+    assert attack.amount_sets == amount_sets, "Number of shadow classifiers are not equal to input."
+    assert attack.size_set == size_set, "Number of samples is not equal to input."
+    assert attack.classes == classes, "Classes are not equal to input classes."
+    assert len(output[1]) == len(classes), "Output is not compatible to input."
+    
