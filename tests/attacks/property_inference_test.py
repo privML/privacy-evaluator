@@ -24,4 +24,9 @@ def test_property_inference_attack():
     target_model = Classifier._to_art_classifier(model, num_classes, input_shape)
     print("Start attack ...")
     attack = PropertyInferenceAttack(target_model, train_dataset, verbose=1)
-    attack.attack()
+    assert attack.input_shape == input_shape, f"Wrong input shape. Input shape should be {input_shape}."
+    assert attack.amount_sets >= 2 and attack.amount_sets % 2 == 0, "Number of shadow classifiers must be even and greater than 1."
+    output = attack.attack()
+
+    assert isinstance(output, tuple) and list(map(type, output)) == [str, dict]
+    # TODO adapt when update the output: check if all properties are present, most probable property
