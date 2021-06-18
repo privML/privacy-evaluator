@@ -11,7 +11,7 @@ import torch
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from typing import Tuple, Dict, List, Union
-from art.estimators.classification import TensorFlowV2Classifier,PyTorchClassifier
+from art.estimators.classification import TensorFlowV2Classifier, PyTorchClassifier
 from collections import OrderedDict
 
 
@@ -26,21 +26,29 @@ class PropertyInferenceAttack(Attack):
         with concatenation [test_features, test_labels]
         """
 
-        if not (isinstance(dataset, tuple) and list(map(type, dataset)) == [np.ndarray, np.ndarray]):
+        if not (
+            isinstance(dataset, tuple)
+            and list(map(type, dataset)) == [np.ndarray, np.ndarray]
+        ):
             raise TypeError("Dataset type should be of shape (np.ndarray, np.ndarray).")
-            
+
         self.dataset = dataset
 
-        if not(isinstance(target_model, TensorFlowV2Classifier) or isinstance(target_model,PyTorchClassifier)):
+        if not (
+            isinstance(target_model, TensorFlowV2Classifier)
+            or isinstance(target_model, PyTorchClassifier)
+        ):
             raise TypeError("Target model must be of type Classifier.")
 
         # count of shadow training sets, must be even
         self.amount_sets = 2
         if self.amount_sets % 2 != 0 or self.amount_sets < 2:
-            raise ValueError("Number of shadow classifiers must be even and greater than 2.")
+            raise ValueError(
+                "Number of shadow classifiers must be even and greater than 2."
+            )
 
         self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
-        self.classes = [0,1]
+        self.classes = [0, 1]
         if len(self.classes) != 2:
             raise ValueError("Currently attack only works with two classes.")
         for class_number in self.classes:
@@ -203,9 +211,8 @@ class PropertyInferenceAttack(Attack):
 
         return meta_features, meta_labels
 
-
-    def train_meta_classifier(self,
-        meta_training_X: np.ndarray, meta_training_y: np.ndarray
+    def train_meta_classifier(
+        self, meta_training_X: np.ndarray, meta_training_y: np.ndarray
     ) -> TensorFlowV2Classifier:
         """
         Train meta-classifier with the meta-training set.
@@ -280,11 +287,10 @@ class PropertyInferenceAttack(Attack):
         predictions = meta_classifier.predict(x=[feature_extraction_target_model])
         return predictions
 
-
-    def output_attack(self, predictions_ratios) -> Tuple[str,Dict[str, float]]:
+    def output_attack(self, predictions_ratios) -> Tuple[str, Dict[str, float]]:
         """
         Determination of prediction with highest probability.
-        :param predictions_ratios: Prediction values from meta-classifier for different subattacks (different properties) 
+        :param predictions_ratios: Prediction values from meta-classifier for different subattacks (different properties)
         :type predictions_ratios: OrderedDict[float, np.ndarray]
         :return: Output message for the attack
         """
@@ -293,13 +299,15 @@ class PropertyInferenceAttack(Attack):
         max_property = max(predictions_ratios.items(), key=lambda item: item[1][0][0])
 
         output = dict()
-        #rounding because calculation creates values like 0.499999999 when we expected 0.5
+        # rounding because calculation creates values like 0.499999999 when we expected 0.5
         for ratio in predictions_ratios:
-            output[f"class {self.classes[0]}: {round(1-ratio,5)}, class {self.classes[1]}: {round(ratio,5)}"] = predictions_ratios[ratio][0][0]
+            output[
+                f"class {self.classes[0]}: {round(1-ratio,5)}, class {self.classes[1]}: {round(ratio,5)}"
+            ] = predictions_ratios[ratio][0][0]
 
         max_message = f"The most probable property is class {self.classes[0]}: {round(1-max_property[0],5)}, class {self.classes[1]}: {round(max_property[0],5)} with a probability of {predictions_ratios[max_property[0]][0][0]}."
 
-        return (max_message,output)
+        return (max_message, output)
 
     def prediction_on_specific_property(
         self,
@@ -343,7 +351,7 @@ class PropertyInferenceAttack(Attack):
 
         return prediction
 
-    def attack(self)-> Tuple[str,Dict[str, float]]:
+    def attack(self) -> Tuple[str, Dict[str, float]]:
         """
         Perform Property Inference attack.
         :param params: Example data to run through target model for feature extraction
@@ -359,8 +367,7 @@ class PropertyInferenceAttack(Attack):
 
         # balanced ratio
         num_elements = int(round(size_set / len(self.classes)))
-        neg_property_num_elements_per_class = {i:num_elements for i in self.classes}
-
+        neg_property_num_elements_per_class = {i: num_elements for i in self.classes}
 
         # create balanced shadow classifiers negation property
         shadow_classifiers_neg_property = (
