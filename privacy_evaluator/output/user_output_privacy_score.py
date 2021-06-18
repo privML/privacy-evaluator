@@ -32,6 +32,7 @@ class UserOutputPrivacyScore(UserOutput):
         Draw histogram of class distribution of the k points with highest privacy risk score
         :param all_labels: all the labels of the input data
         :param k: the number of points to consider, default 10
+        :param label_names: Labels to display on the x axis of the Histogam
         :param show_diagram: determines if the diagram should be shown, default: True
         :return: All lables of the data with the number of points that are in the top k
         """
@@ -77,6 +78,7 @@ class UserOutputPrivacyScore(UserOutput):
         Draw histogram of class distribution of the k points with highest privacy risk score, relative to the size of the classes
         :param all_labels: all the labels of the input data
         :param k: the number of points to consider, default 10
+        :param label_names: Labels to display on the x axis of the Histogam
         :param show_diagram: determines if the diagram should be shown, default: True
         :return: All lables of the data with the number of points that are in the top k, relative to the size of the classes
         """
