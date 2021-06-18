@@ -393,7 +393,6 @@ class PropertyInferenceAttack(Attack):
         :param feature_extraction_target_model: extracted features of target model
         :param shadow_classifiers_neg_property: balanced shadow classifiers negation property
         :param ratio: distribution for the property
-        :param size_set: size of one class from data set
         :return: Prediction of meta-classifier for property and negation property
         """
 
@@ -470,7 +469,9 @@ class PropertyInferenceAttack(Attack):
             self.ratios_for_attack, file=sys.stdout, disable=(self.verbose == 0)
         ):
             predictions[ratio] = self.prediction_on_specific_property(
-                feature_extraction_target_model, shadow_classifiers_neg_property, ratio
+                feature_extraction_target_model,
+                shadow_classifiers_neg_property,
+                ratio,
             )
 
         return self.output_attack(predictions)
