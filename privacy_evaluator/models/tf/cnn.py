@@ -13,7 +13,7 @@ from typing import Tuple
 def ConvNet(
     num_classes: int = 2,
     input_shape: Tuple[int, ...] = (1, 28, 28),
-    num_channels: Tuple[int, ...] = (1, 16, 32, 64)
+    num_channels: Tuple[int, ...] = (1, 16, 32, 64),
 ) -> keras.Model:
     """
     Provide a convolutional neural network for image classification.
@@ -63,6 +63,7 @@ class ConvNetMNIST(keras.Model):
             for the channel-dimension).
         num_channels: Number of channels.
     """
+
     def __init__(
         self, num_classes: int = 2, num_channels: Tuple[int, ...] = (1, 16, 32, 64)
     ):
@@ -139,6 +140,7 @@ class ConvNetCIFAR10(keras.Model):
             for the channel-dimension).
         num_channels: Number of input channels.
     """
+
     def __init__(
         self, num_classes: int = 2, num_channels: Tuple[int, ...] = (3, 16, 32, 64)
     ):
