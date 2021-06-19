@@ -1,8 +1,11 @@
 """
 The Privacy Evaluator.
 """
-from privacy_evaluator import attacks
-from privacy_evaluator import classifiers
-from privacy_evaluator import datasets
-from privacy_evaluator import metrics
-from privacy_evaluator import models
+
+from . import attacks
+from . import classifiers
+from . import datasets
+from . import metrics
+from . import models
+from . import output
+from . import validators
