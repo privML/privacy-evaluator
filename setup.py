@@ -1,4 +1,21 @@
+from setuptools import find_packages
 from setuptools import setup
+
+install_requires = [
+    "adversarial-robustness-toolbox[pytorch,tensorflow]==1.6.2",
+    "matplotlib",
+    "numpy",
+    "pandas",
+    "torch",
+    "tensorflow",
+    "torchvision",
+]
+
+development_requires = [
+    "black",
+    "googledrivedownloader",
+    "pytest",
+]
 
 setup(
     name="privacy-evaluator",
@@ -6,6 +23,8 @@ setup(
     description="Tool to assess ML model's levels of privacy.",
     url="https://github.com/privML/privacy-evaluator",
     license="MIT",
-    packages=["privacy_evaluator"],
-    install_requires=["adversarial-robustness-toolbox[pytorch,tensorflow]==1.6.1"],
+    packages=find_packages(include=["privacy_evaluator*"]),
+    install_requires=install_requires,
+    extras_require={"development": development_requires},
+    include_package_data=True,
 )
