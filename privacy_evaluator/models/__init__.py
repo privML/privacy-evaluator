@@ -1,4 +1,5 @@
 """
 Module providing models.
 """
-from privacy_evaluator.models import torch, tf
+from . import torch
+from . import tf
