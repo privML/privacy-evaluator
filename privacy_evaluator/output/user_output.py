@@ -33,7 +33,7 @@ class UserOutput:
         output function for JSON
         :param filter: if needed this filters the output for the given keys
         """
-        UserOutput._to_json(self, filter=filter)
+        return UserOutput._to_json(self, filter=filter)
 
     def to_dict(self, filter: np.ndarray = None) -> dict:
         """
