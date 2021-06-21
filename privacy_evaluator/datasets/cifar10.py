@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 import numpy as np
 from typing import Tuple
 
-from privacy_evaluator.datasets.dataset import Dataset
+from ..datasets.dataset import Dataset
 
 
 class CIFAR10(Dataset):

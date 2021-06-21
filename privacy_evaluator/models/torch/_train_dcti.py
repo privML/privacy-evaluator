@@ -10,7 +10,7 @@ import torchvision.transforms as transforms
 
 from torch.utils.data import DataLoader
 
-from dcti import *
+from .dcti import *
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

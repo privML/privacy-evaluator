@@ -1,1 +1,1 @@
-from .dcti import *
+from . import dcti

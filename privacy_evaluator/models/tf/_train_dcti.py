@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from dcti import *
+from .dcti import DCTI
 
 
 def augment(x, y):

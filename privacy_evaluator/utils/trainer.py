@@ -5,7 +5,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 import numpy as np
 from typing import Tuple, Dict, Union
-from privacy_evaluator.utils.metric import cross_entropy_loss, accuracy
+from ..utils.metric import cross_entropy_loss, accuracy
 from tqdm import tqdm
 import sys
 

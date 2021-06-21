@@ -1,9 +1,9 @@
-from privacy_evaluator.attacks.attack import Attack
-from privacy_evaluator.classifiers.classifier import Classifier
-import privacy_evaluator.utils.data_utils as data_utils
-from privacy_evaluator.utils.trainer import trainer
-from privacy_evaluator.models.tf.conv_net_meta_classifier import ConvNetMetaClassifier
-from privacy_evaluator.utils.model_utils import copy_and_reset_model
+from ..attacks.attack import Attack
+from ..classifiers.classifier import Classifier
+from ..utils import data_utils
+from ..utils.trainer import trainer
+from ..models.tf.conv_net_meta_classifier import ConvNetMetaClassifier
+from ..utils.model_utils import copy_and_reset_model
 
 
 import numpy as np
