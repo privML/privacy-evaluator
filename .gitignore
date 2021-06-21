@@ -133,3 +133,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+# model data
+data/
+CIFAR10/
+tests/model_data/

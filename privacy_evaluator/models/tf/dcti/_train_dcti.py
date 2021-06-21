@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from dcti import *
+from .dcti import DCTI
 
 
 def augment(x, y):
@@ -15,12 +15,16 @@ def normalize(x, y):
     return x, y
 
 
+def scale(x):
+    return x / 255
+
+
 def main():
     (x, y), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
 
     # Scale to [0, 1]
-    x = x / 255
-    x_test = x_test / 255
+    x = scale(x)
+    x_test = scale(x_test)
 
     train_dataset = tf.data.Dataset.from_tensor_slices((x, y))
     test_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test))
@@ -44,7 +48,7 @@ def main():
         train_dataset, epochs=100, validation_data=test_dataset, validation_freq=1
     )
 
-    model.save("./dcti/model")
+    model.save("./model")
 
 
 if __name__ == "__main__":

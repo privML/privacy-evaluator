@@ -1,1 +1,4 @@
-from .dcti import *
+"""
+Module providing TensorFlow models.
+"""
+from . import dcti
