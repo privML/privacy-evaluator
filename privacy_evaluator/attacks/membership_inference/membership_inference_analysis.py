@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from ...output.user_output_inference_attack_analysis import (
-    UserOutpurInferenceAttackAnalysis,
+    UserOutputInferenceAttackAnalysis,
 )
 from typing import Iterable, Type
 import numpy as np
@@ -10,7 +10,6 @@ from ...classifiers import Classifier
 from .data_structures.slicing import Slicing
 from .data_structures.slicing import Slice
 from sklearn import metrics
-from textwrap import indent
 
 
 class MembershipInferenceAttackAnalysis:
@@ -34,7 +33,7 @@ class MembershipInferenceAttackAnalysis:
         y: np.ndarray,
         membership: np.ndarray,
         slicing: Slicing = Slicing(entire_dataset=True),
-    ) -> Iterable[UserOutpurInferenceAttackAnalysis]:
+    ) -> Iterable[UserOutputInferenceAttackAnalysis]:
         """Runs the membership inference attack and calculates attacker's advantage for each slice.
 
         :param target_model: Target model to attack.
@@ -65,12 +64,15 @@ class MembershipInferenceAttackAnalysis:
                 drop_intermediate=False,
             )
             advantage = max(np.abs(tpr - fpr))
+            accuracy = (membership_prediction == membership[slice.indices]).sum() / len(
+                slice.indices
+            )
 
             results.append(
-                UserOutpurInferenceAttackAnalysis(
-                    slice.desc,
-                    slice.indices,
-                    advantage,
+                UserOutputInferenceAttackAnalysis(
+                    slice=slice,
+                    advantage=advantage,
+                    accuracy=accuracy,
                 )
             )
 
