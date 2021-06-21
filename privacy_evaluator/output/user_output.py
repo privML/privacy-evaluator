@@ -19,7 +19,6 @@ class UserOutput:
                 ret[key] = UserOutput._convert_to_list_if_needed(value)
         return json.dumps(ret)
 
-
     @staticmethod
     def _convert_to_list_if_needed(obj):
         """
@@ -29,14 +28,12 @@ class UserOutput:
             return obj.tolist()
         return obj
 
-
     def to_json(self, filter: np.ndarray = None) -> str:
         """
         output function for JSON
         :param filter: if needed this filters the output for the given keys
         """
         UserOutput._to_json(self, filter=filter)
-
 
     def to_dict(self, filter: np.ndarray = None) -> dict:
         """
@@ -50,10 +47,8 @@ class UserOutput:
             return ret
         return self.__dict__
 
-
     def __str__(self) -> str:
         """
         Overwrite the String method so the output looks nicer
         """
         return self.to_json()
-

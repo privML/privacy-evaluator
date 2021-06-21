@@ -20,10 +20,9 @@ class UserOutputInferenceAttackAnalysis(UserOutput):
         self.advantage = advantage
         self.accuracy = accuracy
 
-
     def to_json(self, include_indices=False) -> str:
         """Serialize the output to JSON.
-        
+
         :param include_indices: If True, slice indices will be included in the output.
         """
         if include_indices:
@@ -46,7 +45,6 @@ class UserOutputInferenceAttackAnalysis(UserOutput):
         return UserOutput._to_json(
             output,
         )
-
 
     def __str__(self) -> str:
         return "\n".join(
