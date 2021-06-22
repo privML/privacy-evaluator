@@ -18,9 +18,6 @@ class TFDataset:
         """
         (x_train, y_train), (x_test, y_test) = cls.TF_MODULE.load_data()
 
-        cls.validate(x_train, y_train)
-        cls.validate(x_test, y_test, dataset="test")
-
         if normalize:
             x_train = cls.normalize(x_train)
             x_test = cls.normalize(x_test)
@@ -28,6 +25,9 @@ class TFDataset:
         if one_hot_encode:
             y_train = cls.one_hot_encode(y_train)
             y_test = cls.one_hot_encode(y_test)
+
+        cls.validate(x_train, y_train, one_hot_encoded=one_hot_encode)
+        cls.validate(x_test, y_test, dataset="test", one_hot_encoded=one_hot_encode)
 
         return x_train, y_train, x_test, y_test
 
@@ -45,15 +45,25 @@ class TFDataset:
         )
 
     @classmethod
-    def validate(cls, x: np.ndarray, y: np.ndarray, dataset: str = "train"):
+    def validate(
+        cls,
+        x: np.ndarray,
+        y: np.ndarray,
+        dataset: str = "train",
+        one_hot_encoded: bool = True,
+    ):
         """Validates the data.
 
         :param x: Data to be validated.
         :param y: Labels for `x` to be validated.
+        :param one_hot_encoded: If data is one-hot-encoded or not.
         :param dataset: Dataset to be validated; either `train` or `test`.
         """
         assert x.shape == (cls.DATASET_SIZE[dataset], *cls.INPUT_SHAPE)
-        assert y.shape == (cls.DATASET_SIZE[dataset],)
+        if one_hot_encoded:
+            assert y.shape == (cls.DATASET_SIZE[dataset], cls.N_CLASSES)
+        else:
+            assert y.shape == (cls.DATASET_SIZE[dataset])
 
     @staticmethod
     def normalize(x: np.ndarray) -> np.ndarray:

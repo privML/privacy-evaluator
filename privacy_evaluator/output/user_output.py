@@ -1,59 +1,54 @@
+import json
 import numpy as np
-import pandas as pd
-from matplotlib import pyplot as plt
-
-from typing import Tuple
 
 
 class UserOutput:
+    @staticmethod
+    def _to_json(obj, filter: np.ndarray = None) -> str:
+        """Serialize given object to JSON.
 
-    """User Output Class"""
+        :param obj: Object to serialize.
+        :param filter: If needed this filters the output for the given keys
+        """
+        ret = {}
+        if filter is not None:
+            for key in filter:
+                ret[key] = UserOutput._convert_to_list_if_needed(obj.__dict__.get(key))
+        else:
+            for key, value in obj.__dict__.items():
+                ret[key] = UserOutput._convert_to_list_if_needed(value)
+        return json.dumps(ret)
 
-    def __init__(
-        self,
-        attack_data_y: np.ndarray,
-        privacy_risk: np.ndarray,
-        all_labels: np.ndarray,
-    ):
+    @staticmethod
+    def _convert_to_list_if_needed(obj):
         """
-        Initilaizes the Class with values
-        :param attack_data_y: An Array of the labels of the attck data
-        :param privacy_risk: the Privacy risk corresponding to the attack data
-        :param all_labels: All labels that are in the training set
+        Use internally to convert ndarray to list in order to turn it to json
         """
-        self.attack_data_y = attack_data_y
-        self.privacy_risk = privacy_risk
-        self.all_labels = all_labels
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return obj
 
-    def histogram_top_k(
-        self, k: int = 10, show_diagram: bool = True
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def to_json(self, filter: np.ndarray = None) -> str:
         """
-        Draw histogram of class distribution of the k points with highest privacy risk score
-        :param k: the number of points to consider, default 10
-        :param show_diagram: determines if the diagram should be shown, default: True
-        :return: All lables of the data with the number of points that are in the top k
+        output function for JSON
+        :param filter: if needed this filters the output for the given keys
         """
-        sorting = np.argsort(self.privacy_risk)
-        sorting = np.flip(sorting)
-        sorted_attack_data_labels = self.attack_data_y[sorting][:k]
-        df = pd.DataFrame(
-            {
-                "labels": sorted_attack_data_labels,
-            }
-        )
-        df = df.groupby("labels")["labels"].agg(["count"])
-        labels = df.index.to_numpy()
-        count = df["count"].to_numpy()
-        all_counts = np.array([])
-        for label in self.all_labels:
-            index = np.where(labels == label)
-            if len(index[0]) == 0:
-                all_counts = np.append(all_counts, 0)
-            else:
-                all_counts = np.append(all_counts, count[index[0]])
-        if show_diagram:
-            plt.bar(self.all_labels, all_counts)
-            plt.title("histogram")
-            plt.show()
-        return self.all_labels, all_counts
+        return UserOutput._to_json(self, filter=filter)
+
+    def to_dict(self, filter: np.ndarray = None) -> dict:
+        """
+        output function for dicts
+        :param filter: if needed this filters the output for the given keys
+        """
+        if filter is not None:
+            ret = {}
+            for key in filter:
+                ret[key] = self.__dict__.get(key)
+            return ret
+        return self.__dict__
+
+    def __str__(self) -> str:
+        """
+        Overwrite the String method so the output looks nicer
+        """
+        return self.to_json()

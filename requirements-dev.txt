@@ -1,7 +1,0 @@
-# Requirements for privacy-evaluator development
-
-# Required for code style
-black
-
-# Required for test
-pytest
