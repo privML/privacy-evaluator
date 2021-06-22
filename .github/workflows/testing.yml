@@ -2,7 +2,7 @@ name: Testing with pytest
 
 on:
   pull_request:
-    branches: [ main, team1sprint2 ]
+    branches: [ main, team1sprint2, team1sprint3, team1sprint4 ]
     types:
       - opened
       - edited
@@ -22,11 +22,10 @@ jobs:
       - name: Install dependencies
         run: |
             python -m pip install --upgrade pip
-            if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+            if [ -f setup.py ]; then pip install .[development]; fi
 
       - name: Install pytest plugin
         run: pip install pytest-github-actions-annotate-failures
 
       - name: Test with pytest
         run: pytest
-
