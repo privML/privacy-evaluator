@@ -9,6 +9,7 @@ from privacy_evaluator.utils.model_utils import copy_and_reset_model
 
 import numpy as np
 import torch
+from torch import nn
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
@@ -176,7 +177,7 @@ class PropertyInferenceAttack(Attack):
 
             # change pytorch classifier to art classifier
             art_model = Classifier._to_art_classifier(
-                model, num_classes, self.input_shape
+                model, nn.CrossEntropyLoss(reduction="none"), num_classes, self.input_shape
             )
             shadow_classifiers.append(art_model)
 
@@ -319,7 +320,7 @@ class PropertyInferenceAttack(Attack):
         # model has .evaluate(test_X,test_y) function
         # convert model to ART classifier
         art_meta_classifier = Classifier._to_art_classifier(
-            cnmc.model, nb_classes=nb_classes, input_shape=meta_input_shape
+            cnmc.model, nb_classes=nb_classes, loss=nn.CrossEntropyLoss(reduction="none"), input_shape=meta_input_shape
         )
 
         return art_meta_classifier
