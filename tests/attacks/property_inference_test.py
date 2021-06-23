@@ -58,6 +58,3 @@ def test_property_inference_attack(num_elements_per_classes: Dict[int, int] = NU
     assert attack.size_set == size_set, "Number of samples is not equal to input."
     assert attack.classes == classes, "Classes are not equal to input classes."
     assert len(output[1]) == len(classes), "Output is not compatible to input."
-
-
-test_property_inference_attack()
