@@ -17,10 +17,12 @@ def ConvNet(
     image sizes (28*28 and 32*32*3)
 
     Args:
-        num_classes: number of classes during prediction, serving as the size of
+        num_classes: Number of classes during prediction, serving as the size of
         the last fully-connected layer.
-        input_shape: either (28, 28) or (32, 32, 3) or their variations (because
+        input_shape: Either (28, 28) or (32, 32, 3) or their variations (because
         of position for channel-dimension).
+        num_channels: Number of input channels.
+
     Returns:
         An MNIST-classifier if `input_shape` corresponds to 28*28 or a CIFAR10-classifier
         if corresponds to 32*32*3. Otherwise raise an Error.
@@ -49,6 +51,15 @@ def ConvNet(
 
 
 class ConvBlock(nn.Module):
+    """
+    A convolutional block consisting of a sequence of convolutional, normalization,
+    pooling, and activation layers.
+
+    Args:
+        in_channels: Number of input channels for each conv-block.
+        out_channels: Number of output channels for each conv-block.
+    """
+
     def __init__(self, in_channels: int, out_channels: int):
         super(ConvBlock, self).__init__()
         self.conv = nn.Sequential(
@@ -68,6 +79,21 @@ class ConvBlock(nn.Module):
 
 
 class ConvNetMNIST(nn.Module):
+    """
+    Provide a convolutional neural network for MNIST classification.
+
+    Note: This method is just aimed at fetching a model for developers' test when
+    a target model is required. Since only the `MNIST` dataset is our concern, this 
+    method is compatible only with the corresponding image size (28*28).
+
+    Args:
+        num_classes: Number of classes during prediction, serving as the size of
+        the last fully-connected layer.
+        input_shape: Either (28, 28) or its variations (because of possible positions \
+            for the channel-dimension).
+        num_channels: Number of input channels.
+    """
+
     def __init__(
         self,
         num_classes: int = 2,
@@ -123,6 +149,21 @@ class ConvNetMNIST(nn.Module):
 
 
 class ConvNetCIFAR10(nn.Module):
+    """
+    Provide a convolutional neural network for CIFAR10 classification.
+
+    Note: This method is just aimed at fetching a model for developers' test when
+    a target model is required. Since only the `CIFAR10` dataset is our concern, this 
+    method is compatible only with the corresponding image size (32*32*3).
+
+    Args:
+        num_classes: Number of classes during prediction, serving as the size of
+        the last fully-connected layer.
+        input_shape: Either (32, 32, 3) or its variations (because of possible positions \
+            for the channel-dimension).
+        num_channels: Number of input channels.
+    """
+
     def __init__(
         self,
         num_classes: int = 2,
@@ -167,11 +208,10 @@ class ConvNetCIFAR10(nn.Module):
     def convs(self, x):
         return self.conv3(self.conv2(self.conv1(x)))
 
-
-def forward(self, x):
-    # if the input is in the form "BHWC", make channel the second dimension
-    if x.shape[-1] == 3:
-        x = x.permute(0, 3, 1, 2)
-    out = self.convs(x)
-    out = self.fc(out)
-    return out
+    def forward(self, x):
+        # if the input is in the form "BHWC", make channel the second dimension
+        if x.shape[-1] == 3:
+            x = x.permute(0, 3, 1, 2)
+        out = self.convs(x)
+        out = self.fc(out)
+        return out

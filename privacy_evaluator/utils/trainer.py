@@ -5,7 +5,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 import numpy as np
 from typing import Tuple, Dict, Union
-from privacy_evaluator.utils.metric import cross_entropy_loss, accuracy
+from ..utils.metric import cross_entropy_loss, accuracy
 from tqdm import tqdm
 import sys
 
@@ -20,6 +20,26 @@ def trainer(
     weight_decay: float = 0,
     verbose: int = 0,
 ):
+    """
+    Train a given model on a given training set `train_set` under customized 
+    hyper-parameter settings (see Args section for details).
+
+    Args:
+        train_set: The given training set, packing `train_X` and `train_y` in itself.
+        size_dict: The class distribution in `train_set`, and is only involved when \
+            we do label-encoding (map likely dis-continuous class_ids into integer \ 
+            sequential starting from 0)
+        model: The model that needs to be trained, whose weights get updated after \
+            execution of this function.
+        batch_size: The number of data points (i.e. images) that are simultaneously \ 
+            processed during training, so as to give statistical gradient among a \
+            batch and accelerate training.
+        num_epochs: The number of times each data point in `train_set` has been iterated.
+        learning_rate: The coefficient that decides the amplitude of the next gradient \
+            descent.
+        weight_decay: The coefficient of regularization-loss for trainable parameters.\
+            This loss will finally contribute to the total training loss.
+    """
     if isinstance(model, keras.Model):
         return _trainer_tf(
             train_set,
