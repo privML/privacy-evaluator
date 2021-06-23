@@ -13,7 +13,7 @@ from typing import Tuple
 def ConvNet(
     num_classes: int = 2,
     input_shape: Tuple[int, ...] = (1, 28, 28),
-    num_channels: Tuple[int, ...] = (1, 16, 32, 64)
+    num_channels: Tuple[int, ...] = (1, 16, 32, 64),
 ) -> keras.Model:
 
     if input_shape in [(1, 28, 28), (28, 28, 1)]:
