@@ -1,17 +1,24 @@
-from typing import Tuple, Dict
+from typing import Dict
 import numpy as np
 
-from privacy_evaluator.metrics.basics import (
+from ...metrics.basics import (
     accuracy,
     train_to_test_accuracy_gap,
     train_to_test_accuracy_ratio,
 )
-from privacy_evaluator.attacks.attack import Attack
-from privacy_evaluator.classifiers.classifier import Classifier
+from ..attack import Attack
+from ...classifiers.classifier import Classifier
+from ...validators.attack import validate_parameters
+
+from ...output.user_output_inference_attack import UserOutputInferenceAttack
 
 
 class MembershipInferenceAttack(Attack):
     """MembershipInferenceAttack base class."""
+
+    _ART_MEMBERSHIP_INFERENCE_ATTACK_MODULE = (
+        "art.attacks.inference.membership_inference"
+    )
 
     def __init__(
         self,
@@ -20,70 +27,134 @@ class MembershipInferenceAttack(Attack):
         y_train: np.ndarray,
         x_test: np.ndarray,
         y_test: np.ndarray,
+        **kwargs
     ):
         """Initializes a MembershipInferenceAttack class.
 
         :param target_model: Target model to be attacked.
-        :param x_train: Data that was used to train the target model.
-        :param y_train: Labels for the data that was used to train the target model.
+        :param x_train: Data which was used to train the target model.
+        :param y_train: True, one-hot encoded labels for `x_train`.
         :param x_test: Data that was not used to train the target model.
-        :param y_test: Labels for the data that was not used to train the target model.
+        :param y_test: True, one-hot encoded labels for `x_test`.
         """
-        super().__init__(target_model, x_train, y_train, x_test, y_test)
-
-    def attack(self, *args, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
-        """Performs the attack on the target model.
-
-        :param args: Arguments of the attack.
-        :param kwargs: Keyword arguments of the attack.
-        :return: Two arrays holding the inferred membership status. The first array includes the results for the
-        inferred membership status of the train data and the second includes the results for the test data, where 1
-        indicates a member and 0 indicates non-member. The optimal attack would return only ones for the first array and
-        only zeros for the second.
-        """
-        return self.infer(*args, **kwargs)
-
-    def infer(self, *args, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
-        """Alias method for attack().
-
-        :param args: Arguments of the attack.
-        :param kwargs: Keyword arguments of the attack.
-        :return: Two arrays holding the inferred membership status. The first array includes the results for the
-        inferred membership status of the train data and the second includes the results for the test data, where 1
-        indicates a member and 0 indicates non-member. The optimal attack would return only ones for the first array and
-        only zeros for the second.
-        """
-        raise NotImplementedError(
-            "Method 'infer()' needs to be implemented in subclass"
+        validate_parameters(
+            "init",
+            target_model=target_model,
+            x_train=x_train,
+            y_train=y_train,
+            x_test=x_test,
+            y_test=y_test,
         )
 
-    def attack_output(self, **kwargs) -> Dict:
+        super().__init__(target_model, x_train, y_train, x_test, y_test)
+        self._art_attack = self._init_art_attack(target_model, **kwargs)
+        self._art_attack_model_fitted = False
+
+    def attack(self, x: np.ndarray, y: np.ndarray, **kwargs) -> np.ndarray:
+        """Performs the membership inference attack on the target model.
+
+        :param x: Data to be attacked.
+        :param y: True, one-hot encoded labels for `x`.
+        :param kwargs: Keyword arguments of the attack.
+        :return: An array holding the inferred membership status, 1 indicates a member and 0 indicates non-member.
+        :raises Exception: If attack model is not fitted.
+        """
+
+        validate_parameters(
+            "attack",
+            target_model=self.target_model,
+            x=x,
+            y=y,
+        )
+        if self._art_attack_model_fitted is False:
+            raise Exception(
+                "The attack model needs to be fitted first. Please run `fit()` on the attack."
+            )
+        return self._art_attack.infer(x, y)
+
+    def attack_output(self, x: np.ndarray, y: np.ndarray, y_attack: np.ndarray) -> Dict:
         """Creates attack output metrics in an extractable format.
 
-        :return: Attack output metrics including the target model train and test accuracy, target model train to test
-        accuracy gap and ratio and the attack model accuracy.
+        :param x: Data to be attacked.
+        :param y: True, one-hot encoded labels for `x`.
+        :param y_attack: True, non one-hot encoded labels for the attack model (e.g. the membership status).
+        :return: An dict with attack output metrics including the target model train and test accuracy, target model
+        train to test accuracy gap and ratio and the attack model accuracy.
         """
+
+        validate_parameters(
+            "attack_output", target_model=self.target_model, x=x, y=y, y_attack=y_attack
+        )
 
         train_accuracy = accuracy(self.y_train, self.target_model.predict(self.x_train))
         test_accuracy = accuracy(self.y_test, self.target_model.predict(self.x_test))
-        attack_train_result, attack_test_result = self.attack(**kwargs)
+        y_attack_prediction = self.attack(x, y)
 
-        return {
-            "target_model_train_accuracy": train_accuracy,
-            "target_model_test_accuracy": test_accuracy,
-            "target_model_train_to_test_accuracy_gap": train_to_test_accuracy_gap(
-                train_accuracy, test_accuracy
-            ),
-            "target_model_train_to_test_accuracy_ratio": train_to_test_accuracy_ratio(
-                train_accuracy, test_accuracy
-            ),
-            "attack_model_accuracy": accuracy(
-                np.stack([attack_train_result, attack_test_result]),
-                np.stack(
-                    [
-                        np.ones(attack_train_result.shape),
-                        np.zeros(attack_test_result.shape),
-                    ]
-                ),
-            ),
-        }
+        return UserOutputInferenceAttack(
+            train_accuracy,
+            test_accuracy,
+            train_to_test_accuracy_gap(train_accuracy, test_accuracy),
+            train_to_test_accuracy_ratio(train_accuracy, test_accuracy),
+            accuracy(y_attack, y_attack_prediction),
+        )
+
+    def fit(self, **kwargs):
+        """Fits the attack model.
+
+        :param kwargs: Keyword arguments for the fitting.
+        """
+        raise NotImplementedError(
+            "Method `attack()` needs to be implemented in subclass"
+        )
+
+    @classmethod
+    def _art_module(cls) -> str:
+        """Returns the matching ART module for this class.
+
+        :return: Matching ART module.
+        """
+        return cls._ART_MEMBERSHIP_INFERENCE_ATTACK_MODULE
+
+    @classmethod
+    def _art_class(cls) -> str:
+        """Returns the matching ART class for this class.
+
+        :return: Matching ART class.
+        :raises AttributeError: If `_ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS` is not defined.
+
+        """
+        try:
+            return cls._ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS
+        except AttributeError:
+            raise AttributeError(
+                "Attribute `_ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS` needs to be defined in subclass."
+            )
+
+    @classmethod
+    def _init_art_attack(cls, target_model: Classifier, **kwargs):
+        """Initializes an ART attack.
+
+        :param target_model: Target model to be attacked.
+        :param kwargs: Keyword arguments of the attack.
+        :return: Instance of an ART attack.
+        """
+        _art_module = __import__(cls._art_module(), fromlist=[cls._art_class()])
+        _art_class = getattr(_art_module, cls._art_class())
+        return _art_class(target_model.to_art_classifier(), **kwargs)
+
+    @staticmethod
+    def _fit_decorator(fit_function):
+        """Decorator for the `fit()` methods of the subclasses.
+
+        Defines a decorator method which checks weather attack model was already fitted. If not, attack model is fitted and
+        `_art_attack_model_fitted` is set to `True`.
+
+        :return: Decorator method.
+        """
+
+        def __fit_decorator(self, **kwargs):
+            if self._art_attack_model_fitted is False:
+                fit_function(self, **kwargs)
+                self._art_attack_model_fitted = True
+
+        return __fit_decorator

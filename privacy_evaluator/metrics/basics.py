@@ -7,13 +7,18 @@ def accuracy(y: np.ndarray, y_prediction: np.ndarray) -> np.float32:
     :params y: True labels.
     :params y_prediction: Predicted labels.
     :return: Accuracy
-    :raises ValueError: If true labels and predicted labels are not of the same shape.
+    :raises ValueError: If `y` and `y_prediction` are not of the same shape.
     """
     if y.shape != y_prediction.shape:
         raise ValueError(
-            f"Expected true labels and predicted labels to be of same shape, received true labels with shape {str(y.shape)} and predicted labels with shape {str(y_prediction.shape)} instead."
+            f"Expected `y` and `y_prediction` to be of same shape, received `y` with shape {str(y.shape)} and y_prediction` with shape {str(y_prediction.shape)} instead."
         )
-    return (np.argmax(y, axis=1) == np.argmax(y_prediction, axis=1)).sum() / y.shape[0]
+
+    if len(y.shape) != 1:
+        y = np.argmax(y, axis=1)
+        y_prediction = np.argmax(y_prediction, axis=1)
+
+    return (y == y_prediction).sum() / y.shape[0]
 
 
 def train_to_test_accuracy_gap(

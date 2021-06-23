@@ -1,4 +1,4 @@
 """
-Module providing torch models.
+Module providing PyTorch models.
 """
 from . import dcti

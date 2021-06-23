@@ -7,6 +7,7 @@ from privacy_evaluator.utils.data_utils import (
 from privacy_evaluator.utils.trainer import trainer
 from privacy_evaluator.models.torch.cnn import ConvNet
 from typing import Dict
+from torch import nn
 
 
 NUM_ELEMENTS_PER_CLASSES = {0: 1000, 1: 1000}
@@ -32,7 +33,9 @@ def test_property_inference_attack(
     trainer(train_set, num_elements_per_classes, model, num_epochs=2)
 
     # change pytorch classifier to art classifier
-    target_model = Classifier._to_art_classifier(model, num_classes, input_shape)
+    target_model = Classifier._to_art_classifier(
+        model, "sparse_categorical_crossentropy", num_classes, input_shape
+    )
     print("Start attack ...")
     # test parameters for PIA:
     amount_sets = 2
