@@ -17,18 +17,12 @@ def ConvNet(
     image sizes (28*28 and 32*32*3)
 
     Args:
-<<<<<<< HEAD
         num_classes: Number of classes during prediction, serving as the size of
         the last fully-connected layer.
         input_shape: Either (28, 28) or (32, 32, 3) or their variations (because
         of position for channel-dimension).
         num_channels: Number of input channels.
-=======
-        num_classes: number of classes during prediction, serving as the size of
-        the last fully-connected layer.
-        input_shape: either (28, 28) or (32, 32, 3) or their variations (because
-        of position for channel-dimension).
->>>>>>> c219cd3268f45a24845d9803d4402dd3e056d74d
+
     Returns:
         An MNIST-classifier if `input_shape` corresponds to 28*28 or a CIFAR10-classifier
         if corresponds to 32*32*3. Otherwise raise an Error.
