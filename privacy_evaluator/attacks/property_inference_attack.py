@@ -67,6 +67,7 @@ class PropertyInferenceAttack(Attack):
         :param ratios_for_attack: ratios for different properties in sub-attacks
         with concatenation [test_features, test_labels]
         :param classes: classes the attack should be performed on
+        :param verbose: 0: no information; 1: backbone (most important) information; 2: utterly detailed information will be printed
         """
         if not (
             isinstance(dataset, tuple)
@@ -428,8 +429,6 @@ class PropertyInferenceAttack(Attack):
     def attack(self) -> Tuple[str, Dict[str, float]]:
         """
         Perform Property Inference attack.
-        :param params: Example data to run through target model for feature extraction
-        :type params: np.ndarray
         :return: message with most probable property, dictionary with all properties
         """
         if self.verbose > 0:
