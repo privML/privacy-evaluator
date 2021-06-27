@@ -6,6 +6,7 @@ from typing import Tuple
 
 class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
     """MembershipInferenceBlackBoxAttack class."""
+
     def __init__(
         self,
         target_model: Classifier,
@@ -13,7 +14,6 @@ class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
         y_train: np.ndarray,
         x_test: np.ndarray,
         y_test: np.ndarray,
-        attack_model_type: str = "nn",
     ):
         """Initializes a MembershipInferenceOnPointBasis class.
 
@@ -22,25 +22,16 @@ class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
         :param y_train: True, one-hot encoded labels for `x_train`.
         :param x_test: Data that was not used to train the target model.
         :param y_test: True, one-hot encoded labels for `x_test`.
-        :param attack_model_type: Type of the attack model. On of "rf", "gb", "nn".
         :raises TypeError: If `attack_model_type` is of invalid type.
         :raises ValueError: If `attack_model_type` is none of `rf`, `gb`, `nn`.
         """
-        if not isinstance(attack_model_type, str):
-            raise TypeError(
-                f"Expected `attack_model_type` to be an instance of {str(str)}, received {str(type(attack_model_type))} instead."
-            )
-        if attack_model_type not in ["rf", "gb", "nn"]:
-            raise ValueError(
-                f"Expected `attack_model_type` to be one of `rf`, `gb`, `nn`, received {attack_model_type} instead."
-            )
         super().__init__(
             target_model,
             x_train,
             y_train,
             x_test,
             y_test,
-            attack_model_type=attack_model_type,
+            init_art_attack=False
         )
 
     @MembershipInferenceAttack._fit_decorator
@@ -51,10 +42,9 @@ class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
         """
         pass
 
-
     def attack(
         self,
-        num_bins=15,
+        num_bins=15, **kwargs
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Computes each individual point's likelihood of being a member
@@ -71,13 +61,17 @@ class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
         :param num_bins: the number of bins used to compute the training/test histogram
         :return: membership probability results
         """
-        loss_train = self.target_model.art_classifier.compute_loss(self.x_train, self.y_train)
-        loss_test = self.target_model.art_classifier.compute_loss(self.x_test, self.y_test)
+        loss_train = self.target_model.art_classifier.compute_loss(
+            self.x_train, self.y_train
+        )
+        loss_test = self.target_model.art_classifier.compute_loss(
+            self.x_test, self.y_test
+        )
         return self._compute_membership_probability(loss_train, loss_test, num_bins)
 
-
+    @staticmethod
     def _compute_membership_probability(
-        self, loss_train, loss_test, num_bins: int = 15
+            loss_train, loss_test, num_bins: int = 15
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Has been taken from https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/membership_inference_attack/membership_inference_attack.py#L217
@@ -107,7 +101,9 @@ class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
 
         test_hist, _ = np.histogram(test_values, bins=bins_hist)
         test_hist = test_hist / (len(test_values) + 0.0)
-        test_hist_indices = np.fmin(np.digitize(test_values, bins=bins_hist), num_bins) - 1
+        test_hist_indices = (
+            np.fmin(np.digitize(test_values, bins=bins_hist), num_bins) - 1
+        )
 
         combined_hist = train_hist + test_hist
         combined_hist[combined_hist == 0] = small_value
