@@ -16,15 +16,20 @@ class MembershipInferenceAttackAnalysis:
     """Represents the membership inference attack analysis class."""
 
     def __init__(
-        self, attack_type: Type[MembershipInferenceAttack], input_data: AttackInputData
+        self,
+        attack_type: Type[MembershipInferenceAttack],
+        input_data: AttackInputData,
+        **kwargs,
     ) -> None:
         """Initializes a MembershipInferenceAttackAnalysis class.
 
         :param attack_type: Type of membership inference attack to analyse.
         :param input_data: Data for the membership inference attack.
+        :param attack_kwargs: kwargs passed to the attack.
         """
         self.attack_type = attack_type
         self.input_data = input_data
+        self.attack_kwargs = kwargs
 
     def analyse(
         self,
@@ -50,6 +55,7 @@ class MembershipInferenceAttackAnalysis:
             y_train=self.input_data.y_train,
             x_test=self.input_data.x_test,
             y_test=self.input_data.y_test,
+            **self.attack_kwargs,
         )
         attack.fit()
 
