@@ -26,12 +26,7 @@ class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
         :raises ValueError: If `attack_model_type` is none of `rf`, `gb`, `nn`.
         """
         super().__init__(
-            target_model,
-            x_train,
-            y_train,
-            x_test,
-            y_test,
-            init_art_attack=False
+            target_model, x_train, y_train, x_test, y_test, init_art_attack=False
         )
 
     @MembershipInferenceAttack._fit_decorator
@@ -42,10 +37,7 @@ class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
         """
         pass
 
-    def attack(
-        self,
-        num_bins=15, **kwargs
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def attack(self, num_bins=15, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
         """
         Computes each individual point's likelihood of being a member
         (denoted as privacy risk score in https://arxiv.org/abs/2003.10595).
@@ -71,7 +63,7 @@ class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
 
     @staticmethod
     def _compute_membership_probability(
-            loss_train, loss_test, num_bins: int = 15
+        loss_train, loss_test, num_bins: int = 15
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Has been taken from https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/membership_inference_attack/membership_inference_attack.py#L217

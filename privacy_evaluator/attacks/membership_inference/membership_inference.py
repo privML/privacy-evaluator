@@ -74,7 +74,9 @@ class MembershipInferenceAttack(Attack):
             )
         return self._art_attack.infer(x, y)
 
-    def attack_output(self, x: np.ndarray, y: np.ndarray, y_attack: np.ndarray) -> UserOutputInferenceAttack:
+    def attack_output(
+        self, x: np.ndarray, y: np.ndarray, y_attack: np.ndarray
+    ) -> UserOutputInferenceAttack:
         """Creates attack output metrics in an extractable format.
 
         :param x: Data to be attacked.
