@@ -55,7 +55,9 @@ class MembershipInferenceAttackAnalysis:
 
         results = []
         for slice in slices(x, y, target_model, slicing):
-            membership_prediction = attack.attack(x[slice.indices], y[slice.indices])
+            membership_prediction = attack.attack(
+                x[slice.indices], y[slice.indices], probabilities=True
+            )
 
             # Calculate the advantage score as in tensorflow privacy package.
             tpr, fpr, _ = metrics.roc_curve(
@@ -64,9 +66,9 @@ class MembershipInferenceAttackAnalysis:
                 drop_intermediate=False,
             )
             advantage = max(np.abs(tpr - fpr))
-            accuracy = (membership_prediction == membership[slice.indices]).sum() / len(
-                slice.indices
-            )
+            accuracy = (
+                membership_prediction.argmax(axis=1) == membership[slice.indices]
+            ).sum() / len(slice.indices)
 
             results.append(
                 UserOutputInferenceAttackAnalysis(

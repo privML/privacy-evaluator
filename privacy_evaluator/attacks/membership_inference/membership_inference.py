@@ -50,11 +50,14 @@ class MembershipInferenceAttack(Attack):
         self._art_attack = self._init_art_attack(target_model, **kwargs)
         self._art_attack_model_fitted = False
 
-    def attack(self, x: np.ndarray, y: np.ndarray, **kwargs) -> np.ndarray:
+    def attack(
+        self, x: np.ndarray, y: np.ndarray, probabilities: bool = False, **kwargs
+    ) -> np.ndarray:
         """Performs the membership inference attack on the target model.
 
         :param x: Data to be attacked.
         :param y: True, one-hot encoded labels for `x`.
+        :param probabilities: If True, the method returns probability vector for each data point instead of predicted class.
         :param kwargs: Keyword arguments of the attack.
         :return: An array holding the inferred membership status, 1 indicates a member and 0 indicates non-member.
         :raises Exception: If attack model is not fitted.
@@ -70,7 +73,10 @@ class MembershipInferenceAttack(Attack):
             raise Exception(
                 "The attack model needs to be fitted first. Please run `fit()` on the attack."
             )
-        return self._art_attack.infer(x, y)
+
+        result = self._art_attack.infer(x, y)
+        # Flatten the ART output in case when only the predicted class is needed
+        return result if probabilities else result.reshape(-1)
 
     def attack_output(self, x: np.ndarray, y: np.ndarray, y_attack: np.ndarray) -> Dict:
         """Creates attack output metrics in an extractable format.
