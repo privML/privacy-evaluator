@@ -74,9 +74,9 @@ class MembershipInferenceAttack(Attack):
                 "The attack model needs to be fitted first. Please run `fit()` on the attack."
             )
 
-        result = self._art_attack.infer(x, y)
-        # Flatten the ART output in case when only the predicted class is needed
-        return result if probabilities else result.reshape(-1)
+        return self._art_attack.infer(
+            x, y, probabilities=probabilities, **kwargs
+        ).reshape(-1)
 
     def attack_output(self, x: np.ndarray, y: np.ndarray, y_attack: np.ndarray) -> Dict:
         """Creates attack output metrics in an extractable format.

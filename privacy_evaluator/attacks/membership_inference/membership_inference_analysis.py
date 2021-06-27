@@ -67,7 +67,7 @@ class MembershipInferenceAttackAnalysis:
             )
             advantage = max(np.abs(tpr - fpr))
             accuracy = (
-                membership_prediction.argmax(axis=1) == membership[slice.indices]
+                membership_prediction.round() == membership[slice.indices]
             ).sum() / len(slice.indices)
 
             results.append(
