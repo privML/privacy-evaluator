@@ -165,15 +165,8 @@ class PropertyInferenceAttack(Attack):
         for shadow_training_set in tqdm(
             shadow_training_sets, file=sys.stdout, disable=(self.verbose < 2)
         ):
-            shadow_training_X, shadow_training_y = shadow_training_set
-            train_X, test_X, train_y, test_y = train_test_split(
-                shadow_training_X, shadow_training_y, test_size=0.3
-            )
-            train_set = (train_X, train_y)
-            test_set = (test_X, test_y)
-
             model = copy_and_reset_model(self.target_model)
-            trainer(train_set, num_elements_per_classes, model, verbose=self.verbose)
+            trainer(shadow_training_set, num_elements_per_classes, model, verbose=self.verbose)
 
             # change pytorch classifier to art classifier
             art_model = Classifier._to_art_classifier(
