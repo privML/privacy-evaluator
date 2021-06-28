@@ -89,4 +89,6 @@ def test_property_inference_attack(
     ), "Number of shadow classifiers are not equal to input."
     assert attack.size_set == size_set, "Number of samples is not equal to input."
     assert attack.classes == classes, "Classes are not equal to input classes."
-    assert len(output[1]) == len(classes), "Output is not compatible to input."
+    assert len(output[1]) == len(
+        ratios_for_attack
+    ), "Output is not compatible to input."
