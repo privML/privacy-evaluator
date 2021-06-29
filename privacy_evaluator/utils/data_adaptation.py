@@ -15,7 +15,8 @@ def images_adaptation(
 
     :params images: The original images of shape [N, H, W, D].
     :params adaptation: The type of adaptation, so far "mask" is supported.
-    :params **kwargs: optional parameters for the specified adaptation.
+    :params **kwargs: Optional parameters for the specified adaptation.
+    :return: The adapted images.
 
     Examples:
         `images_adaptation(images, 'mask', box_len=5)`: Apply mask-adaptation with box \
@@ -40,7 +41,8 @@ def _mask_images(images: np.ndarray, box_len: int = BOX_LEN) -> np.ndarray:
     Mask each image in `images` with a white-colored box of side length `box_len`
 
     :params images: The original images of shape [N, H, W, D].
-    :params box_len: The side length of the masking box, to be `min(H, W)` top
+    :params box_len: The side length of the masking box, to be `min(H, W)` top.
+    :return: The masked images.
     """
     masked_images = deepcopy(images)
     for image in masked_images:
