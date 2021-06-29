@@ -166,7 +166,12 @@ class PropertyInferenceAttack(Attack):
             shadow_training_sets, file=sys.stdout, disable=(self.verbose < 2)
         ):
             model = copy_and_reset_model(self.target_model)
-            trainer(shadow_training_set, num_elements_per_classes, model, verbose=self.verbose)
+            trainer(
+                shadow_training_set,
+                num_elements_per_classes,
+                model,
+                verbose=self.verbose,
+            )
 
             # change pytorch classifier to art classifier
             art_model = Classifier._to_art_classifier(
