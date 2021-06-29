@@ -4,7 +4,7 @@ import numpy as np
 from copy import deepcopy
 
 
-BOX_LEN = 3
+BOX_LEN = 3  # default side length of the box we use for mask-adaptation
 
 
 def images_adaptation(
