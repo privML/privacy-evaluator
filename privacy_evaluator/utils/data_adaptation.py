@@ -35,7 +35,7 @@ def images_adaptation(
         )
 
 
-def _mask_images(images: np.ndarray, box_len: int = BOX_LEN):
+def _mask_images(images: np.ndarray, box_len: int = BOX_LEN) -> np.ndarray:
     """
     Mask each image in `images` with a white-colored box of side length `box_len`
 
