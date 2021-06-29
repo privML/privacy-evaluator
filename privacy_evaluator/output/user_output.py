@@ -3,19 +3,37 @@ import numpy as np
 
 
 class UserOutput:
+    @staticmethod
+    def _to_json(obj, filter: np.ndarray = None) -> str:
+        """Serialize given object to JSON.
+
+        :param obj: Object to serialize.
+        :param filter: If needed this filters the output for the given keys
+        """
+        ret = {}
+        if filter is not None:
+            for key in filter:
+                ret[key] = UserOutput._convert_to_list_if_needed(obj.__dict__.get(key))
+        else:
+            for key, value in obj.__dict__.items():
+                ret[key] = UserOutput._convert_to_list_if_needed(value)
+        return json.dumps(ret)
+
+    @staticmethod
+    def _convert_to_list_if_needed(obj):
+        """
+        Use internally to convert ndarray to list in order to turn it to json
+        """
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return obj
+
     def to_json(self, filter: np.ndarray = None) -> str:
         """
         output function for JSON
         :param filter: if needed this filters the output for the given keys
         """
-        ret = {}
-        if filter is not None:
-            for key in filter:
-                ret[key] = self._convert_to_list_if_needed(self.__dict__.get(key))
-        else:
-            for key, value in self.__dict__.items():
-                ret[key] = self._convert_to_list_if_needed(value)
-        return json.dumps(ret)
+        return UserOutput._to_json(self, filter=filter)
 
     def to_dict(self, filter: np.ndarray = None) -> dict:
         """
@@ -34,11 +52,3 @@ class UserOutput:
         Overwrite the String method so the output looks nicer
         """
         return self.to_json()
-
-    def _convert_to_list_if_needed(self, obj):
-        """
-        Use internally to convert ndarray to list in order to turn it to json
-        """
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        return obj

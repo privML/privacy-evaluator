@@ -9,7 +9,7 @@ from privacy_evaluator.classifiers.classifier import Classifier
 
 
 def test_inference_label_only_decision_boundary_attack():
-    x_train, y_train, x_test, y_test = TorchCIFAR10.numpy(take=10)
+    x_train, y_train, x_test, y_test = TorchCIFAR10.numpy()
 
     target_model = Classifier(
         load_dcti(),
