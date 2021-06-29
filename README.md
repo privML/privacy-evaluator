@@ -125,7 +125,7 @@ All three attacks are generic and not based on any particular dataset or model t
 
 #### Membership Inference Back-Box
 
-This is the implementation of the original idea of a black-box membership inference attack as provided by [Shokri et al.](https://arxiv.org/abs/1610.05820). It aims to abuse the abnormal confidence of a target model when queried on their training data to differentiate between members and non-members of a model’s training set. The confidence is a vector of probabilities, the confidence values, one value per class, estimating the likelihood of a given input data record belonging to a certain class.
+This is the implementation of the original idea of a black-box membership inference attack as provided by ([Shokri et al.](https://arxiv.org/abs/1610.05820)). It aims to abuse the abnormal confidence of a target model when queried on their training data to differentiate between members and non-members of a model’s training set. The confidence is a vector of probabilities, the confidence values, one value per class, estimating the likelihood of a given input data record belonging to a certain class.
 
 Provided a model, the target model (trained on an unknown labeled set of data _(X,y)<sub>target</sub>_), and a separate labeled set of data _(X,y)<sub>attack</sub>_, which can be derived via various methods and which is preferably most similar to the one that the target model was trained on, the original attack trains a binary meta-classifier, using _(X,y)<sub>attack</sub>_ in conjunction with a multitude of so-called shadow models, and uses the meta-classifier to decide whether or not a data point was part of the target model’s training set or not. 
 
