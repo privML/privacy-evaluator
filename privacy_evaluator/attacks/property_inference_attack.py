@@ -61,9 +61,9 @@ class PropertyInferenceAttack(Attack):
         Initialize the Property Inference Attack Class.
         :param target_model: the target model to be attacked
         :param dataset: dataset for training of shadow classifiers, test_data from dataset
-        :param amount_sets: count of shadow training sets, must be even
-        :param size_set: ratio and size for unbalanced data sets
-        :param ratios_for_attack: ratios for different properties in sub-attacks
+        :param amount_sets: number of shadow training sets, must be even
+        :param size_set: ratio and size of unbalanced data sets
+        :param ratios_for_attack: ratios of different properties in sub-attacks
         with concatenation [test_features, test_labels]
         :param classes: classes the attack should be performed on
         :param verbose: 0: no information; 1: backbone (most important) information; 2: utterly detailed information will be printed
@@ -79,7 +79,9 @@ class PropertyInferenceAttack(Attack):
             isinstance(target_model, TensorFlowV2Classifier)
             or isinstance(target_model, PyTorchClassifier)
         ):
-            raise TypeError("Target model must be of type Classifier.")
+            raise TypeError(
+                "Target model must be of type TensorFlowV2Classifier or PyTorchClassifier."
+            )
 
         # count of shadow training sets, must be even
         self.amount_sets = amount_sets
@@ -354,7 +356,7 @@ class PropertyInferenceAttack(Attack):
 
     def output_attack(self, predictions_ratios) -> Tuple[str, Dict[str, float]]:
         """
-        Determination of prediction with highest probability.
+        Calculates the prediction with highest probability.
         :param predictions_ratios: Prediction values from meta-classifier for different subattacks (different properties)
         :type predictions_ratios: OrderedDict[float, np.ndarray]
         :return: Output message for the attack
@@ -425,7 +427,7 @@ class PropertyInferenceAttack(Attack):
 
     def attack(self) -> Tuple[str, Dict[str, float]]:
         """
-        Perform Property Inference attack.
+        Performs Property Inference attack.
         :return: message with most probable property, dictionary with all properties
         """
         if self.verbose > 0:
@@ -459,12 +461,12 @@ class PropertyInferenceAttack(Attack):
 
         self.ratios_for_attack.sort()
         predictions = OrderedDict.fromkeys(self.ratios_for_attack, 0)
-        # iterate over unbalanced ratios in 0.05 steps (0.05-0.45, 0.55-0.95)
-        # (e.g. 0.55 means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
 
         if self.verbose > 0:
             print("Performing PIA for various ratios ... ")
 
+        # iterate over unbalanced ratios
+        # (e.g. 0.55 means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
         for ratio in tqdm(
             self.ratios_for_attack, file=sys.stdout, disable=(self.verbose == 0)
         ):

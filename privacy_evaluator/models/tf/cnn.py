@@ -16,7 +16,7 @@ def ConvNet(
     num_channels: Tuple[int, ...] = (1, 16, 32, 64),
 ) -> keras.Model:
     """
-    Provide a convolutional neural network for image classification.
+    Provides a convolutional neural network for image classification.
 
     Note: This method is just aimed at fetching a model for developers' test when
     a target model is required. Since only `MNIST` and `CIFAR10` datasets are
@@ -50,7 +50,7 @@ def ConvNet(
 
 class ConvNetMNIST(keras.Model):
     """
-    Provide a convolutional neural network for MNIST classification.
+    Provides a convolutional neural network for MNIST classification.
 
     Note: This method is just aimed at fetching a model for developers' test when
     a target model is required. Since only the `MNIST` dataset is our concern, this 
@@ -127,7 +127,7 @@ class ConvNetMNIST(keras.Model):
 
 class ConvNetCIFAR10(keras.Model):
     """
-    Provide a convolutional neural network for CIFAR10 classification.
+    Provides a convolutional neural network for CIFAR10 classification.
 
     Note: This method is just aimed at fetching a model for developers' test when
     a target model is required. Since only the `CIFAR10` dataset is our concern, this 

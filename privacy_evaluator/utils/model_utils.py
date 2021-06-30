@@ -12,7 +12,7 @@ def copy_and_reset_model(
     model: Union[keras.Model, nn.Module, BaseEstimator]
 ) -> Union[nn.Module, keras.Model]:
     """
-    Get a clone of a model (i.e. with the same architecture) and reset the weights \
+    Gets a clone of a model (i.e. with the same architecture) and reset the weights \
         of this copy.
 
     :param model: A tf(keras) or torch model. Alternatively, an art-classifier encapsulating \
