@@ -1,4 +1,3 @@
-from typing import Dict
 import numpy as np
 
 from ...metrics.basics import (
@@ -52,6 +51,7 @@ class MembershipInferenceAttack(Attack):
         y_train: np.ndarray,
         x_test: np.ndarray,
         y_test: np.ndarray,
+        init_art_attack: bool = True,
         **kwargs
     ):
         """Initializes a MembershipInferenceAttack class.
@@ -61,6 +61,7 @@ class MembershipInferenceAttack(Attack):
         :param y_train: True, one-hot encoded labels for `x_train`.
         :param x_test: Data that was not used to train the target model.
         :param y_test: True, one-hot encoded labels for `x_test`.
+        :param init_art_attack: Indicates if belonging ART attack should be initialized.
         """
         validate_parameters(
             "init",
@@ -72,7 +73,8 @@ class MembershipInferenceAttack(Attack):
         )
 
         super().__init__(target_model, x_train, y_train, x_test, y_test)
-        self._art_attack = self._init_art_attack(target_model, **kwargs)
+        if init_art_attack:
+            self._art_attack = self._init_art_attack(target_model, **kwargs)
         self._art_attack_model_fitted = False
 
     def attack(
@@ -103,7 +105,9 @@ class MembershipInferenceAttack(Attack):
             x, y, probabilities=probabilities, **kwargs
         ).reshape(-1)
 
-    def attack_output(self, x: np.ndarray, y: np.ndarray, y_attack: np.ndarray) -> Dict:
+    def attack_output(
+        self, x: np.ndarray, y: np.ndarray, y_attack: np.ndarray
+    ) -> UserOutputInferenceAttack:
         """Creates attack output metrics in an extractable format.
 
         :param x: Data to be attacked.

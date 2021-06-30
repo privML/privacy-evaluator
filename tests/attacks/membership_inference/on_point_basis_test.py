@@ -4,12 +4,14 @@ import tensorflow as tf
 
 from privacy_evaluator.classifiers.classifier import Classifier
 from privacy_evaluator.datasets.tf.mnist import TFMNIST
-from privacy_evaluator.metrics import compute_privacy_risk_score
+from privacy_evaluator.attacks.membership_inference import (
+    MembershipInferenceAttackOnPointBasis,
+)
 
-from ..fixtures import tests_tmp_path, models_path
+from ...fixtures import tests_tmp_path, models_path
 
 
-def test_privacy_risk_score(models_path):
+def test_on_point_basis(models_path):
     try:
         assert os.path.exists(models_path)
         assert os.path.exists(
@@ -103,17 +105,20 @@ def test_privacy_risk_score(models_path):
         input_shape=TFMNIST.INPUT_SHAPE,
         loss=tf.keras.losses.CategoricalCrossentropy(),
     )
-
-    # run risk evaluation on high risk model
     x_train, y_train, x_test, y_test = TFMNIST.numpy()
-    high_risk_train_probs, high_risk_test_probs = compute_privacy_risk_score(
-        high_risk_classifier, x_train[:100], y_train[:100], x_test[:100], y_test[:100]
+    low_risk_attack = MembershipInferenceAttackOnPointBasis(
+        high_risk_classifier, x_train[:300], y_train[:300], x_test[:300], y_test[:300]
     )
-    # run risk evaluation on low risk model
-    x_train, y_train, x_test, y_test = TFMNIST.numpy()
-    low_risk_train_probs, low_risk_test_probs = compute_privacy_risk_score(
+
+    high_risk_attack = MembershipInferenceAttackOnPointBasis(
         low_risk_classifier, x_train[:100], y_train[:100], x_test[:100], y_test[:100]
     )
+
+    # run risk evaluation on high risk model
+
+    high_risk_train_probs, high_risk_test_probs = low_risk_attack.attack()
+    # run risk evaluation on low risk model
+    low_risk_train_probs, low_risk_test_probs = high_risk_attack.attack()
     # assert that the low privacy model has a lower privacy risk score on the training then on the test data
     assert high_risk_train_probs.sum() / len(
         high_risk_train_probs
