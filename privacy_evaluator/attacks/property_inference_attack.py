@@ -79,7 +79,9 @@ class PropertyInferenceAttack(Attack):
             isinstance(target_model, TensorFlowV2Classifier)
             or isinstance(target_model, PyTorchClassifier)
         ):
-            raise TypeError("Target model must be of type TensorFlowV2Classifier or PyTorchClassifier.")
+            raise TypeError(
+                "Target model must be of type TensorFlowV2Classifier or PyTorchClassifier."
+            )
 
         # count of shadow training sets, must be even
         self.amount_sets = amount_sets
