@@ -36,11 +36,15 @@ def images_adaptation(
             else _mask_images(images, kwargs["box_len"])
         )
     elif adaptation == "random_noise":
-        return (
-            _random_noise_images(images)
-            if "box_len" not in kwargs
-            else _mask_images(images)
-        )
+        if "mean" in kwargs:
+            if "std" in kwargs:
+                return _random_noise_images(images, kwargs["mean"], kwargs["std"])
+            else:
+                return _random_noise_images(images, kwargs["mean"])
+        elif "std" in kwargs:
+            return _random_noise_images(images, std=kwargs["std"])
+        else:
+            return _random_noise_images(images)
 
 
 def _mask_images(images: np.ndarray, box_len: int = BOX_LEN) -> np.ndarray:
