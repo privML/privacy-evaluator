@@ -7,9 +7,7 @@ from copy import deepcopy
 BOX_LEN = 3  # default side length of the box we use for mask-adaptation
 
 
-def images_adaptation(
-    images: np.ndarray, adaptation: str = "mask", **kwargs
-) -> np.ndarray:
+def images_adaptation(images: np.ndarray, adaptation: str, **kwargs) -> np.ndarray:
     """
     Apply a specific adaptation on each image in `images`.
 
@@ -18,41 +16,31 @@ def images_adaptation(
     :params **kwargs: Optional parameters for the specified adaptation.
     :return: The adapted images.
 
+    Optional params:
+    :params box_len: Int, whe
+
     Examples:
         `images_adaptation(images, 'mask', box_len=5)`: Apply mask-adaptation with box \
             of side length 5.
     """
-    supported_adaptations = [
-        "mask",
-        "random_noise"
-    ]
+    supported_adaptations = ["mask", "random_noise"]
     assert len(images.shape) == 4
     assert adaptation in supported_adaptations
 
     if adaptation == "mask":
-        return (
-            _mask_images(images)
-            if "box_len" not in kwargs
-            else _mask_images(images, kwargs["box_len"])
-        )
+        return _mask_images(images, **kwargs)
     elif adaptation == "random_noise":
-        if "mean" in kwargs:
-            if "std" in kwargs:
-                return _random_noise_images(images, kwargs["mean"], kwargs["std"])
-            else:
-                return _random_noise_images(images, kwargs["mean"])
-        elif "std" in kwargs:
-            return _random_noise_images(images, std=kwargs["std"])
-        else:
-            return _random_noise_images(images)
+        return _random_noise_images(images, **kwargs)
 
 
-def _mask_images(images: np.ndarray, box_len: int = BOX_LEN) -> np.ndarray:
+def _mask_images(images: np.ndarray, box_len: int = BOX_LEN, **kwargs) -> np.ndarray:
     """
     Mask each image in `images` with a white-colored box of side length `box_len`
 
     :params images: The original images of shape [N, H, W, D].
     :params box_len: The side length of the masking box, to be `min(H, W)` top.
+    :params kwargs: Optional params to make the function run also wenn unexpected \
+        params are passed from `images_adaptation()`
     :return: The masked images.
     """
     masked_images = deepcopy(images)
@@ -78,13 +66,17 @@ def _mask_image(image: np.ndarray, box_len: int = BOX_LEN):
     image[start_x : start_x + box_len, start_y : start_y + box_len] = 255
 
 
-def _random_noise_images(images: np.ndarray, mean: float = 0.0, std: float = 50.0):
+def _random_noise_images(
+    images: np.ndarray, mean: float = 0.0, std: float = 50.0, **kwargs
+):
     """
     Create dataset where noise from normal distribution with mean and standard deviation is added to images.
 
     :params image: The original image of shape [H, W, D].
     :params mean: mean for the distribution from which noise is computed
     :params std: standard deviation for the distribution from which noise is computed
+    :params kwargs: optional params to make the function run also wenn unexpected \
+        params are passed from `images_adaptation()`
     """
 
     # Create noise with shape of image
