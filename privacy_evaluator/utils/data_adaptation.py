@@ -6,9 +6,11 @@ import logging
 
 
 BOX_LEN = 3  # default side length of the box we use for mask-adaptation
-BRIGHTNESS= 50 # default value to adjust brightness pictures
-MEAN = 0.0 # default mean for the distribution from which noise is computed
-STD = 50.0 # default standard deviation for the distribution from which noise is computed
+BRIGHTNESS = 50  # default value to adjust brightness pictures
+MEAN = 0.0  # default mean for the distribution from which noise is computed
+STD = (
+    50.0  # default standard deviation for the distribution from which noise is computed
+)
 
 
 def images_adaptation(images: np.ndarray, adaptation: str, **kwargs) -> np.ndarray:
@@ -104,9 +106,10 @@ def _brighten_images(images: np.ndarray, brightness: int = BRIGHTNESS) -> np.nda
         _brighten_image(image, brightness)
     return brighten_images
 
+
 def _brighten_image(image: np.ndarray, brightness: int):
     """
-    Adjust the brightness of one image 
+    Adjust the brightness of one image
 
     :params image: The original image of shape [H, W, D].
     :params brightness: The amount the brightness should be raised or lowered
@@ -114,12 +117,13 @@ def _brighten_image(image: np.ndarray, brightness: int):
     height, width, _ = image.shape
     for x in range(height):
         for y in range(width):
-            if image[x,y] < (0 - brightness):
-                image[x,y] = 0
-            elif image[x,y] > (255 - brightness):
-                 image[x,y] = 255
+            if image[x, y] < (0 - brightness):
+                image[x, y] = 0
+            elif image[x, y] > (255 - brightness):
+                image[x, y] = 255
             else:
-                image[x,y] = image[x,y]+brightness
+                image[x, y] = image[x, y] + brightness
+
 
 def _random_noise_images(
     images: np.ndarray, mean: float = MEAN, std: float = STD, **kwargs
