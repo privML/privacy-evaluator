@@ -2,6 +2,7 @@ from .data_utils import dataset_downloader
 
 import numpy as np
 from copy import deepcopy
+import logging
 
 
 BOX_LEN = 3  # default side length of the box we use for mask-adaptation
@@ -45,6 +46,14 @@ def _mask_images(images: np.ndarray, box_len: int = BOX_LEN, **kwargs) -> np.nda
         params are passed from `images_adaptation()`
     :return: The masked images.
     """
+    # give warning if there are still unexpected parameters
+    if kwargs:
+        logging.warning(
+            "Unexpected parameter(s) for mask adaptation: {}.".format(
+                list(kwargs.keys())
+            )
+        )
+
     masked_images = deepcopy(images)
     for image in masked_images:
         _mask_image(image, box_len)
@@ -80,6 +89,13 @@ def _random_noise_images(
     :params kwargs: optional params to make the function run also when unexpected \
         params are passed from `images_adaptation()`
     """
+    # give warning if there are still unexpected parameters
+    if kwargs:
+        logging.warning(
+            "Unexpected parameter(s) for random noise adaptation: {}.".format(
+                list(kwargs.keys())
+            )
+        )
 
     # Create noise with shape of image
     noise = np.random.normal(mean, std, images.shape)
