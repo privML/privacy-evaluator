@@ -21,7 +21,6 @@ def copy_and_reset_model(
         (or art-keras) then we return a keras model; If `model` is a torch model (or art-torch) \
         then we return a torch model.
     """
-    assert isinstance(model, tf.Module)
     if isinstance(model, nn.Module):
         return _copy_and_reset_torch_model(model)
     if isinstance(model, keras.Model):
