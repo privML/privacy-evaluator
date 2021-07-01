@@ -17,7 +17,9 @@ def images_adaptation(images: np.ndarray, adaptation: str, **kwargs) -> np.ndarr
     :return: The adapted images.
 
     Optional params:
-    :params box_len: Int, whe
+    :params box_len: Involved when `adaptation` is "mask", the side length of masking boxes.
+    :params mean: Involved when `adaptation` is "random_noise", the mean of the added noise.
+    :params mean: Involved when `adaptation` is "random_noise", the standard deviation of the added noise.
 
     Examples:
         `images_adaptation(images, 'mask', box_len=5)`: Apply mask-adaptation with box \
