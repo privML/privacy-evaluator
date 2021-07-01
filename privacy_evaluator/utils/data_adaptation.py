@@ -41,7 +41,7 @@ def _mask_images(images: np.ndarray, box_len: int = BOX_LEN, **kwargs) -> np.nda
 
     :params images: The original images of shape [N, H, W, D].
     :params box_len: The side length of the masking box, to be `min(H, W)` top.
-    :params kwargs: Optional params to make the function run also wenn unexpected \
+    :params kwargs: Optional params to make the function run also when unexpected \
         params are passed from `images_adaptation()`
     :return: The masked images.
     """
@@ -77,7 +77,7 @@ def _random_noise_images(
     :params image: The original image of shape [H, W, D].
     :params mean: mean for the distribution from which noise is computed
     :params std: standard deviation for the distribution from which noise is computed
-    :params kwargs: optional params to make the function run also wenn unexpected \
+    :params kwargs: optional params to make the function run also when unexpected \
         params are passed from `images_adaptation()`
     """
 
