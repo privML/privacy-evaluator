@@ -49,14 +49,16 @@ def test_property_inference_attack(
     # num_channels and input_shape are optional in cnn.py
     model = ConvNet(num_classes, input_shape, num_channels=num_channels)
 
-    print("Start training target model ...\n")
+    if verbose > 0:
+        print("Start training target model ...\n")
     trainer(train_set, num_elements_per_classes, model, num_epochs=num_epochs)
 
     # change pytorch classifier to art classifier
     target_model = Classifier._to_art_classifier(
         model, "sparse_categorical_crossentropy", num_classes, input_shape
     )
-    print("Start attack ...")
+    if verbose > 0:
+        print("Start attack ...")
 
     attack = PropertyInferenceAttack(
         target_model,
