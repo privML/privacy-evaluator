@@ -24,6 +24,7 @@ def images_adaptation(
     """
     supported_adaptations = [
         "mask",
+        "random_noise"
     ]
     assert len(images.shape) == 4
     assert adaptation in supported_adaptations
@@ -33,6 +34,12 @@ def images_adaptation(
             _mask_images(images)
             if "box_len" not in kwargs
             else _mask_images(images, kwargs["box_len"])
+        )
+    elif adaptation == "random_noise":
+        return (
+            _random_noise_images(images)
+            if "box_len" not in kwargs
+            else _mask_images(images)
         )
 
 
@@ -65,3 +72,24 @@ def _mask_image(image: np.ndarray, box_len: int = BOX_LEN):
     start_y = np.random.randint(0, height - box_len + 1)
 
     image[start_x : start_x + box_len, start_y : start_y + box_len] = 255
+
+
+def _random_noise_images(images: np.ndarray, mean: float = 0.0, std: float = 50.0):
+    """
+    Create dataset where noise from normal distribution with mean and standard deviation is added to images.
+
+    :params image: The original image of shape [H, W, D].
+    :params mean: mean for the distribution from which noise is computed
+    :params std: standard deviation for the distribution from which noise is computed
+    """
+
+    # Create noise with shape of image
+    noise = np.random.normal(mean, std, images.shape)
+
+    # Add noise to images and convert both to int16 to allow negative noise values
+    images = np.int16(images) + np.int16(noise)
+
+    # Clip image values to range [0,255]
+    images = np.uint8(np.clip(images, 0, 255))
+
+    return images
