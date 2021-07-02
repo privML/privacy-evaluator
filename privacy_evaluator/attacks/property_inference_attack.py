@@ -107,6 +107,12 @@ class PropertyInferenceAttack(Attack):
                 ).format(i, length_class, size_set_old, size_set)
                 warnings.warn(warning_message)
         self.ratios_for_attack = ratios_for_attack
+
+        if len(ratios_for_attack) < 1:
+            raise ValueError(
+                "Ratios for different properties in sub-attacks can't have length zero."
+            )
+
         self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
         self.verbose = verbose
 
@@ -371,16 +377,37 @@ class PropertyInferenceAttack(Attack):
             )
             output[key] = predictions_ratios[ratio][0][0]
 
-        max_message = (
-            "The most probable property is class {}: {}, "
-            "class {}: {} with a probability of {}.".format(
-                self.classes[0],
-                round(1 - max_property[0], 5),
-                self.classes[1],
-                round(max_property[0], 5),
-                predictions_ratios[max_property[0]][0][0],
+        if len(self.ratios_for_attack) >= 2:
+            max_message = (
+                "The most probable property is class {}: {}, "
+                "class {}: {} with a probability of {}.".format(
+                    self.classes[0],
+                    round(1 - max_property[0], 5),
+                    self.classes[1],
+                    round(max_property[0], 5),
+                    predictions_ratios[max_property[0]][0][0],
+                )
             )
-        )
+        else:
+            if list(predictions_ratios.values())[0][0][0] > 0.5:
+                max_message = "The given distribution is more likely than a balanced distribution. " "The given distribution is class {}: {}, class {}: {}".format(
+                    self.classes[0],
+                    round(1 - self.ratios_for_attack[0], 5),
+                    self.classes[1],
+                    round(self.ratios_for_attack[0], 5),
+                )
+            else:
+                max_message = "A balanced distribution is more likely than the given distribution. " "The given distribution is class {}: {}, class {}: {}".format(
+                    self.classes[0],
+                    round(1 - self.ratios_for_attack[0], 5),
+                    self.classes[1],
+                    round(self.ratios_for_attack[0], 5),
+                )
+            if abs(list(predictions_ratios.values())[0][0][0] - 0.5) <= 0.05:
+                warnings.warn(
+                    "The probabilities are very close to each other. The prediction is likely to be a random guess."
+                )
+
         return (max_message, output)
 
     def prediction_on_specific_property(
