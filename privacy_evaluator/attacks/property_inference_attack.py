@@ -4,7 +4,9 @@ from ..utils import data_utils
 from ..utils.trainer import trainer
 from ..models.tf.conv_net_meta_classifier import ConvNetMetaClassifier
 from ..utils.model_utils import copy_and_reset_model
-
+from ..output.user_output_property_inference_attack import (
+    UserOutputPropertyInferenceAttack,
+)
 
 import numpy as np
 import torch
@@ -358,7 +360,7 @@ class PropertyInferenceAttack(Attack):
         predictions = meta_classifier.predict(x=[feature_extraction_target_model])
         return predictions
 
-    def output_attack(self, predictions_ratios) -> Tuple[str, Dict[str, float]]:
+    def output_attack(self, predictions_ratios) -> UserOutputPropertyInferenceAttack:
         """
         Determination of prediction with highest probability.
         :param predictions_ratios: Prediction values from meta-classifier for different subattacks (different properties)
@@ -408,7 +410,7 @@ class PropertyInferenceAttack(Attack):
                     "The probabilities are very close to each other. The prediction is likely to be a random guess."
                 )
 
-        return (max_message, output)
+        return UserOutputPropertyInferenceAttack(max_message, output)
 
     def prediction_on_specific_property(
         self,
@@ -450,7 +452,7 @@ class PropertyInferenceAttack(Attack):
 
         return prediction
 
-    def attack(self) -> Tuple[str, Dict[str, float]]:
+    def attack(self) -> UserOutputPropertyInferenceAttack:
         """
         Perform Property Inference attack.
         :return: message with most probable property, dictionary with all properties
