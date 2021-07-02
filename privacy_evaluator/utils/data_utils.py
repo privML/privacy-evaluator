@@ -89,3 +89,24 @@ def new_dataset_from_size_dict(
     new_dataset = (new_data_x, new_data_y)
 
     return new_dataset
+
+def split_data_set_with_ratio(
+    data_set: Tuple[np.ndarray, np.ndarray], ratio: float
+) -> Tuple[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]]:
+    """
+    Splits a data set in two datsets according to given ratio. 
+    :param original_data_set: Input data set
+    :param ratio: A ratio how to split the data set. Describes size of new_data_set1.
+    """
+    assert ratio <=1 and ratio >=0
+    num_samples = len(data_set[0])
+
+    idx = np.random.choice(num_samples,int(num_samples * ratio), replace=False)
+    new_data_set1 = (data_set[0][idx], data_set[1][idx])
+
+    mask = np.ones(num_samples, np.bool)
+    mask[idx] = 0
+    new_data_set2 = (data_set[0][mask],data_set[1][mask])
+
+    return new_data_set1, new_data_set2
+    
