@@ -4,7 +4,9 @@ from privacy_evaluator.utils.data_utils import (
     dataset_downloader,
     new_dataset_from_size_dict,
 )
-from privacy_evaluator.output.user_output_property_inference_attack import UserOutputPropertyInferenceAttack
+from privacy_evaluator.output.user_output_property_inference_attack import (
+    UserOutputPropertyInferenceAttack,
+)
 from privacy_evaluator.utils.trainer import trainer
 from privacy_evaluator.models.torch.cnn import ConvNet
 from typing import Dict, List
@@ -78,7 +80,9 @@ def test_property_inference_attack(
     # we expect the ratios to be ordered
     ratios_for_attack.sort()
 
-    assert isinstance(output, UserOutputPropertyInferenceAttack), "Wrong output type of attack."
+    assert isinstance(
+        output, UserOutputPropertyInferenceAttack
+    ), "Wrong output type of attack."
     assert (
         attack.ratios_for_attack == ratios_for_attack
     ), "Ratios for properties are not equal to input."
@@ -87,4 +91,6 @@ def test_property_inference_attack(
     ), "Number of shadow classifiers are not equal to input."
     assert attack.size_set == size_set, "Number of samples is not equal to input."
     assert attack.classes == classes, "Classes are not equal to input classes."
-    assert len(output.output) == len(classes), "Output is not compatible to input."
+    assert len(output.output) == len(
+        ratios_for_attack
+    ), "Output is not compatible to input."

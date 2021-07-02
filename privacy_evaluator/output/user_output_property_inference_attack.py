@@ -6,11 +6,7 @@ class UserOutputPropertyInferenceAttack(UserOutput):
 
     """User Output for Inference Attacks Class"""
 
-    def __init__(
-        self,
-        max_message: str,
-        output: Dict[str, float]
-    ):
+    def __init__(self, max_message: str, output: Dict[str, float]):
         """
         Initilaizes the Class with values
         """
