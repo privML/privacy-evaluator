@@ -1,5 +1,3 @@
-from .data_utils import dataset_downloader
-
 import numpy as np
 from copy import deepcopy
 import logging
@@ -18,7 +16,7 @@ def images_adaptation(images: np.ndarray, adaptation: str, **kwargs) -> np.ndarr
     Apply a specific adaptation on each image in `images`.
 
     :params images: The original images of shape [N, H, W, D].
-    :params adaptation: The type of adaptation, so far "mask", is supported.
+    :params adaptation: The type of adaptation.
     :params **kwargs: Optional parameters for the specified adaptation.
     :return: The adapted images.
 

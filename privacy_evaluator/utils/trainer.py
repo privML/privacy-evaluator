@@ -34,7 +34,7 @@ def trainer(
         batch_size: The number of data points (i.e. images) that are simultaneously \ 
             processed during training, so as to give statistical gradient among a \
             batch and accelerate training.
-        num_epochs: The number of times each data point in `train_set` has been iterated.
+        num_epochs: The number of times each data point in `train_set` is iterated during training.
         learning_rate: The coefficient that decides the amplitude of the next gradient \
             descent.
         weight_decay: The coefficient of regularization-loss for trainable parameters.\
