@@ -324,11 +324,18 @@ class PropertyInferenceAttack(Attack):
             metrics=["accuracy"],
         )
 
+        # keras functional API provides a verbose variable ranging from {0, 1, 2}. 
+        # logging uses levels in our case corresponding to numeric values from {30, 20, 10}.
+        # We can therefore convert our self.logger.level to the appropriate verbose value in the following manner:
+        verbose = 3 - int(self.logger.level/10)
+
         cnmc.model.fit(
             x=meta_training_X,
             y=meta_training_y,
             epochs=2,
             batch_size=128,
+            verbose=verbose
+
             # If enough shadow classifiers are available, one could split the training set
             # and create an additional validation set as input:
             # validation_data = (validation_X, validation_y),
@@ -475,8 +482,7 @@ class PropertyInferenceAttack(Attack):
         feature_extraction_target_model = self.feature_extraction(self.target_model)
 
         self.logger.info(
-            feature_extraction_target_model.shape,
-            " --- features extracted from the target model.",
+            "{} --- features extracted from the target model.".format(feature_extraction_target_model.shape),
         )
 
         # balanced ratio
@@ -484,9 +490,7 @@ class PropertyInferenceAttack(Attack):
         neg_property_num_elements_per_class = {i: num_elements for i in self.classes}
 
         self.logger.info(
-            "Creating set of",
-            int(self.amount_sets / 2),
-            "balanced shadow classifiers ... ",
+            "Creating set of {} balanced shadow classifiers ... ".format(int(self.amount_sets / 2)),
         )
         # create balanced shadow classifiers negation property
         shadow_classifiers_neg_property = (

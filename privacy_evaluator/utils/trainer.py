@@ -16,11 +16,11 @@ def trainer(
     train_set: Union[Tuple[np.ndarray, np.ndarray], torch.utils.data.Dataset],
     size_dict: Dict[int, int],
     model: Union[nn.Module, keras.Model],
+    logger: logging.Logger = None,
     batch_size: int = 250,
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
-    logger: logging.Logger = None,
 ):
     """
     Train a given model on a given training set `train_set` under customized 
@@ -47,11 +47,11 @@ def trainer(
             train_set,
             size_dict,
             model,
+            logger,
             batch_size,
             num_epochs,
             learning_rate,
             weight_decay,
-            logger,
         )
     elif isinstance(model, nn.Module):
         # for torch, convert [0, 255] scale to [0, 1] (float)
@@ -62,11 +62,11 @@ def trainer(
             train_set,
             size_dict,
             model,
+            logger,
             batch_size,
             num_epochs,
             learning_rate,
             weight_decay,
-            logger,
         )
     else:
         raise TypeError("Only torch and tensorflow models are accepted inputs.")
@@ -95,11 +95,11 @@ def _trainer_tf(
     train_set: Tuple[np.ndarray, np.ndarray],
     size_dict: Dict[int, int],
     model: keras.Model,
+    logger: logging.Logger = None,
     batch_size: int = 500,
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
-    logger: logging.Logger = None,
 ):
     """
     Train the given model on the given dataset.
@@ -127,7 +127,7 @@ def _trainer_tf(
     class_encoding = {class_id: i for i, (class_id, _) in enumerate(size_dict.items())}
 
     # start training
-    logger.info("Training TensorFlow model in", num_epochs, "epochs.")
+    logger.info("Training TensorFlow model in {} epochs.".format(num_epochs))
     for _ in tqdm(range(num_epochs), file=sys.stdout, disable=(logger.level > logging.INFO)):
         for images, labels in train_loader:
             labels = np.vectorize(lambda id: class_encoding[id])(labels)
@@ -150,11 +150,11 @@ def _trainer_torch(
     train_set: Union[Tuple[np.ndarray, np.ndarray], torch.utils.data.Dataset],
     size_dict: Dict[int, int],
     model: nn.Module,
+    logger: logging.Logger = None,
     batch_size: int = 500,
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
-    logger: logging.Logger = None,
 ):
     """
     Train the given model on the given dataset.
@@ -191,7 +191,7 @@ def _trainer_torch(
     class_encoding = {class_id: i for i, (class_id, _) in enumerate(size_dict.items())}
 
     # start training
-    logger.info("Training PyTorch model in ", num_epochs, "epochs.")
+    logger.info("Training PyTorch model in {} epochs.".format(num_epochs))
     for _ in tqdm(range(num_epochs), file=sys.stdout, disable=(logger.level > logging.INFO)):
         model.train()
         for images, labels in train_loader:
