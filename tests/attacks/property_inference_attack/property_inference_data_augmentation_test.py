@@ -11,6 +11,7 @@ from privacy_evaluator.utils.data_utils import create_new_dataset_with_adaptatio
 
 from typing import Dict, List
 import numpy as np
+import logging
 
 # dataset for the attack
 DATASET = "MNIST"
@@ -45,6 +46,15 @@ def test_property_inference_data_augmentation_attack(
     adaptation: str = ADAPTATION,
     ratio: float = RATIO
 ):
+    logger = logging.getLogger(__name__)
+    if verbose==2:
+        level = logging.DEBUG
+    elif verbose==1:
+        level = logging.INFO
+    else:
+        level = logging.WARNING
+    logger.setLevel(level)
+
     train_dataset, test_dataset = dataset_downloader(dataset)
     input_shape = train_dataset[0][0].shape
 
@@ -52,7 +62,7 @@ def test_property_inference_data_augmentation_attack(
 
     train_set = create_new_dataset_with_adaptation(train_dataset, ratio, adaptation, box_len = box_len)
     
-    print("Start training target model ...\n")
+    logger.info("Start training target model ...\n")
 
     # num_channels and input_shape are optional in cnn.py
     model = create_and_train_torch_ConvNet_model(train_set, num_channels, num_epochs)

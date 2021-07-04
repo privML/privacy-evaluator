@@ -1,3 +1,4 @@
+import logging
 import tensorflow as tf
 from tensorflow import keras
 import torch
@@ -8,6 +9,7 @@ from typing import Tuple, Dict, Union
 from ..utils.metric import cross_entropy_loss, accuracy
 from tqdm import tqdm
 import sys
+import logging
 
 
 def trainer(
@@ -18,7 +20,7 @@ def trainer(
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
-    verbose: int = 0,
+    logger: logging.Logger = None,
 ):
     """
     Train a given model on a given training set `train_set` under customized 
@@ -49,7 +51,7 @@ def trainer(
             num_epochs,
             learning_rate,
             weight_decay,
-            verbose,
+            logger,
         )
     elif isinstance(model, nn.Module):
         # for torch, convert [0, 255] scale to [0, 1] (float)
@@ -64,7 +66,7 @@ def trainer(
             num_epochs,
             learning_rate,
             weight_decay,
-            verbose,
+            logger,
         )
     else:
         raise TypeError("Only torch and tensorflow models are accepted inputs.")
@@ -97,12 +99,15 @@ def _trainer_tf(
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
-    verbose: int = 0,
+    logger: logging.Logger = None,
 ):
     """
     Train the given model on the given dataset.
     """
-
+    if not logger:
+        logger = logging.getLogger(__name__)
+        logger.setLevel(logging.WARNING)
+    
     # set device
     gpus = tf.config.experimental.list_physical_devices("GPU")
     if gpus:
@@ -122,9 +127,8 @@ def _trainer_tf(
     class_encoding = {class_id: i for i, (class_id, _) in enumerate(size_dict.items())}
 
     # start training
-    if verbose == 2:
-        print("Training TensorFlow model in", num_epochs, "epochs.")
-    for _ in tqdm(range(num_epochs), file=sys.stdout, disable=(verbose < 2)):
+    logger.info("Training TensorFlow model in", num_epochs, "epochs.")
+    for _ in tqdm(range(num_epochs), file=sys.stdout, disable=(logger.level > logging.INFO)):
         for images, labels in train_loader:
             labels = np.vectorize(lambda id: class_encoding[id])(labels)
             with tf.GradientTape() as g:
@@ -150,17 +154,19 @@ def _trainer_torch(
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
-    verbose: int = 0,
+    logger: logging.Logger = None,
 ):
     """
     Train the given model on the given dataset.
     """
+    if not logger:
+        logger = logging.getLogger(__name__)
+        logger.setLevel(logging.WARNING)
     # convert np.array datasets into torch dataset
     if isinstance(train_set, tuple):
         train_x, train_y = train_set
         train_x, train_y = map(torch.tensor, (train_x, train_y))
         train_set = torch.utils.data.TensorDataset(train_x, train_y)
-
     # create data-loader
     train_loader = DataLoader(
         dataset=train_set,
@@ -185,9 +191,8 @@ def _trainer_torch(
     class_encoding = {class_id: i for i, (class_id, _) in enumerate(size_dict.items())}
 
     # start training
-    if verbose == 2:
-        print("Training PyTorch model in ", num_epochs, "epochs.")
-    for _ in tqdm(range(num_epochs), file=sys.stdout, disable=(verbose < 2)):
+    logger.info("Training PyTorch model in ", num_epochs, "epochs.")
+    for _ in tqdm(range(num_epochs), file=sys.stdout, disable=(logger.level > logging.INFO)):
         model.train()
         for images, labels in train_loader:
             labels = labels.apply_(lambda id: class_encoding[id]).flatten()

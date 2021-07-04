@@ -10,6 +10,7 @@ from privacy_evaluator.output.user_output_property_inference_attack import (
 from privacy_evaluator.utils.model_utils import create_and_train_torch_ConvNet_model
 
 from typing import Dict, List
+import logging
 
 # ratio for target model
 NUM_ELEMENTS_PER_CLASSES = {0: 1000, 1: 1000}
@@ -42,6 +43,15 @@ def test_property_inference_class_distribution_attack(
     classes: List[int] = CLASSES,
     verbose: int = VERBOSE,
 ):
+    logger = logging.getLogger(__name__)
+    if verbose==2:
+        level = logging.DEBUG
+    elif verbose==1:
+        level = logging.INFO
+    else:
+        level = logging.WARNING
+    logger.setLevel(level)
+    
     train_dataset, test_dataset = dataset_downloader(dataset)
     input_shape = train_dataset[0][0].shape
 
@@ -49,7 +59,7 @@ def test_property_inference_class_distribution_attack(
 
     train_set = new_dataset_from_size_dict(train_dataset, num_elements_per_classes)
     
-    print("Start training target model ...\n")
+    logger.info("Start training target model ...\n")
 
     # num_channels and input_shape are optional in cnn.py
     model = create_and_train_torch_ConvNet_model(train_set, num_channels, num_epochs)
@@ -58,7 +68,7 @@ def test_property_inference_class_distribution_attack(
     target_model = Classifier._to_art_classifier(
         model, "sparse_categorical_crossentropy", num_classes, input_shape
     )
-    print("Start attack ...")
+    logger.info("Start attack ...")
 
     attack = PropertyInferenceAttack(
         target_model,
