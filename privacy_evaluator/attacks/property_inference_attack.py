@@ -12,6 +12,8 @@ import numpy as np
 import torch
 from torch import nn
 import tensorflow as tf
+import logging
+from tqdm.contrib.logging import logging_redirect_tqdm
 from tqdm import tqdm
 import sys
 from typing import Tuple, Dict, List, Union
@@ -70,6 +72,16 @@ class PropertyInferenceAttack(Attack):
         :param classes: classes the attack should be performed on
         :param verbose: 0: no information; 1: backbone (most important) information; 2: utterly detailed information will be printed
         """
+        self.logger = logging.getLogger(__name__)
+        if verbose==2:
+            level = logging.DEBUG
+        elif verbose==1:
+            level = logging.INFO
+        else:
+            level = logging.WARNING
+
+        self.logger.setLevel(level)
+
         if not (
             isinstance(dataset, tuple)
             and list(map(type, dataset)) == [np.ndarray, np.ndarray]
@@ -116,7 +128,6 @@ class PropertyInferenceAttack(Attack):
             )
 
         self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
-        self.verbose = verbose
 
         super().__init__(target_model, None, None, None, None)
 
@@ -137,17 +148,18 @@ class PropertyInferenceAttack(Attack):
         # Creation of shadow training sets with the size dictionaries
         # amount_sets divided by 2 because amount_sets describes the total amount of shadow training sets.
         # In this function however only all shadow training sets of one type (follow property OR negation of property) are created, hence amount_sets / 2.
-        if self.verbose > 0:
-            print("Creating shadow training sets")
+        self.logger.info("Creating shadow training sets")
+
         for _ in tqdm(
             range(int(self.amount_sets / 2)),
             file=sys.stdout,
-            disable=(self.verbose < 2),
+            disable=(self.logger.level > logging.INFO),
         ):
             shadow_training_sets = data_utils.new_dataset_from_size_dict(
                 self.dataset, num_elements_per_class
             )
             training_sets.append(shadow_training_sets)
+
         return training_sets
 
     def train_shadow_classifiers(
@@ -167,24 +179,24 @@ class PropertyInferenceAttack(Attack):
         shadow_classifiers = []
 
         num_classes = len(num_elements_per_classes)
-        if self.verbose > 0:
-            print("Training shadow classifiers")
-        for shadow_training_set in tqdm(
-            shadow_training_sets, file=sys.stdout, disable=(self.verbose < 2)
-        ):
-            model = copy_and_reset_model(self.target_model)
-            trainer(
-                shadow_training_set,
-                num_elements_per_classes,
-                model,
-                verbose=self.verbose,
-            )
+        self.logger.info("Training shadow classifiers")
+        with logging_redirect_tqdm():
+            for shadow_training_set in tqdm(
+                shadow_training_sets, file=sys.stdout, disable=(self.logger.level > logging.INFO)
+            ):
+                model = copy_and_reset_model(self.target_model)
+                trainer(
+                    shadow_training_set,
+                    num_elements_per_classes,
+                    model,
+                    self.logger,
+                )
 
-            # change pytorch classifier to art classifier
-            art_model = Classifier._to_art_classifier(
-                model, "sparse_categorical_crossentropy", num_classes, self.input_shape
-            )
-            shadow_classifiers.append(art_model)
+                # change pytorch classifier to art classifier
+                art_model = Classifier._to_art_classifier(
+                    model, "sparse_categorical_crossentropy", num_classes, self.input_shape
+                )
+                shadow_classifiers.append(art_model)
 
         return shadow_classifiers
 
@@ -312,11 +324,18 @@ class PropertyInferenceAttack(Attack):
             metrics=["accuracy"],
         )
 
+        # keras functional API provides a verbose variable ranging from {0, 1, 2}. 
+        # logging uses levels in our case corresponding to numeric values from {30, 20, 10}.
+        # We can therefore convert our self.logger.level to the appropriate verbose value in the following manner:
+        verbose = 3 - int(self.logger.level/10)
+
         cnmc.model.fit(
             x=meta_training_X,
             y=meta_training_y,
             epochs=2,
             batch_size=128,
+            verbose=verbose
+
             # If enough shadow classifiers are available, one could split the training set
             # and create an additional validation set as input:
             # validation_data = (validation_X, validation_y),
@@ -457,28 +476,22 @@ class PropertyInferenceAttack(Attack):
         Perform Property Inference attack.
         :return: message with most probable property, dictionary with all properties
         """
-        if self.verbose > 0:
-            print("Initiating Property Inference Attack ... ")
-            print("Extracting features from target model ... ")
+        self.logger.info("Initiating Property Inference Attack ... ")
+        self.logger.info("Extracting features from target model ... ")
         # extract features of target model
         feature_extraction_target_model = self.feature_extraction(self.target_model)
 
-        if self.verbose > 0:
-            print(
-                feature_extraction_target_model.shape,
-                " --- features extracted from the target model.",
-            )
+        self.logger.info(
+            "{} --- features extracted from the target model.".format(feature_extraction_target_model.shape),
+        )
 
         # balanced ratio
         num_elements = int(round(self.size_set / len(self.classes)))
         neg_property_num_elements_per_class = {i: num_elements for i in self.classes}
 
-        if self.verbose > 0:
-            print(
-                "Creating set of",
-                int(self.amount_sets / 2),
-                "balanced shadow classifiers ... ",
-            )
+        self.logger.info(
+            "Creating set of {} balanced shadow classifiers ... ".format(int(self.amount_sets / 2)),
+        )
         # create balanced shadow classifiers negation property
         shadow_classifiers_neg_property = (
             self.create_shadow_classifier_from_training_set(
@@ -491,11 +504,10 @@ class PropertyInferenceAttack(Attack):
         # iterate over unbalanced ratios in 0.05 steps (0.05-0.45, 0.55-0.95)
         # (e.g. 0.55 means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
 
-        if self.verbose > 0:
-            print("Performing PIA for various ratios ... ")
+        self.logger.info("Performing PIA for various ratios ... ")
 
         for ratio in tqdm(
-            self.ratios_for_attack, file=sys.stdout, disable=(self.verbose == 0)
+            self.ratios_for_attack, file=sys.stdout, disable=(self.logger.level > logging.INFO)
         ):
             predictions[ratio] = self.prediction_on_specific_property(
                 feature_extraction_target_model,
