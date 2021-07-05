@@ -9,6 +9,7 @@ install_requires = [
     "torch",
     "tensorflow",
     "torchvision",
+    "pillow==8.2.0",
 ]
 
 development_requires = [
