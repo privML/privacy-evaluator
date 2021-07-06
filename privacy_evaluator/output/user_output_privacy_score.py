@@ -8,8 +8,24 @@ from .user_output import UserOutput
 
 
 class UserOutputPrivacyScore(UserOutput):
+    """User Output Class
 
-    """User Output Class"""
+    Interpretation of Outcome:
+
+    Vulnerability of individual data points:
+    The training data points that exhibit an increased membership privacy risk might differ from their classes mean
+    samples (outliers) [2]. You could check them again, see if they have the correct label, or if they exhibit any
+    non-standard properties for the class. If so, correct them. It was also shown that points with an high influence on
+    the decision boundary are more vulnerable to membership inference attacks [1]. Therefore, these points might be
+    important. If you want to protect them, you might add several similar training samples as they are to the class.
+
+    References:
+    [1] Stacey Truex, Ling Liu, Mehmet Emre Gursoy, Lei Yu, and Wenqi Wei. 2019.Demystifying Membership Inference
+    Attacks in Machine Learning as a Service.IEEE Transactions on Services Computing(2019)
+    [2] Yunhui Long, Vincent Bindschaedler, Lei Wang, Diyue Bu, Xiaofeng Wang, HaixuTang, Carl A. Gunter, and Kai Chen.
+    2018.   Understanding Membership In-ferences on Well-Generalized Learning Models.CoRRabs/1802.04889
+    (2018).arXiv:1802.04889  http://arxiv.org/abs/1802.0
+    """
 
     def __init__(self, attack_data_y: np.ndarray, privacy_risk: np.ndarray):
         """

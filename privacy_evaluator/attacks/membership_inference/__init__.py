@@ -14,3 +14,5 @@ from .membership_inference import (
 from .membership_inference_analysis import (
     MembershipInferenceAttackAnalysis,
 )
+
+from .on_point_basis import MembershipInferenceAttackOnPointBasis
