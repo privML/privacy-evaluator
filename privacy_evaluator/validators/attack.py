@@ -20,7 +20,7 @@ def _validate_fit_parameters(
     y_train: np.ndarray,
     x_test: np.ndarray,
     y_test: np.ndarray,
-    **kwargs
+    **kwargs,
 ):
     """Validates parameters for `fit` method.
 
