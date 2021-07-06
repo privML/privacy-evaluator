@@ -45,7 +45,9 @@ class MembershipInferenceAttack(Attack):
         "art.attacks.inference.membership_inference"
     )
 
-    def __init__(self, target_model: Classifier, init_art_attack: bool = True, **kwargs):
+    def __init__(
+        self, target_model: Classifier, init_art_attack: bool = True, **kwargs
+    ):
         """Initializes a MembershipInferenceAttack class.
 
         :param target_model: Target model to be attacked.

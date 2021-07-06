@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from ...output.user_output_inference_attack_analysis import (
     UserOutputInferenceAttackAnalysis,
 )
@@ -87,6 +86,7 @@ class MembershipInferenceAttackAnalysis:
         # Instantiate an object of the given attack type.
         attack = self.attack_type(
             target_model=target_model,
+            **self.attack_kwargs,
         )
 
         attack.fit(
@@ -94,7 +94,6 @@ class MembershipInferenceAttackAnalysis:
             y_train=self.input_data.y_train,
             x_test=self.input_data.x_test,
             y_test=self.input_data.y_test,
-            **self.attack_kwargs,
         )
 
         results = []
