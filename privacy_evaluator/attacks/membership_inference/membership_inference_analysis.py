@@ -46,12 +46,14 @@ class MembershipInferenceAttackAnalysis:
         # Instantiate an object of the given attack type.
         attack = self.attack_type(
             target_model=target_model,
+        )
+
+        attack.fit(
             x_train=self.input_data.x_train,
             y_train=self.input_data.y_train,
             x_test=self.input_data.x_test,
             y_test=self.input_data.y_test,
         )
-        attack.fit()
 
         results = []
         for slice in slices(x, y, target_model, slicing):

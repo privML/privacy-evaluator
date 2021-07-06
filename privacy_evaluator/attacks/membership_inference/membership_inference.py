@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Callable
 import numpy as np
 
 from ...metrics.basics import (
@@ -20,33 +20,12 @@ class MembershipInferenceAttack(Attack):
         "art.attacks.inference.membership_inference"
     )
 
-    def __init__(
-        self,
-        target_model: Classifier,
-        x_train: np.ndarray,
-        y_train: np.ndarray,
-        x_test: np.ndarray,
-        y_test: np.ndarray,
-        **kwargs
-    ):
+    def __init__(self, target_model: Classifier, **kwargs):
         """Initializes a MembershipInferenceAttack class.
 
         :param target_model: Target model to be attacked.
-        :param x_train: Data which was used to train the target model.
-        :param y_train: True, one-hot encoded labels for `x_train`.
-        :param x_test: Data that was not used to train the target model.
-        :param y_test: True, one-hot encoded labels for `x_test`.
         """
-        validate_parameters(
-            "init",
-            target_model=target_model,
-            x_train=x_train,
-            y_train=y_train,
-            x_test=x_test,
-            y_test=y_test,
-        )
-
-        super().__init__(target_model, x_train, y_train, x_test, y_test)
+        super().__init__(target_model)
         self._art_attack = self._init_art_attack(target_model, **kwargs)
         self._art_attack_model_fitted = False
 
@@ -143,16 +122,18 @@ class MembershipInferenceAttack(Attack):
         return _art_class(target_model.to_art_classifier(), **kwargs)
 
     @staticmethod
-    def _fit_decorator(fit_function):
+    def _fit_decorator(fit_function: Callable):
         """Decorator for the `fit()` methods of the subclasses.
 
-        Defines a decorator method which checks weather attack model was already fitted. If not, attack model is fitted and
-        `_art_attack_model_fitted` is set to `True`.
+        Defines a decorator for the `fit()` method which validates the fit parameters and checks weather the attack
+        model was already fitted. If not, attack model is fitted and `_art_attack_model_fitted` is set to `True`.
 
+        :param fit_function: Actual `fit()` method that should be decorated.
         :return: Decorator method.
         """
 
         def __fit_decorator(self, **kwargs):
+            validate_parameters("fit", **kwargs)
             if self._art_attack_model_fitted is False:
                 fit_function(self, **kwargs)
                 self._art_attack_model_fitted = True

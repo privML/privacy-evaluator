@@ -19,9 +19,9 @@ def test_membership_inference_black_box_attack():
     )
 
     attack = MembershipInferenceBlackBoxAttack(
-        target_model, x_train[:100], y_train[:100], x_test[:100], y_test[:100]
+        target_model
     )
 
-    attack.fit()
+    attack.fit(x_train[:100], y_train[:100], x_test[:100], y_test[:100])
     assert attack.attack(x_train[100:200], y_train[100:200]).sum() in [58, 59]
     assert attack.attack(x_test[100:200], y_test[100:200]).sum() == 52
