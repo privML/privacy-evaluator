@@ -19,9 +19,10 @@ class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
         self._art_attack_model_fitted = True
 
     @MembershipInferenceAttack._fit_decorator
-    def fit(self, **kwargs):
+    def fit(self, *args, **kwargs):
         """Fits the attack model.
 
+        :param args: Arguments for the fitting.
         :param kwargs: Keyword arguments for the fitting.
         """
         pass

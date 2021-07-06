@@ -18,9 +18,10 @@ class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
         super().__init__(target_model, init_art_attack=False)
 
     @MembershipInferenceAttack._fit_decorator
-    def fit(self, **kwargs):
+    def fit(self, *args, **kwargs):
         """Fits the attack model.
 
+        :param args: Arguments for the fitting.
         :param kwargs: Keyword arguments for the fitting.
         """
         pass

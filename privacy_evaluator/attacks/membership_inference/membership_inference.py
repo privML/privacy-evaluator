@@ -87,12 +87,23 @@ class MembershipInferenceAttack(Attack):
         ).reshape(-1)
 
     def attack_output(
-        self, x: np.ndarray, y: np.ndarray, y_attack: np.ndarray
+        self,
+        x: np.ndarray,
+        y: np.ndarray,
+        x_train: np.ndarray,
+        y_train: np.ndarray,
+        x_test: np.ndarray,
+        y_test: np.ndarray,
+        y_attack: np.ndarray,
     ) -> UserOutputInferenceAttack:
         """Creates attack output metrics in an extractable format.
 
         :param x: Data to be attacked.
         :param y: True, one-hot encoded labels for `x`.
+        :param x_train: Data which was used to train the target model and will be used for training the attack model.
+        :param y_train: True, one-hot encoded labels for `x_train`.
+        :param x_test: Data that was not used to train the target model and will be used for training the attack model.
+        :param y_test: True, one-hot encoded labels for `x_test`.
         :param y_attack: True, non one-hot encoded labels for the attack model (e.g. the membership status).
         :return: An dict with attack output metrics including the target model train and test accuracy, target model
         train to test accuracy gap and ratio and the attack model accuracy.
@@ -102,8 +113,8 @@ class MembershipInferenceAttack(Attack):
             "attack_output", target_model=self.target_model, x=x, y=y, y_attack=y_attack
         )
 
-        train_accuracy = accuracy(self.y_train, self.target_model.predict(self.x_train))
-        test_accuracy = accuracy(self.y_test, self.target_model.predict(self.x_test))
+        train_accuracy = accuracy(y_train, self.target_model.predict(x_train))
+        test_accuracy = accuracy(y_test, self.target_model.predict(x_test))
         y_attack_prediction = self.attack(x, y)
 
         return UserOutputInferenceAttack(
@@ -114,9 +125,10 @@ class MembershipInferenceAttack(Attack):
             accuracy(y_attack, y_attack_prediction),
         )
 
-    def fit(self, **kwargs):
+    def fit(self, *args, **kwargs):
         """Fits the attack model.
 
+        :param args: Arguments for the fitting.
         :param kwargs: Keyword arguments for the fitting.
         """
         raise NotImplementedError(
@@ -169,10 +181,10 @@ class MembershipInferenceAttack(Attack):
         :return: Decorator method.
         """
 
-        def __fit_decorator(self, **kwargs):
-            validate_parameters("fit", **kwargs)
+        def __fit_decorator(self, *args, **kwargs):
             if self._art_attack_model_fitted is False:
-                fit_function(self, **kwargs)
+                validate_parameters("fit", self.target_model, *args, **kwargs)
+                fit_function(self, *args, **kwargs)
                 self._art_attack_model_fitted = True
 
         return __fit_decorator
