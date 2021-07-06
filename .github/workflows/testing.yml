@@ -2,7 +2,7 @@ name: Testing with pytest
 
 on:
   pull_request:
-    branches: [ main, team1sprint2, team1sprint3, team1sprint4, team1sprint5 ]
+    branches: [ main, team1sprint2, team1sprint3, team1sprint4, team1sprint5, team1sprint6]
     types:
       - opened
       - edited
