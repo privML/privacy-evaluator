@@ -50,6 +50,6 @@ class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
     def fit(self, **kwargs):
         """Fits the attack model.
 
-        :param kwargs: Keyword arguments for the fitting.
+        :param kwargs: Further keyword arguments for fitting the attack model.:param kwargs: Keyword arguments for the fitting.
         """
         self._art_attack.fit(self.x_train, self.y_train, self.x_test, self.y_test)

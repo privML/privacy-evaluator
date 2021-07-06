@@ -33,7 +33,7 @@ class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
     def fit(self, **kwargs):
         """Fits the attack model.
 
-        :param kwargs: Keyword arguments for the fitting.
+        :param kwargs: Further keyword arguments for fitting the attack model.
         """
         pass
 

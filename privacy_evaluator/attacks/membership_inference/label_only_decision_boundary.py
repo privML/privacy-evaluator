@@ -31,7 +31,10 @@ class MembershipInferenceLabelOnlyDecisionBoundaryAttack(MembershipInferenceAtta
     def fit(self, **kwargs):
         """Fits the attack model.
 
-        :param kwargs: Keyword arguments for the fitting.
+        :param max_iter: ...
+        :param max_eval: ...
+        :param max_eval: ...
+        :param kwargs: Further keyword arguments for fitting the attack model.
         """
         self._art_attack.calibrate_distance_threshold(
             self.x_train, self.y_train, self.x_test, self.y_test, **kwargs
