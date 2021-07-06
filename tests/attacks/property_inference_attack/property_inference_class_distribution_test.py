@@ -44,26 +44,26 @@ def test_property_inference_class_distribution_attack(
     verbose: int = VERBOSE,
 ):
     logger = logging.getLogger(__name__)
-    if verbose==2:
+    if verbose == 2:
         level = logging.DEBUG
-    elif verbose==1:
+    elif verbose == 1:
         level = logging.INFO
     else:
         level = logging.WARNING
     logger.setLevel(level)
-    
+
     train_dataset, test_dataset = dataset_downloader(dataset)
     input_shape = train_dataset[0][0].shape
 
     num_classes = len(num_elements_per_classes)
 
     train_set = new_dataset_from_size_dict(train_dataset, num_elements_per_classes)
-    
+
     logger.info("Start training target model ...\n")
 
     # num_channels and input_shape are optional in cnn.py
     model = create_and_train_torch_ConvNet_model(train_set, num_channels, num_epochs)
-    
+
     # change pytorch classifier to art classifier
     target_model = Classifier._to_art_classifier(
         model, "sparse_categorical_crossentropy", num_classes, input_shape

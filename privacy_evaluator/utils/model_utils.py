@@ -15,6 +15,7 @@ NUM_CHANNELS = (1, 16, 32, 64)
 # number of epochs for trainer
 NUM_EPOCHS = 2
 
+
 def copy_and_reset_model(
     model: Union[keras.Model, nn.Module, BaseEstimator]
 ) -> Union[nn.Module, keras.Model]:
@@ -74,15 +75,16 @@ def _copy_and_reset_tf_model(target_model: keras.Model) -> keras.Model:
         layer.assign(np.random.normal(0, 1, layer_shape))
     return model
 
+
 def create_and_train_torch_ConvNet_model(
-    data_set: Tuple[np.ndarray, np.ndarray], 
+    data_set: Tuple[np.ndarray, np.ndarray],
     num_channels: Tuple[int, ...] = NUM_CHANNELS,
-    num_epochs: int = NUM_EPOCHS
+    num_epochs: int = NUM_EPOCHS,
 ) -> nn.Module:
     """
     Creates a torch ConvNet model and trains it on the provided data set.
     :param data_set: Input data set.
-    :param num_channels: Number of input channels. 
+    :param num_channels: Number of input channels.
     :param num_epochs: The number of times each data point in `data_set` is iterated during training.
     """
     num_elements_per_classes = dict(zip(*np.unique(data_set[1], return_counts=True)))

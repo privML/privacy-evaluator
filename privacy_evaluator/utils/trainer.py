@@ -107,7 +107,7 @@ def _trainer_tf(
     if not logger:
         logger = logging.getLogger(__name__)
         logger.setLevel(logging.WARNING)
-    
+
     # set device
     gpus = tf.config.experimental.list_physical_devices("GPU")
     if gpus:
@@ -128,7 +128,9 @@ def _trainer_tf(
 
     # start training
     logger.info("Training TensorFlow model in {} epochs.".format(num_epochs))
-    for _ in tqdm(range(num_epochs), file=sys.stdout, disable=(logger.level > logging.INFO)):
+    for _ in tqdm(
+        range(num_epochs), file=sys.stdout, disable=(logger.level > logging.INFO)
+    ):
         for images, labels in train_loader:
             labels = np.vectorize(lambda id: class_encoding[id])(labels)
             with tf.GradientTape() as g:
@@ -192,7 +194,9 @@ def _trainer_torch(
 
     # start training
     logger.info("Training PyTorch model in {} epochs.".format(num_epochs))
-    for _ in tqdm(range(num_epochs), file=sys.stdout, disable=(logger.level > logging.INFO)):
+    for _ in tqdm(
+        range(num_epochs), file=sys.stdout, disable=(logger.level > logging.INFO)
+    ):
         model.train()
         for images, labels in train_loader:
             labels = labels.apply_(lambda id: class_encoding[id]).flatten()

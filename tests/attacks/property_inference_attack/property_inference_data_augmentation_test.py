@@ -27,12 +27,13 @@ SIZE_SET = 100
 RATIOS_FOR_ATTACK = [0.9, 0.3]
 # 0: no information; 1: backbone (most important) information; 2: utterly detailed
 VERBOSE = 1
-#The type of adaptation. ('mask', 'random_noise', 'brightness')
+# The type of adaptation. ('mask', 'random_noise', 'brightness')
 ADAPTATION = "mask"
-#A ratio for the number of adapted samples
+# A ratio for the number of adapted samples
 RATIO = 0.2
-#Involved when adaptation is "mask", the side length of masking boxes.
+# Involved when adaptation is "mask", the side length of masking boxes.
 BOX_LEN = 4
+
 
 def test_property_inference_data_augmentation_attack(
     dataset: str = DATASET,
@@ -44,12 +45,12 @@ def test_property_inference_data_augmentation_attack(
     verbose: int = VERBOSE,
     box_len: int = BOX_LEN,
     adaptation: str = ADAPTATION,
-    ratio: float = RATIO
+    ratio: float = RATIO,
 ):
     logger = logging.getLogger(__name__)
-    if verbose==2:
+    if verbose == 2:
         level = logging.DEBUG
-    elif verbose==1:
+    elif verbose == 1:
         level = logging.INFO
     else:
         level = logging.WARNING
@@ -60,17 +61,18 @@ def test_property_inference_data_augmentation_attack(
 
     num_classes = len(np.unique(train_dataset[1]))
 
-    train_set = create_new_dataset_with_adaptation(train_dataset, ratio, adaptation, box_len = box_len)
-    
+    train_set = create_new_dataset_with_adaptation(
+        train_dataset, ratio, adaptation, box_len=box_len
+    )
+
     logger.info("Start training target model ...\n")
 
     # num_channels and input_shape are optional in cnn.py
     model = create_and_train_torch_ConvNet_model(train_set, num_channels, num_epochs)
-    
+
     # change pytorch classifier to art classifier
     target_model = Classifier._to_art_classifier(
         model, "sparse_categorical_crossentropy", num_classes, input_shape
     )
-    
-    #TODO start attack
 
+    # TODO start attack
