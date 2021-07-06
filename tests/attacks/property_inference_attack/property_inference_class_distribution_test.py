@@ -4,10 +4,13 @@ from privacy_evaluator.utils.data_utils import (
     dataset_downloader,
     new_dataset_from_size_dict,
 )
-from privacy_evaluator.utils.trainer import trainer
-from privacy_evaluator.models.torch.cnn import ConvNet
+from privacy_evaluator.output.user_output_property_inference_attack import (
+    UserOutputPropertyInferenceAttack,
+)
+from privacy_evaluator.utils.model_utils import create_and_train_torch_ConvNet_model
+
 from typing import Dict, List
-from torch import nn
+import logging
 
 # ratio for target model
 NUM_ELEMENTS_PER_CLASSES = {0: 1000, 1: 1000}
@@ -29,7 +32,7 @@ CLASSES = [4, 5]
 VERBOSE = 1
 
 
-def test_property_inference_attack(
+def test_property_inference_class_distribution_attack(
     num_elements_per_classes: Dict[int, int] = NUM_ELEMENTS_PER_CLASSES,
     dataset: str = DATASET,
     num_channels: int = NUM_CHANNELS,
@@ -40,23 +43,32 @@ def test_property_inference_attack(
     classes: List[int] = CLASSES,
     verbose: int = VERBOSE,
 ):
+    logger = logging.getLogger(__name__)
+    if verbose == 2:
+        level = logging.DEBUG
+    elif verbose == 1:
+        level = logging.INFO
+    else:
+        level = logging.WARNING
+    logger.setLevel(level)
+
     train_dataset, test_dataset = dataset_downloader(dataset)
-    input_shape = test_dataset[0][0].shape
+    input_shape = train_dataset[0][0].shape
 
     num_classes = len(num_elements_per_classes)
 
     train_set = new_dataset_from_size_dict(train_dataset, num_elements_per_classes)
-    # num_channels and input_shape are optional in cnn.py
-    model = ConvNet(num_classes, input_shape, num_channels=num_channels)
 
-    print("Start training target model ...\n")
-    trainer(train_set, num_elements_per_classes, model, num_epochs=num_epochs)
+    logger.info("Start training target model ...\n")
+
+    # num_channels and input_shape are optional in cnn.py
+    model = create_and_train_torch_ConvNet_model(train_set, num_channels, num_epochs)
 
     # change pytorch classifier to art classifier
     target_model = Classifier._to_art_classifier(
         model, "sparse_categorical_crossentropy", num_classes, input_shape
     )
-    print("Start attack ...")
+    logger.info("Start attack ...")
 
     attack = PropertyInferenceAttack(
         target_model,
@@ -77,10 +89,9 @@ def test_property_inference_attack(
     # we expect the ratios to be ordered
     ratios_for_attack.sort()
 
-    assert isinstance(output, tuple) and list(map(type, output)) == [
-        str,
-        dict,
-    ], "Wrong output type of attack."
+    assert isinstance(
+        output, UserOutputPropertyInferenceAttack
+    ), "Wrong output type of attack."
     assert (
         attack.ratios_for_attack == ratios_for_attack
     ), "Ratios for properties are not equal to input."
@@ -89,4 +100,6 @@ def test_property_inference_attack(
     ), "Number of shadow classifiers are not equal to input."
     assert attack.size_set == size_set, "Number of samples is not equal to input."
     assert attack.classes == classes, "Classes are not equal to input classes."
-    assert len(output[1]) == len(classes), "Output is not compatible to input."
+    assert len(output.output) == len(
+        ratios_for_attack
+    ), "Output is not compatible to input."
