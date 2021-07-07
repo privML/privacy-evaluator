@@ -138,3 +138,49 @@ class UserOutputPrivacyScore(UserOutput):
                 plt.xticks(all_labels)
             plt.show()
         return all_labels, relative_values
+
+    def histogram_distribution(
+        self,
+        class_name: str = None,
+        show_diagram: bool = True,
+    ) -> np.ndarray:
+        """
+        Draw histogram of the highest privacy risk score of the given data
+        :param class_name: Name of the Class shown in the diagram
+        :param show_diagram: determines if the diagram should be shown, default: True
+        :return: the data that is being ploted
+        """
+        if show_diagram:
+            plt.hist(self.privacy_risk)
+            if class_name is None:
+                plt.title("Histogram for the whole data")
+            else:
+                plt.title("Histogram for data of {}".format(class_name))
+            plt.ylabel("Number of occurences")
+            plt.xlabel("Privacy risk score")
+            plt.show()
+        return self.privacy_risk
+
+    def histogram_slices(
+        self,
+        slices: np.ndarray,
+        slices_priv_risk: np.ndarray,
+        show_diagram: bool = True,
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Draw histogram of class distribution of the k points with highest privacy risk score, relative to the size of the classes
+        :param slices: The names of the slices to be ploted
+        :param slices_priv_risk: a list of the privacy risk scores whitin the slices
+        :param show_diagram: determines if the diagram should be shown, default: True
+        :return: All Slice names with the average privacy risk score
+        """
+        avg_scores = np.array([])
+        for priv_risk in slices_priv_risk:
+            avg_scores = np.append(avg_scores, np.average(priv_risk))
+        if show_diagram:
+            plt.bar(slices, avg_scores)
+            plt.title("Histogram for the average score on each slice")
+            plt.xlabel("Slices")
+            plt.ylabel("Average Privacy Score")
+            plt.show()
+        return slices, avg_scores
