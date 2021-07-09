@@ -20,7 +20,7 @@ def trainer(
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
-    log_level: int = logging.WARNING,
+    log_level: int = logging.DEBUG,
 ):
     """
     Train a given model on a given training set `train_set` under customized 
