@@ -328,6 +328,7 @@ class PropertyInferenceAttack(Attack):
         inputs = tf.keras.Input(shape=meta_input_shape)
 
         # create model according to model from https://arxiv.org/pdf/2002.05688.pdf
+        self.logger.info("Initialize meta-classifier ... ")
         cnmc = ConvNetMetaClassifier(inputs=inputs, num_classes=nb_classes)
 
         cnmc.model.compile(
@@ -341,6 +342,7 @@ class PropertyInferenceAttack(Attack):
         # We can therefore convert our self.logger.level to the appropriate verbose value in the following manner:
         verbose = 3 - int(self.logger.level / 10)
 
+        self.logger.info(f"Training meta-classifier for {self.num_epochs_meta_classifier} epochs ... ")
         cnmc.model.fit(
             x=meta_training_X,
             y=meta_training_y,
