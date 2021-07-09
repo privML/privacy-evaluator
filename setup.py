@@ -11,6 +11,7 @@ install_requires = [
     "torchvision",
     "pillow==8.2.0",
     "tqdm==4.61.0",
+    "matplotlib==3.4.1",
 ]
 
 development_requires = [
