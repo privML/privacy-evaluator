@@ -16,11 +16,11 @@ def trainer(
     train_set: Union[Tuple[np.ndarray, np.ndarray], torch.utils.data.Dataset],
     size_dict: Dict[int, int],
     model: Union[nn.Module, keras.Model],
-    logger: logging.Logger = None,
     batch_size: int = 250,
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
+    log_level: int = logging.WARNING,
 ):
     """
     Train a given model on a given training set `train_set` under customized 
@@ -47,11 +47,11 @@ def trainer(
             train_set,
             size_dict,
             model,
-            logger,
             batch_size,
             num_epochs,
             learning_rate,
             weight_decay,
+            log_level,
         )
     elif isinstance(model, nn.Module):
         # for torch, convert [0, 255] scale to [0, 1] (float)
@@ -62,11 +62,11 @@ def trainer(
             train_set,
             size_dict,
             model,
-            logger,
             batch_size,
             num_epochs,
             learning_rate,
             weight_decay,
+            log_level,
         )
     else:
         raise TypeError("Only torch and tensorflow models are accepted inputs.")
@@ -95,18 +95,17 @@ def _trainer_tf(
     train_set: Tuple[np.ndarray, np.ndarray],
     size_dict: Dict[int, int],
     model: keras.Model,
-    logger: logging.Logger = None,
     batch_size: int = 500,
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
+    log_level: int = logging.DEBUG,
 ):
     """
     Train the given model on the given dataset.
     """
-    if not logger:
-        logger = logging.getLogger(__name__)
-        logger.setLevel(logging.WARNING)
+    logger = logging.getLogger(__name__)
+    logger.setLevel(log_level)
 
     # set device
     gpus = tf.config.experimental.list_physical_devices("GPU")
@@ -127,9 +126,11 @@ def _trainer_tf(
     class_encoding = {class_id: i for i, (class_id, _) in enumerate(size_dict.items())}
 
     # start training
-    logger.info("Training TensorFlow model in {} epochs.".format(num_epochs))
+    logger.info("Training TensorFlow model in {} epochs...".format(num_epochs))
     for _ in tqdm(
-        range(num_epochs), file=sys.stdout, disable=(logger.level > logging.WARNING)
+        range(num_epochs),
+        disable=(logger.level > logging.DEBUG),
+        desc="Training TensorFlow model",
     ):
         for images, labels in train_loader:
             labels = np.vectorize(lambda id: class_encoding[id])(labels)
@@ -152,18 +153,18 @@ def _trainer_torch(
     train_set: Union[Tuple[np.ndarray, np.ndarray], torch.utils.data.Dataset],
     size_dict: Dict[int, int],
     model: nn.Module,
-    logger: logging.Logger = None,
     batch_size: int = 500,
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
+    log_level: int = logging.DEBUG,
 ):
     """
     Train the given model on the given dataset.
     """
-    if not logger:
-        logger = logging.getLogger(__name__)
-        logger.setLevel(logging.WARNING)
+    logger = logging.getLogger(__name__)
+    logger.setLevel(log_level)
+
     # convert np.array datasets into torch dataset
     if isinstance(train_set, tuple):
         train_x, train_y = train_set
@@ -193,9 +194,11 @@ def _trainer_torch(
     class_encoding = {class_id: i for i, (class_id, _) in enumerate(size_dict.items())}
 
     # start training
-    logger.info("Training PyTorch model in {} epochs.".format(num_epochs))
+    logger.info("Training PyTorch model in {} epochs...".format(num_epochs))
     for _ in tqdm(
-        range(num_epochs), file=sys.stdout, disable=(logger.level > logging.WARNING)
+        range(num_epochs),
+        disable=(logger.level > logging.DEBUG),
+        desc="Training PyTorch model",
     ):
         model.train()
         for images, labels in train_loader:

@@ -10,7 +10,7 @@ install_requires = [
     "tensorflow",
     "torchvision",
     "pillow==8.2.0",
-    "tqdm==4.61.0",  
+    "tqdm==4.61.0",
 ]
 
 development_requires = [

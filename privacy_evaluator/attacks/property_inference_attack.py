@@ -1,3 +1,4 @@
+from unicodedata import decimal
 from ..attacks.attack import Attack
 from ..classifiers.classifier import Classifier
 from ..utils import data_utils
@@ -14,10 +15,10 @@ import tensorflow as tf
 import logging
 from tqdm.contrib.logging import logging_redirect_tqdm
 from tqdm import tqdm
-import sys
 from typing import Tuple, Dict, List, Union
 from art.estimators.classification import TensorFlowV2Classifier, PyTorchClassifier
 from collections import OrderedDict
+
 
 # count of shadow training sets, must be even
 AMOUNT_SETS = 2
@@ -50,6 +51,7 @@ CLASSES = [0, 1]
 # number of epochs for training the meta classifier
 NUM_EPOCHS_META_CLASSIFIER = 20
 
+
 class PropertyInferenceAttack(Attack):
     def __init__(
         self,
@@ -60,7 +62,7 @@ class PropertyInferenceAttack(Attack):
         ratios_for_attack: List[int] = RATIOS_FOR_ATTACK,
         classes: List[int] = CLASSES,
         verbose: int = 0,
-        num_epochs_meta_classifier: int = NUM_EPOCHS_META_CLASSIFIER
+        num_epochs_meta_classifier: int = NUM_EPOCHS_META_CLASSIFIER,
     ):
         """
         Initialize the Property Inference Attack Class.
@@ -74,7 +76,8 @@ class PropertyInferenceAttack(Attack):
         :param verbose: 0: no information; 1: backbone (most important) information; 2: utterly detailed information will be printed
         :param num_epochs_meta_classifier: number of epochs for training the meta classifier
         """
-        self.logger = logging.getLogger('PIA_class_dist_logger')
+        logging.info("======== Property Inference Attack ========")
+        self.logger = logging.getLogger(__name__)
         if verbose == 2:
             level = logging.DEBUG
         elif verbose == 1:
@@ -124,12 +127,12 @@ class PropertyInferenceAttack(Attack):
                 self.logger.warning(warning_message)
         self.ratios_for_attack = ratios_for_attack
 
-        if (num_epochs_meta_classifier < 1):
+        if num_epochs_meta_classifier < 1:
             raise ValueError(
                 "The number of epochs for training the meta classifier must be at least one."
             )
         self.num_epochs_meta_classifier = num_epochs_meta_classifier
-        
+
         if len(ratios_for_attack) < 1:
             raise ValueError(
                 "Ratios for different properties in sub-attacks can't have length zero."
@@ -183,19 +186,19 @@ class PropertyInferenceAttack(Attack):
         shadow_classifiers = []
 
         num_classes = len(num_elements_per_classes)
-        self.logger.info(f"Training {len(shadow_training_sets)} shadow classifiers:")
+        self.logger.info(f"Training {len(shadow_training_sets)} shadow classifier(s):")
         with logging_redirect_tqdm():
             for shadow_training_set in tqdm(
                 shadow_training_sets,
-                file=sys.stdout,
                 disable=(self.logger.level > logging.INFO),
+                desc=f"Training {len(shadow_training_sets)} shadow classifier(s)",
             ):
                 model = copy_and_reset_model(self.target_model)
                 trainer(
                     shadow_training_set,
                     num_elements_per_classes,
                     model,
-                    self.logger,
+                    log_level=self.logger.level,
                 )
 
                 # change pytorch classifier to art classifier
@@ -488,7 +491,7 @@ class PropertyInferenceAttack(Attack):
         self.logger.info("Extracting features from target model ... ")
         # extract features of target model
         feature_extraction_target_model = self.feature_extraction(self.target_model)
-        print(self.logger.level)
+
         self.logger.info(
             "{} --- features extracted from the target model.".format(
                 feature_extraction_target_model.shape
@@ -500,7 +503,7 @@ class PropertyInferenceAttack(Attack):
         neg_property_num_elements_per_class = {i: num_elements for i in self.classes}
 
         self.logger.info(
-            "Creating set of {} balanced shadow classifiers ... ".format(
+            "Creating set of {} balanced shadow classifier(s) ... ".format(
                 int(self.amount_sets / 2)
             ),
         )
@@ -520,9 +523,10 @@ class PropertyInferenceAttack(Attack):
 
         for ratio in tqdm(
             self.ratios_for_attack,
-            file=sys.stdout,
             disable=(self.logger.level > logging.INFO),
+            desc=f"Performing {len(self.ratios_for_attack)} sub-attack(s)",
         ):
+            self.logger.info(f"Sub-attack for ratio {ratio} ... ")
             predictions[ratio] = self.prediction_on_specific_property(
                 feature_extraction_target_model,
                 shadow_classifiers_neg_property,

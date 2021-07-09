@@ -44,7 +44,7 @@ def test_property_inference_class_distribution_attack(
     ratios_for_attack: List[float] = RATIOS_FOR_ATTACK,
     classes: List[int] = CLASSES,
     verbose: int = VERBOSE,
-    num_epochs_meta_classifier:int=NUM_EPOCHS_META_CLASSIFIER,
+    num_epochs_meta_classifier: int = NUM_EPOCHS_META_CLASSIFIER,
 ):
     logger = logging.getLogger(__name__)
     if verbose == 2:
@@ -81,7 +81,7 @@ def test_property_inference_class_distribution_attack(
         ratios_for_attack=ratios_for_attack,
         classes=classes,
         verbose=verbose,
-        num_epochs_meta_classifier = num_epochs_meta_classifier
+        num_epochs_meta_classifier=num_epochs_meta_classifier,
     )
     assert (
         attack.input_shape == input_shape
