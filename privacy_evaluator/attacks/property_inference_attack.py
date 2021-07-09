@@ -10,7 +10,6 @@ from ..output.user_output_property_inference_attack import (
 
 import numpy as np
 import torch
-from torch import nn
 import tensorflow as tf
 import logging
 from tqdm.contrib.logging import logging_redirect_tqdm
@@ -19,7 +18,6 @@ import sys
 from typing import Tuple, Dict, List, Union
 from art.estimators.classification import TensorFlowV2Classifier, PyTorchClassifier
 from collections import OrderedDict
-import warnings
 
 # count of shadow training sets, must be even
 AMOUNT_SETS = 2
@@ -76,7 +74,7 @@ class PropertyInferenceAttack(Attack):
         :param verbose: 0: no information; 1: backbone (most important) information; 2: utterly detailed information will be printed
         :param num_epochs_meta_classifier: number of epochs for training the meta classifier
         """
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger('PIA_class_dist_logger')
         if verbose == 2:
             level = logging.DEBUG
         elif verbose == 1:
@@ -123,7 +121,7 @@ class PropertyInferenceAttack(Attack):
                     "This is smaller than the given size set ({}). "
                     "{} is now the new size set."
                 ).format(i, length_class, size_set_old, size_set)
-                warnings.warn(warning_message)
+                self.logger.warning(warning_message)
         self.ratios_for_attack = ratios_for_attack
 
         if (num_epochs_meta_classifier < 1):
@@ -435,7 +433,7 @@ class PropertyInferenceAttack(Attack):
                     round(self.ratios_for_attack[0], 5),
                 )
             if abs(list(predictions_ratios.values())[0][0][0] - 0.5) <= 0.05:
-                warnings.warn(
+                self.logger.warning(
                     "The probabilities are very close to each other. The prediction is likely to be a random guess."
                 )
 
@@ -490,7 +488,7 @@ class PropertyInferenceAttack(Attack):
         self.logger.info("Extracting features from target model ... ")
         # extract features of target model
         feature_extraction_target_model = self.feature_extraction(self.target_model)
-
+        print(self.logger.level)
         self.logger.info(
             "{} --- features extracted from the target model.".format(
                 feature_extraction_target_model.shape
