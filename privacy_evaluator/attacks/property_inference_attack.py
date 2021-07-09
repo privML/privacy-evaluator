@@ -14,7 +14,7 @@ import torch
 import tensorflow as tf
 import logging
 from tqdm.contrib.logging import logging_redirect_tqdm
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 from typing import Tuple, Dict, List, Union
 from art.estimators.classification import TensorFlowV2Classifier, PyTorchClassifier
 from collections import OrderedDict
@@ -536,5 +536,5 @@ class PropertyInferenceAttack(Attack):
                 shadow_classifiers_neg_property,
                 ratio,
             )
-
+        self.logger.info("PIA completed!")
         return self.output_attack(predictions)

@@ -7,8 +7,8 @@ from torch.utils.data import DataLoader
 import numpy as np
 from typing import Tuple, Dict, Union
 from ..utils.metric import cross_entropy_loss, accuracy
-from tqdm import tqdm
-import sys
+from tqdm.notebook import tqdm
+from tqdm.contrib.logging import logging_redirect_tqdm
 import logging
 
 
@@ -127,26 +127,26 @@ def _trainer_tf(
 
     # start training
     logger.info("Training TensorFlow model in {} epochs...".format(num_epochs))
-    for _ in tqdm(
-        range(num_epochs),
-        disable=(logger.level > logging.DEBUG),
-        desc="Training TensorFlow model",
-    ):
-        for images, labels in train_loader:
-            labels = np.vectorize(lambda id: class_encoding[id])(labels)
-            with tf.GradientTape() as g:
-                # forward pass
+    with logging_redirect_tqdm():
+        for _ in tqdm(
+            range(num_epochs),
+            disable=(logger.level > logging.DEBUG),
+            desc="Training TensorFlow model",
+        ):
+            for images, labels in train_loader:
+                labels = np.vectorize(lambda id: class_encoding[id])(labels)
+                with tf.GradientTape() as g:
+                    # forward pass
+                    preds = model(images, training=True)
+                    loss = cross_entropy_loss(preds, labels)
+                    l2_loss = weight_decay * tf.add_n(
+                        [tf.nn.l2_loss(v) for v in model.trainable_variables]
+                    )
+                    loss += l2_loss
 
-                preds = model(images, training=True)
-                loss = cross_entropy_loss(preds, labels)
-                l2_loss = weight_decay * tf.add_n(
-                    [tf.nn.l2_loss(v) for v in model.trainable_variables]
-                )
-                loss += l2_loss
-
-            # backward pass
-            grad = g.gradient(loss, model.trainable_variables)
-            optimizer.apply_gradients(zip(grad, model.trainable_variables))
+                # backward pass
+                grad = g.gradient(loss, model.trainable_variables)
+                optimizer.apply_gradients(zip(grad, model.trainable_variables))
 
 
 def _trainer_torch(
@@ -195,25 +195,26 @@ def _trainer_torch(
 
     # start training
     logger.info("Training PyTorch model in {} epochs...".format(num_epochs))
-    for _ in tqdm(
-        range(num_epochs),
-        disable=(logger.level > logging.DEBUG),
-        desc="Training PyTorch model",
-    ):
-        model.train()
-        for images, labels in train_loader:
-            labels = labels.apply_(lambda id: class_encoding[id]).flatten()
-            images = images.to(device=device, dtype=torch.float)
-            labels = labels.to(device=device, dtype=torch.long)
+    with logging_redirect_tqdm():
+        for _ in tqdm(
+            range(num_epochs),
+            disable=(logger.level > logging.DEBUG),
+            desc="Training PyTorch model",
+        ):
+            model.train()
+            for images, labels in train_loader:
+                labels = labels.apply_(lambda id: class_encoding[id]).flatten()
+                images = images.to(device=device, dtype=torch.float)
+                labels = labels.to(device=device, dtype=torch.long)
 
-            # forward pass
-            pred = model(images)
-            loss = criterion(pred, labels)
+                # forward pass
+                pred = model(images)
+                loss = criterion(pred, labels)
 
-            # backward pass
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+                # backward pass
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
 
 
 def _tester_tf(
