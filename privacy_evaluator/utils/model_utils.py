@@ -98,5 +98,6 @@ def create_and_train_torch_ConvNet_model(
         num_elements_per_classes,
         model,
         num_epochs=num_epochs,
+        desc="target model",
     )
     return model

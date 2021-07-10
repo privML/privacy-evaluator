@@ -21,6 +21,7 @@ def trainer(
     learning_rate: float = 0.001,
     weight_decay: float = 0,
     log_level: int = logging.DEBUG,
+    desc: str = None,
 ):
     """
     Train a given model on a given training set `train_set` under customized 
@@ -52,6 +53,7 @@ def trainer(
             learning_rate,
             weight_decay,
             log_level,
+            desc=desc,
         )
     elif isinstance(model, nn.Module):
         # for torch, convert [0, 255] scale to [0, 1] (float)
@@ -67,6 +69,7 @@ def trainer(
             learning_rate,
             weight_decay,
             log_level,
+            desc=desc,
         )
     else:
         raise TypeError("Only torch and tensorflow models are accepted inputs.")
@@ -100,6 +103,7 @@ def _trainer_tf(
     learning_rate: float = 0.001,
     weight_decay: float = 0,
     log_level: int = logging.DEBUG,
+    desc: str = "TensorFlow model",
 ):
     """
     Train the given model on the given dataset.
@@ -126,12 +130,11 @@ def _trainer_tf(
     class_encoding = {class_id: i for i, (class_id, _) in enumerate(size_dict.items())}
 
     # start training
-    logger.info("Training TensorFlow model in {} epochs...".format(num_epochs))
+    logger.info("Training a {} in {} epochs...".format(desc, num_epochs))
     with logging_redirect_tqdm():
         for _ in tqdm(
             range(num_epochs),
-            disable=(logger.level > logging.DEBUG),
-            desc="Training TensorFlow model",
+            disable=(logger.level > logging.INFO),
         ):
             for images, labels in train_loader:
                 labels = np.vectorize(lambda id: class_encoding[id])(labels)
@@ -158,6 +161,7 @@ def _trainer_torch(
     learning_rate: float = 0.001,
     weight_decay: float = 0,
     log_level: int = logging.DEBUG,
+    desc: str = "PyTorch model",
 ):
     """
     Train the given model on the given dataset.
@@ -194,12 +198,11 @@ def _trainer_torch(
     class_encoding = {class_id: i for i, (class_id, _) in enumerate(size_dict.items())}
 
     # start training
-    logger.info("Training PyTorch model in {} epochs...".format(num_epochs))
+    logger.info("Training a {} in {} epochs ...".format(desc, num_epochs))
     with logging_redirect_tqdm():
         for _ in tqdm(
             range(num_epochs),
-            disable=(logger.level > logging.DEBUG),
-            desc="Training PyTorch model",
+            disable=(logger.level > logging.INFO),
         ):
             model.train()
             for images, labels in train_loader:

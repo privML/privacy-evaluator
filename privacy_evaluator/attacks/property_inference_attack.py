@@ -76,7 +76,7 @@ class PropertyInferenceAttack(Attack):
         :param verbose: 0: no information; 1: backbone (most important) information; 2: utterly detailed information will be printed
         :param num_epochs_meta_classifier: number of epochs for training the meta classifier
         """
-        logging.info("======== Property Inference Attack ========")
+        logging.info("Property Inference Attack initialization.")
         self.logger = logging.getLogger(__name__)
         if verbose == 2:
             level = logging.DEBUG
@@ -199,6 +199,7 @@ class PropertyInferenceAttack(Attack):
                     num_elements_per_classes,
                     model,
                     log_level=self.logger.level,
+                    desc="shadow classifier",
                 )
 
                 # change pytorch classifier to art classifier
@@ -523,7 +524,9 @@ class PropertyInferenceAttack(Attack):
         # iterate over unbalanced ratios in 0.05 steps (0.05-0.45, 0.55-0.95)
         # (e.g. 0.55 means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
 
-        self.logger.info("Performing PIA for various ratios ... ")
+        self.logger.info(
+            f"Performing PIA for the following ratios: {self.ratios_for_attack}."
+        )
 
         for ratio in tqdm(
             self.ratios_for_attack,
