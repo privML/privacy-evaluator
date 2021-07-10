@@ -14,7 +14,7 @@ import torch
 import tensorflow as tf
 import logging
 from tqdm.contrib.logging import logging_redirect_tqdm
-from tqdm.notebook import tqdm
+from tqdm.auto import tqdm
 from typing import Tuple, Dict, List, Union
 from art.estimators.classification import TensorFlowV2Classifier, PyTorchClassifier
 from collections import OrderedDict

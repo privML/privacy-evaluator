@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 import numpy as np
 from typing import Tuple, Dict, Union
 from ..utils.metric import cross_entropy_loss, accuracy
-from tqdm.notebook import tqdm
+from tqdm.auto import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
 import logging
 
