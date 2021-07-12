@@ -30,6 +30,8 @@ RATIOS_FOR_ATTACK = [0.9, 0.3]
 CLASSES = [4, 5]
 # 0: no information; 1: backbone (most important) information; 2: utterly detailed
 VERBOSE = 1
+# number of epochs for training the meta classifier
+NUM_EPOCHS_META_CLASSIFIER = 2
 
 
 def test_property_inference_class_distribution_attack(
@@ -42,6 +44,7 @@ def test_property_inference_class_distribution_attack(
     ratios_for_attack: List[float] = RATIOS_FOR_ATTACK,
     classes: List[int] = CLASSES,
     verbose: int = VERBOSE,
+    num_epochs_meta_classifier: int = NUM_EPOCHS_META_CLASSIFIER,
 ):
     logger = logging.getLogger(__name__)
     if verbose == 2:
@@ -73,11 +76,12 @@ def test_property_inference_class_distribution_attack(
     attack = PropertyInferenceAttack(
         target_model,
         train_dataset,
-        verbose=verbose,
+        amount_sets=amount_sets,
         size_set=size_set,
         ratios_for_attack=ratios_for_attack,
         classes=classes,
-        amount_sets=amount_sets,
+        verbose=verbose,
+        num_epochs_meta_classifier=num_epochs_meta_classifier,
     )
     assert (
         attack.input_shape == input_shape

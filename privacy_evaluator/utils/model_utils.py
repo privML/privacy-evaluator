@@ -6,6 +6,7 @@ from copy import deepcopy
 from typing import Union
 import shutil
 from typing import Tuple
+import logging
 
 from ..models.torch.cnn import ConvNet
 from .trainer import trainer
@@ -92,5 +93,11 @@ def create_and_train_torch_ConvNet_model(
     input_shape = data_set[0][0].shape
 
     model = ConvNet(num_classes, input_shape, num_channels=num_channels)
-    trainer(data_set, num_elements_per_classes, model, num_epochs=num_epochs)
+    trainer(
+        data_set,
+        num_elements_per_classes,
+        model,
+        num_epochs=num_epochs,
+        desc="target model",
+    )
     return model

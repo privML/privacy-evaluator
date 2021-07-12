@@ -3,6 +3,7 @@ from setuptools import setup
 
 install_requires = [
     "adversarial-robustness-toolbox[pytorch,tensorflow]==1.6.2",
+    "matplotlib==3.4.1",
     "numpy",
     "pandas",
     "torch",
@@ -10,7 +11,6 @@ install_requires = [
     "torchvision",
     "pillow==8.2.0",
     "tqdm==4.61.0",
-    "matplotlib==3.4.1",
 ]
 
 development_requires = [
