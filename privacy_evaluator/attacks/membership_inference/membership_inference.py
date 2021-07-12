@@ -65,9 +65,13 @@ class MembershipInferenceAttack(Attack):
 
         :param x: Data to be attacked.
         :param y: True, one-hot encoded labels for `x`.
-        :param probabilities: If True, the method returns probability vector for each data point instead of predicted class.
+        :param probabilities: If `True`, the method returns the probability for each
+            data sample being a member.
         :param kwargs: Keyword arguments of the attack.
-        :return: An array holding the inferred membership status, 1 indicates a member and 0 indicates non-member.
+        :return: An array holding the inferred membership status, 1 indicates a member
+            and 0 indicates non-member.
+            A value between 0 and 1 indicates the probability of being a member
+            if `probabilities` is set to `True`.
         :raises Exception: If attack model is not fitted.
         """
 
@@ -82,9 +86,20 @@ class MembershipInferenceAttack(Attack):
                 "The attack model needs to be fitted first. Please run `fit()` on the attack."
             )
 
-        return self._art_attack.infer(
+        membership_pred = self._art_attack.infer(
             x, y, probabilities=probabilities, **kwargs
-        ).reshape(-1)
+        )
+
+        # Some ART attacks return a 2D vector for each data sample,
+        # where the first value is the probability of the data sample *not* being a
+        # member of the training set and the second value is the probability of
+        # that data sample being a member.
+        # Only one of the probabilities is needed to calculate the other,
+        # so we return the probability of being a member only.
+        if probabilities and membership_pred.shape[1] == 2:
+            membership_pred = membership_pred[:, 1]
+
+        return membership_pred.flatten()
 
     def attack_output(
         self,
