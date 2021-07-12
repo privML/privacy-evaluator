@@ -10,34 +10,31 @@ class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
     def __init__(
         self,
         target_model: Classifier,
-        x_train: np.ndarray,
-        y_train: np.ndarray,
-        x_test: np.ndarray,
-        y_test: np.ndarray,
     ):
         """Initializes a MembershipInferenceOnPointBasis class.
 
         :param target_model: Target model to be attacked.
-        :param x_train: Data which was used to train the target model.
-        :param y_train: True, one-hot encoded labels for `x_train`.
-        :param x_test: Data that was not used to train the target model.
-        :param y_test: True, one-hot encoded labels for `x_test`.
-        :raises TypeError: If `attack_model_type` is of invalid type.
-        :raises ValueError: If `attack_model_type` is none of `rf`, `gb`, `nn`.
         """
-        super().__init__(
-            target_model, x_train, y_train, x_test, y_test, init_art_attack=False
-        )
+        super().__init__(target_model, init_art_attack=False)
 
     @MembershipInferenceAttack._fit_decorator
-    def fit(self, **kwargs):
+    def fit(self, *args, **kwargs):
         """Fits the attack model.
 
+        :param args: Arguments for the fitting.
         :param kwargs: Keyword arguments for the fitting.
         """
         pass
 
-    def attack(self, num_bins=15, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
+    def attack(
+        self,
+        x_train: np.ndarray,
+        y_train: np.ndarray,
+        x_test: np.ndarray,
+        y_test: np.ndarray,
+        num_bins: int = 15,
+        **kwargs
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Computes each individual point's likelihood of being a member
         (denoted as privacy risk score in https://arxiv.org/abs/2003.10595).
@@ -49,16 +46,15 @@ class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
         (Helper method and description taken from
         https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/membership_inference_attack/membership_inference_attack.py#L217)
 
-
+        :param x_train: Data which was used to train the target model.
+        :param y_train: True, one-hot encoded labels for `x_train`.
+        :param x_test: Data that was not used to train the target model.
+        :param y_test: True, one-hot encoded labels for `x_test`.
         :param num_bins: the number of bins used to compute the training/test histogram
         :return: membership probability results
         """
-        loss_train = self.target_model.art_classifier.compute_loss(
-            self.x_train, self.y_train
-        )
-        loss_test = self.target_model.art_classifier.compute_loss(
-            self.x_test, self.y_test
-        )
+        loss_train = self.target_model.art_classifier.compute_loss(x_train, y_train)
+        loss_test = self.target_model.art_classifier.compute_loss(x_test, y_test)
         return self._compute_membership_probability(loss_train, loss_test, num_bins)
 
     @staticmethod

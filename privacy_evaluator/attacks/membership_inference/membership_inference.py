@@ -1,3 +1,4 @@
+from typing import Callable
 import numpy as np
 
 from ...metrics.basics import (
@@ -45,34 +46,14 @@ class MembershipInferenceAttack(Attack):
     )
 
     def __init__(
-        self,
-        target_model: Classifier,
-        x_train: np.ndarray,
-        y_train: np.ndarray,
-        x_test: np.ndarray,
-        y_test: np.ndarray,
-        init_art_attack: bool = True,
-        **kwargs
+        self, target_model: Classifier, init_art_attack: bool = True, **kwargs
     ):
         """Initializes a MembershipInferenceAttack class.
 
         :param target_model: Target model to be attacked.
-        :param x_train: Data which was used to train the target model.
-        :param y_train: True, one-hot encoded labels for `x_train`.
-        :param x_test: Data that was not used to train the target model.
-        :param y_test: True, one-hot encoded labels for `x_test`.
         :param init_art_attack: Indicates if belonging ART attack should be initialized.
         """
-        validate_parameters(
-            "init",
-            target_model=target_model,
-            x_train=x_train,
-            y_train=y_train,
-            x_test=x_test,
-            y_test=y_test,
-        )
-
-        super().__init__(target_model, x_train, y_train, x_test, y_test)
+        super().__init__(target_model)
         if init_art_attack:
             self._art_attack = self._init_art_attack(target_model, **kwargs)
         self._art_attack_model_fitted = False
@@ -84,9 +65,13 @@ class MembershipInferenceAttack(Attack):
 
         :param x: Data to be attacked.
         :param y: True, one-hot encoded labels for `x`.
-        :param probabilities: If True, the method returns probability vector for each data point instead of predicted class.
+        :param probabilities: If `True`, the method returns the probability for each
+            data sample being a member.
         :param kwargs: Keyword arguments of the attack.
-        :return: An array holding the inferred membership status, 1 indicates a member and 0 indicates non-member.
+        :return: An array holding the inferred membership status, 1 indicates a member
+            and 0 indicates non-member.
+            A value between 0 and 1 indicates the probability of being a member
+            if `probabilities` is set to `True`.
         :raises Exception: If attack model is not fitted.
         """
 
@@ -101,17 +86,39 @@ class MembershipInferenceAttack(Attack):
                 "The attack model needs to be fitted first. Please run `fit()` on the attack."
             )
 
-        return self._art_attack.infer(
+        membership_pred = self._art_attack.infer(
             x, y, probabilities=probabilities, **kwargs
-        ).reshape(-1)
+        )
+
+        # Some ART attacks return a 2D vector for each data sample,
+        # where the first value is the probability of the data sample *not* being a
+        # member of the training set and the second value is the probability of
+        # that data sample being a member.
+        # Only one of the probabilities is needed to calculate the other,
+        # so we return the probability of being a member only.
+        if probabilities and membership_pred.shape[1] == 2:
+            membership_pred = membership_pred[:, 1]
+
+        return membership_pred.flatten()
 
     def attack_output(
-        self, x: np.ndarray, y: np.ndarray, y_attack: np.ndarray
+        self,
+        x: np.ndarray,
+        y: np.ndarray,
+        x_train: np.ndarray,
+        y_train: np.ndarray,
+        x_test: np.ndarray,
+        y_test: np.ndarray,
+        y_attack: np.ndarray,
     ) -> UserOutputInferenceAttack:
         """Creates attack output metrics in an extractable format.
 
         :param x: Data to be attacked.
         :param y: True, one-hot encoded labels for `x`.
+        :param x_train: Data which was used to train the target model and will be used for training the attack model.
+        :param y_train: True, one-hot encoded labels for `x_train`.
+        :param x_test: Data that was not used to train the target model and will be used for training the attack model.
+        :param y_test: True, one-hot encoded labels for `x_test`.
         :param y_attack: True, non one-hot encoded labels for the attack model (e.g. the membership status).
         :return: An dict with attack output metrics including the target model train and test accuracy, target model
         train to test accuracy gap and ratio and the attack model accuracy.
@@ -121,8 +128,8 @@ class MembershipInferenceAttack(Attack):
             "attack_output", target_model=self.target_model, x=x, y=y, y_attack=y_attack
         )
 
-        train_accuracy = accuracy(self.y_train, self.target_model.predict(self.x_train))
-        test_accuracy = accuracy(self.y_test, self.target_model.predict(self.x_test))
+        train_accuracy = accuracy(y_train, self.target_model.predict(x_train))
+        test_accuracy = accuracy(y_test, self.target_model.predict(x_test))
         y_attack_prediction = self.attack(x, y)
 
         return UserOutputInferenceAttack(
@@ -133,9 +140,10 @@ class MembershipInferenceAttack(Attack):
             accuracy(y_attack, y_attack_prediction),
         )
 
-    def fit(self, **kwargs):
+    def fit(self, *args, **kwargs):
         """Fits the attack model.
 
+        :param args: Arguments for the fitting.
         :param kwargs: Keyword arguments for the fitting.
         """
         raise NotImplementedError(
@@ -178,18 +186,20 @@ class MembershipInferenceAttack(Attack):
         return _art_class(target_model.to_art_classifier(), **kwargs)
 
     @staticmethod
-    def _fit_decorator(fit_function):
+    def _fit_decorator(fit_function: Callable):
         """Decorator for the `fit()` methods of the subclasses.
 
-        Defines a decorator method which checks weather attack model was already fitted. If not, attack model is fitted and
-        `_art_attack_model_fitted` is set to `True`.
+        Defines a decorator for the `fit()` method which validates the fit parameters and checks weather the attack
+        model was already fitted. If not, attack model is fitted and `_art_attack_model_fitted` is set to `True`.
 
+        :param fit_function: Actual `fit()` method that should be decorated.
         :return: Decorator method.
         """
 
-        def __fit_decorator(self, **kwargs):
+        def __fit_decorator(self, *args, **kwargs):
             if self._art_attack_model_fitted is False:
-                fit_function(self, **kwargs)
+                validate_parameters("fit", self.target_model, *args, **kwargs)
+                fit_function(self, *args, **kwargs)
                 self._art_attack_model_fitted = True
 
         return __fit_decorator
