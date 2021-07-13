@@ -1,6 +1,7 @@
 import json
 import os
 import tensorflow as tf
+import logging
 
 from privacy_evaluator.classifiers.classifier import Classifier
 from privacy_evaluator.datasets.tf.mnist import TFMNIST
