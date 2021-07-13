@@ -219,7 +219,6 @@ class PropertyInferenceAttack(Attack):
         self,
         meta_training_X: np.ndarray,
         meta_training_y: np.ndarray,
-        nb_classes: int,
     ) -> TensorFlowV2Classifier:
         """
         Train meta-classifier with the meta-training set.
@@ -234,6 +233,8 @@ class PropertyInferenceAttack(Attack):
         )
         meta_training_y = meta_training_y.reshape((meta_training_y.shape[0], 1))
         meta_input_shape = meta_training_X[0].shape
+
+        nb_classes = len(np.unique(meta_training_y))
 
         inputs = tf.keras.Input(shape=meta_input_shape)
 

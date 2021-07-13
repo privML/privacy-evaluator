@@ -215,12 +215,10 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
             shadow_classifiers_property, shadow_classifiers_neg_property
         )
 
-        # number of classes
-        nb_classes = len(dict(zip(*np.unique(self.dataset[1], return_counts=True))))
-        self.logger.info(nb_classes)
         # create meta classifier
         meta_classifier = self.train_meta_classifier(
-            meta_features, meta_labels, nb_classes
+            meta_features,
+            meta_labels,
         )
 
         # get prediction

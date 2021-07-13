@@ -223,11 +223,10 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
             shadow_classifiers_property, shadow_classifiers_neg_property
         )
 
-        # number of classes
-        nb_classes = len(self.classes)
         # create meta classifier
         meta_classifier = self.train_meta_classifier(
-            meta_features, meta_labels, nb_classes
+            meta_features,
+            meta_labels,
         )
 
         # get prediction
