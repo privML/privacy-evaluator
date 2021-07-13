@@ -1,4 +1,6 @@
-from privacy_evaluator.attacks.property_inference_attack import PropertyInferenceAttack
+from privacy_evaluator.attacks.property_inference_attack.property_inference_class_distribution_attack import (
+    PropertyInferenceClassDistributionAttack,
+)
 from privacy_evaluator.classifiers.classifier import Classifier
 from privacy_evaluator.utils.data_utils import (
     dataset_downloader,
@@ -73,7 +75,7 @@ def test_property_inference_class_distribution_attack(
     )
     logger.info("Start attack ...")
 
-    attack = PropertyInferenceAttack(
+    attack = PropertyInferenceClassDistributionAttack(
         target_model,
         train_dataset,
         amount_sets=amount_sets,
