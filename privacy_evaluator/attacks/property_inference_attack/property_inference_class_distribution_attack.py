@@ -16,7 +16,7 @@ from collections import OrderedDict
 # count of shadow training sets, must be even
 AMOUNT_SETS = 2
 # ratio and size for unbalanced data sets
-SIZE_SET = 1000
+SIZE_SHADOW_TRAINING_SET = 1000
 # ratios for different properties in sub-attacks
 RATIOS_FOR_ATTACK = [
     0.05,
@@ -51,7 +51,7 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
         target_model: Classifier,
         dataset: Tuple[np.ndarray, np.ndarray],
         amount_sets: int = AMOUNT_SETS,
-        size_set: int = SIZE_SET,
+        size_shadow_training_set: int = SIZE_SHADOW_TRAINING_SET,
         ratios_for_attack: List[int] = RATIOS_FOR_ATTACK,
         classes: List[int] = CLASSES,
         verbose: int = 0,
@@ -62,7 +62,7 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
         :param target_model: the target model to be attacked
         :param dataset: dataset for training of shadow classifiers, test_data from dataset
         :param amount_sets: count of shadow training sets, must be even
-        :param size_set: ratio and size for unbalanced data sets
+        :param size_shadow_training_set: ratio and size for unbalanced data sets
         :param ratios_for_attack: ratios for different properties in sub-attacks
         with concatenation [test_features, test_labels]
         :param classes: classes the attack should be performed on
@@ -79,21 +79,21 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
 
         for i in classes:
             length_class = len((np.where(dataset[1] == i))[0])
-            if length_class < size_set:
-                size_set_old = size_set
-                size_set = length_class
+            if length_class < size_shadow_training_set:
+                size_shadow_training_set_old = size_shadow_training_set
+                size_shadow_training_set = length_class
                 warning_message = (
                     "Warning: Number of samples for class {} is {}. "
                     "This is smaller than the given size set ({}). "
                     "{} is now the new size set."
-                ).format(i, length_class, size_set_old, size_set)
+                ).format(i, length_class, size_shadow_training_set_old, size_shadow_training_set)
                 self.logger.warning(warning_message)
 
         super().__init__(
             target_model,
             dataset,
             amount_sets,
-            size_set,
+            size_shadow_training_set,
             ratios_for_attack,
             num_epochs_meta_classifier,
             verbose,
@@ -209,8 +209,8 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
 
         # property of given ratio, only two classes allowed right now
         property_num_elements_per_classes = {
-            self.classes[0]: int((1 - ratio) * self.size_set),
-            self.classes[1]: int(ratio * self.size_set),
+            self.classes[0]: int((1 - ratio) * self.size_shadow_training_set),
+            self.classes[1]: int(ratio * self.size_shadow_training_set),
         }
 
         # create shadow classifiers with trained models with unbalanced data set
@@ -253,7 +253,7 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
         )
 
         # balanced ratio
-        num_elements = int(round(self.size_set / len(self.classes)))
+        num_elements = int(round(self.size_shadow_training_set / len(self.classes)))
         neg_property_num_elements_per_class = {i: num_elements for i in self.classes}
 
         self.logger.info(

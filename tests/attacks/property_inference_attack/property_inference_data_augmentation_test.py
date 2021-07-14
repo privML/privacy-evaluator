@@ -24,7 +24,7 @@ NUM_EPOCHS = 2
 # count of shadow training sets, must be even
 AMOUNT_SETS = 2
 # ratio and size for unbalanced data sets
-SIZE_SET = 100
+SIZE_SHADOW_TRAINING_SET = 100
 # ratios for different properties in sub-attacks
 RATIOS_FOR_ATTACK = [0.9, 0.3]
 # 0: no information; 1: backbone (most important) information; 2: utterly detailed
@@ -44,7 +44,7 @@ def test_property_inference_data_augmentation_attack(
     num_channels: int = NUM_CHANNELS,
     num_epochs: int = NUM_EPOCHS,
     amount_sets: int = AMOUNT_SETS,
-    size_set: int = SIZE_SET,
+    size_shadow_training_set: int = SIZE_SHADOW_TRAINING_SET,
     ratios_for_attack: List[float] = RATIOS_FOR_ATTACK,
     verbose: int = VERBOSE,
     box_len: int = BOX_LEN,
@@ -86,7 +86,7 @@ def test_property_inference_data_augmentation_attack(
         target_model,
         train_dataset,
         amount_sets=amount_sets,
-        size_set=size_set,
+        size_shadow_training_set=size_shadow_training_set,
         ratios_for_attack=ratios_for_attack,
         verbose=verbose,
         num_epochs_meta_classifier=num_epochs_meta_classifier,
@@ -113,7 +113,7 @@ def test_property_inference_data_augmentation_attack(
     assert (
         attack.amount_sets == amount_sets
     ), "Number of shadow classifiers are not equal to input."
-    assert attack.size_set == size_set, "Number of samples is not equal to input."
+    assert attack.size_shadow_training_set == size_shadow_training_set, "Number of samples is not equal to input."
     assert attack.adaptation == adaptation, "Classes are not equal to input classes."
     assert len(output.output) == len(
         ratios_for_attack

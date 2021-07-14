@@ -15,7 +15,7 @@ from collections import OrderedDict
 # count of shadow training sets, must be even
 AMOUNT_SETS = 2
 # ratio and size for unbalanced data sets
-SIZE_SET = 1000
+SIZE_SHADOW_TRAINING_SET = 1000
 # ratios for different properties in sub-attacks
 RATIOS_FOR_ATTACK = [
     0.05,
@@ -51,7 +51,7 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
         target_model: Classifier,
         dataset: Tuple[np.ndarray, np.ndarray],
         amount_sets: int = AMOUNT_SETS,
-        size_set: int = SIZE_SET,
+        size_shadow_training_set: int = SIZE_SHADOW_TRAINING_SET,
         ratios_for_attack: List[int] = RATIOS_FOR_ATTACK,
         verbose: int = 0,
         num_epochs_meta_classifier: int = NUM_EPOCHS_META_CLASSIFIER,
@@ -63,7 +63,7 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
         :param target_model: the target model to be attacked
         :param dataset: dataset for training of shadow classifiers, test_data from dataset
         :param amount_sets: count of shadow training sets, must be even
-        :param size_set: ratio and size for unbalanced data sets
+        :param size_shadow_training_set: ratio and size for unbalanced data sets
         :param ratios_for_attack: ratios for different properties in sub-attacks
         with concatenation [test_features, test_labels]
         :param verbose: 0: no information; 1: backbone (most important) information; 2: utterly detailed information will be printed
@@ -84,7 +84,7 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
             target_model,
             dataset,
             amount_sets,
-            size_set,
+            size_shadow_training_set,
             ratios_for_attack,
             num_epochs_meta_classifier,
             verbose,
@@ -118,7 +118,7 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
         self.logger.info("Creating shadow training sets")
 
         for _ in range(int(self.amount_sets / 2)):
-            idx = np.random.choice(len(self.dataset[0]), self.size_set, replace=False)
+            idx = np.random.choice(len(self.dataset[0]), self.size_shadow_training_set, replace=False)
             smaller_data_set = (self.dataset[0][idx], self.dataset[1][idx])
             shadow_training_set = data_utils.create_new_dataset_with_adaptation(
                 smaller_data_set, ratio, self.adaptation, **self.kwargs

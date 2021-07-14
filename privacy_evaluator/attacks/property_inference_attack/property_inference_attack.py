@@ -26,7 +26,7 @@ class PropertyInferenceAttack(Attack):
         target_model: Classifier,
         dataset: Tuple[np.ndarray, np.ndarray],
         amount_sets: int,
-        size_set: int,
+        size_shadow_training_set: int,
         ratios_for_attack: List[int],
         num_epochs_meta_classifier: int,
         verbose: int,
@@ -36,7 +36,7 @@ class PropertyInferenceAttack(Attack):
         :param target_model: the target model to be attacked
         :param dataset: dataset for training of shadow classifiers, test_data from dataset
         :param amount_sets: count of shadow training sets, must be even
-        :param size_set: ratio and size for unbalanced data sets
+        :param size_shadow_training_set: ratio and size for unbalanced data sets
         :param ratios_for_attack: ratios for different properties in sub-attacks
         with concatenation [test_features, test_labels]
         :param num_epochs_meta_classifier: number of epochs for training the meta classifier
@@ -73,7 +73,7 @@ class PropertyInferenceAttack(Attack):
                 "Number of shadow classifiers must be even and greater than 1."
             )
 
-        self.size_set = size_set
+        self.size_shadow_training_set = size_shadow_training_set
         self.ratios_for_attack = ratios_for_attack
 
         if num_epochs_meta_classifier < 1:
