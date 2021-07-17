@@ -58,9 +58,9 @@ class MembershipInferenceAttack(Attack):
 
         :param target_model: Target model to be attacked.
         :param x_train: Data which was used to train the target model.
-        :param y_train: True, one-hot encoded labels for `x_train`.
+        :param y_train: One-hot encoded labels for `x_train`.
         :param x_test: Data that was not used to train the target model.
-        :param y_test: True, one-hot encoded labels for `x_test`.
+        :param y_test: One-hot encoded labels for `x_test`.
         :param init_art_attack: Indicates if belonging ART attack should be initialized.
         """
         validate_parameters(
