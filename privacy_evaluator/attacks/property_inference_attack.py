@@ -4,12 +4,16 @@ from ..utils import data_utils
 from ..utils.trainer import trainer
 from ..models.tf.conv_net_meta_classifier import ConvNetMetaClassifier
 from ..utils.model_utils import copy_and_reset_model
-
+from ..output.user_output_property_inference_attack import (
+    UserOutputPropertyInferenceAttack,
+)
 
 import numpy as np
 import torch
 from torch import nn
 import tensorflow as tf
+import logging
+from tqdm.contrib.logging import logging_redirect_tqdm
 from tqdm import tqdm
 import sys
 from typing import Tuple, Dict, List, Union
@@ -61,13 +65,23 @@ class PropertyInferenceAttack(Attack):
         Initialize the Property Inference Attack Class.
         :param target_model: the target model to be attacked
         :param dataset: dataset for training of shadow classifiers, test_data from dataset
-        :param amount_sets: number of shadow training sets, must be even
-        :param size_set: ratio and size of unbalanced data sets
-        :param ratios_for_attack: ratios of different properties in sub-attacks
+        :param amount_sets: count of shadow training sets, must be even
+        :param size_set: ratio and size for unbalanced data sets
+        :param ratios_for_attack: ratios for different properties in sub-attacks
         with concatenation [test_features, test_labels]
         :param classes: classes the attack should be performed on
         :param verbose: 0: no information; 1: backbone (most important) information; 2: utterly detailed information will be printed
         """
+        self.logger = logging.getLogger(__name__)
+        if verbose == 2:
+            level = logging.DEBUG
+        elif verbose == 1:
+            level = logging.INFO
+        else:
+            level = logging.WARNING
+
+        self.logger.setLevel(level)
+
         if not (
             isinstance(dataset, tuple)
             and list(map(type, dataset)) == [np.ndarray, np.ndarray]
@@ -79,9 +93,7 @@ class PropertyInferenceAttack(Attack):
             isinstance(target_model, TensorFlowV2Classifier)
             or isinstance(target_model, PyTorchClassifier)
         ):
-            raise TypeError(
-                "Target model must be of type TensorFlowV2Classifier or PyTorchClassifier."
-            )
+            raise TypeError("Target model must be of type Classifier.")
 
         # count of shadow training sets, must be even
         self.amount_sets = amount_sets
@@ -109,8 +121,13 @@ class PropertyInferenceAttack(Attack):
                 ).format(i, length_class, size_set_old, size_set)
                 warnings.warn(warning_message)
         self.ratios_for_attack = ratios_for_attack
+
+        if len(ratios_for_attack) < 1:
+            raise ValueError(
+                "Ratios for different properties in sub-attacks can't have length zero."
+            )
+
         self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
-        self.verbose = verbose
 
         super().__init__(target_model, None, None, None, None)
 
@@ -131,17 +148,18 @@ class PropertyInferenceAttack(Attack):
         # Creation of shadow training sets with the size dictionaries
         # amount_sets divided by 2 because amount_sets describes the total amount of shadow training sets.
         # In this function however only all shadow training sets of one type (follow property OR negation of property) are created, hence amount_sets / 2.
-        if self.verbose > 0:
-            print("Creating shadow training sets")
+        self.logger.info("Creating shadow training sets")
+
         for _ in tqdm(
             range(int(self.amount_sets / 2)),
             file=sys.stdout,
-            disable=(self.verbose < 2),
+            disable=(self.logger.level > logging.INFO),
         ):
             shadow_training_sets = data_utils.new_dataset_from_size_dict(
                 self.dataset, num_elements_per_class
             )
             training_sets.append(shadow_training_sets)
+
         return training_sets
 
     def train_shadow_classifiers(
@@ -161,24 +179,29 @@ class PropertyInferenceAttack(Attack):
         shadow_classifiers = []
 
         num_classes = len(num_elements_per_classes)
-        if self.verbose > 0:
-            print("Training shadow classifiers")
-        for shadow_training_set in tqdm(
-            shadow_training_sets, file=sys.stdout, disable=(self.verbose < 2)
-        ):
-            model = copy_and_reset_model(self.target_model)
-            trainer(
-                shadow_training_set,
-                num_elements_per_classes,
-                model,
-                verbose=self.verbose,
-            )
+        self.logger.info("Training shadow classifiers")
+        with logging_redirect_tqdm():
+            for shadow_training_set in tqdm(
+                shadow_training_sets,
+                file=sys.stdout,
+                disable=(self.logger.level > logging.INFO),
+            ):
+                model = copy_and_reset_model(self.target_model)
+                trainer(
+                    shadow_training_set,
+                    num_elements_per_classes,
+                    model,
+                    self.logger,
+                )
 
-            # change pytorch classifier to art classifier
-            art_model = Classifier._to_art_classifier(
-                model, "sparse_categorical_crossentropy", num_classes, self.input_shape
-            )
-            shadow_classifiers.append(art_model)
+                # change pytorch classifier to art classifier
+                art_model = Classifier._to_art_classifier(
+                    model,
+                    "sparse_categorical_crossentropy",
+                    num_classes,
+                    self.input_shape,
+                )
+                shadow_classifiers.append(art_model)
 
         return shadow_classifiers
 
@@ -306,11 +329,17 @@ class PropertyInferenceAttack(Attack):
             metrics=["accuracy"],
         )
 
+        # keras functional API provides a verbose variable ranging from {0, 1, 2}.
+        # logging uses levels in our case corresponding to numeric values from {30, 20, 10}.
+        # We can therefore convert our self.logger.level to the appropriate verbose value in the following manner:
+        verbose = 3 - int(self.logger.level / 10)
+
         cnmc.model.fit(
             x=meta_training_X,
             y=meta_training_y,
             epochs=2,
             batch_size=128,
+            verbose=verbose
             # If enough shadow classifiers are available, one could split the training set
             # and create an additional validation set as input:
             # validation_data = (validation_X, validation_y),
@@ -354,9 +383,11 @@ class PropertyInferenceAttack(Attack):
         predictions = meta_classifier.predict(x=[feature_extraction_target_model])
         return predictions
 
-    def output_attack(self, predictions_ratios) -> Tuple[str, Dict[str, float]]:
+    def output_attack_results(
+        self, predictions_ratios
+    ) -> UserOutputPropertyInferenceAttack:
         """
-        Calculates the prediction with highest probability.
+        Determination of prediction with highest probability.
         :param predictions_ratios: Prediction values from meta-classifier for different subattacks (different properties)
         :type predictions_ratios: OrderedDict[float, np.ndarray]
         :return: Output message for the attack
@@ -373,17 +404,38 @@ class PropertyInferenceAttack(Attack):
             )
             output[key] = predictions_ratios[ratio][0][0]
 
-        max_message = (
-            "The most probable property is class {}: {}, "
-            "class {}: {} with a probability of {}.".format(
-                self.classes[0],
-                round(1 - max_property[0], 5),
-                self.classes[1],
-                round(max_property[0], 5),
-                predictions_ratios[max_property[0]][0][0],
+        if len(self.ratios_for_attack) >= 2:
+            max_message = (
+                "The most probable property is class {}: {}, "
+                "class {}: {} with a probability of {}.".format(
+                    self.classes[0],
+                    round(1 - max_property[0], 5),
+                    self.classes[1],
+                    round(max_property[0], 5),
+                    predictions_ratios[max_property[0]][0][0],
+                )
             )
-        )
-        return (max_message, output)
+        else:
+            if list(predictions_ratios.values())[0][0][0] > 0.5:
+                max_message = "The given distribution is more likely than a balanced distribution. " "The given distribution is class {}: {}, class {}: {}".format(
+                    self.classes[0],
+                    round(1 - self.ratios_for_attack[0], 5),
+                    self.classes[1],
+                    round(self.ratios_for_attack[0], 5),
+                )
+            else:
+                max_message = "A balanced distribution is more likely than the given distribution. " "The given distribution is class {}: {}, class {}: {}".format(
+                    self.classes[0],
+                    round(1 - self.ratios_for_attack[0], 5),
+                    self.classes[1],
+                    round(self.ratios_for_attack[0], 5),
+                )
+            if abs(list(predictions_ratios.values())[0][0][0] - 0.5) <= 0.05:
+                warnings.warn(
+                    "The probabilities are very close to each other. The prediction is likely to be a random guess."
+                )
+
+        return UserOutputPropertyInferenceAttack(max_message, output)
 
     def prediction_on_specific_property(
         self,
@@ -425,33 +477,31 @@ class PropertyInferenceAttack(Attack):
 
         return prediction
 
-    def attack(self) -> Tuple[str, Dict[str, float]]:
+    def attack(self) -> UserOutputPropertyInferenceAttack:
         """
         Performs Property Inference attack.
         :return: message with most probable property, dictionary with all properties
         """
-        if self.verbose > 0:
-            print("Initiating Property Inference Attack ... ")
-            print("Extracting features from target model ... ")
+        self.logger.info("Initiating Property Inference Attack ... ")
+        self.logger.info("Extracting features from target model ... ")
         # extract features of target model
         feature_extraction_target_model = self.feature_extraction(self.target_model)
 
-        if self.verbose > 0:
-            print(
-                feature_extraction_target_model.shape,
-                " --- features extracted from the target model.",
-            )
+        self.logger.info(
+            "{} --- features extracted from the target model.".format(
+                feature_extraction_target_model.shape
+            ),
+        )
 
         # balanced ratio
         num_elements = int(round(self.size_set / len(self.classes)))
         neg_property_num_elements_per_class = {i: num_elements for i in self.classes}
 
-        if self.verbose > 0:
-            print(
-                "Creating set of",
-                int(self.amount_sets / 2),
-                "balanced shadow classifiers ... ",
-            )
+        self.logger.info(
+            "Creating set of {} balanced shadow classifiers ... ".format(
+                int(self.amount_sets / 2)
+            ),
+        )
         # create balanced shadow classifiers negation property
         shadow_classifiers_neg_property = (
             self.create_shadow_classifier_from_training_set(
@@ -461,14 +511,15 @@ class PropertyInferenceAttack(Attack):
 
         self.ratios_for_attack.sort()
         predictions = OrderedDict.fromkeys(self.ratios_for_attack, 0)
-
-        if self.verbose > 0:
-            print("Performing PIA for various ratios ... ")
-
-        # iterate over unbalanced ratios
+        # iterate over unbalanced ratios in 0.05 steps (0.05-0.45, 0.55-0.95)
         # (e.g. 0.55 means: class 0: 0.45 of all samples, class 1: 0.55 of all samples)
+
+        self.logger.info("Performing PIA for various ratios ... ")
+
         for ratio in tqdm(
-            self.ratios_for_attack, file=sys.stdout, disable=(self.verbose == 0)
+            self.ratios_for_attack,
+            file=sys.stdout,
+            disable=(self.logger.level > logging.INFO),
         ):
             predictions[ratio] = self.prediction_on_specific_property(
                 feature_extraction_target_model,
@@ -476,4 +527,4 @@ class PropertyInferenceAttack(Attack):
                 ratio,
             )
 
-        return self.output_attack(predictions)
+        return self.output_attack_results(predictions)
