@@ -383,7 +383,9 @@ class PropertyInferenceAttack(Attack):
         predictions = meta_classifier.predict(x=[feature_extraction_target_model])
         return predictions
 
-    def output_attack(self, predictions_ratios) -> UserOutputPropertyInferenceAttack:
+    def output_attack_results(
+        self, predictions_ratios
+    ) -> UserOutputPropertyInferenceAttack:
         """
         Determination of prediction with highest probability.
         :param predictions_ratios: Prediction values from meta-classifier for different subattacks (different properties)
@@ -525,4 +527,4 @@ class PropertyInferenceAttack(Attack):
                 ratio,
             )
 
-        return self.output_attack(predictions)
+        return self.output_attack_results(predictions)

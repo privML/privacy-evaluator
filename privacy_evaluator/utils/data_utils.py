@@ -1,7 +1,7 @@
 import numpy as np
 from tensorflow.keras.datasets import cifar10, mnist
 from typing import Tuple, Optional, Dict
-from .data_adaptation import images_adaptation
+from .data_adaptation import adapt_images
 
 
 def dataset_downloader(
@@ -131,7 +131,7 @@ def create_new_dataset_with_adaptation(
     """
     # size of data1 is according to ratio, size of data2 is according to (1-ratio)
     data1, data2 = split_data_set_with_ratio(data_set, ratio)
-    adapted_dataset = (images_adaptation(data1[0], adaptation, **kwargs), data1[1])
+    adapted_dataset = (adapt_images(data1[0], adaptation, **kwargs), data1[1])
     new_data_set = (
         np.concatenate((adapted_dataset[0], data2[0])),
         np.concatenate((adapted_dataset[1], data2[1])),
