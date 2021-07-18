@@ -477,7 +477,7 @@ class PropertyInferenceAttack(Attack):
 
     def attack(self) -> UserOutputPropertyInferenceAttack:
         """
-        Perform Property Inference attack.
+        Performs Property Inference attack.
         :return: message with most probable property, dictionary with all properties
         """
         self.logger.info("Initiating Property Inference Attack ... ")
