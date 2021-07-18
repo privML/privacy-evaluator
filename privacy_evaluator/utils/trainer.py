@@ -21,6 +21,7 @@ def trainer(
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
+    verbose: int = 0,
 ):
     """
     Train a given model on a given training set `train_set` under customized 
@@ -52,6 +53,7 @@ def trainer(
             num_epochs,
             learning_rate,
             weight_decay,
+            verbose,
         )
     elif isinstance(model, nn.Module):
         # for torch, convert [0, 255] scale to [0, 1] (float)
@@ -67,6 +69,7 @@ def trainer(
             num_epochs,
             learning_rate,
             weight_decay,
+            verbose,
         )
     else:
         raise TypeError("Only torch and tensorflow models are accepted inputs.")
@@ -100,6 +103,7 @@ def _trainer_tf(
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
+    verbose: int = 0,
 ):
     """
     Train the given model on the given dataset.
@@ -157,6 +161,7 @@ def _trainer_torch(
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
+    verbose: int = 0,
 ):
     """
     Train the given model on the given dataset.
