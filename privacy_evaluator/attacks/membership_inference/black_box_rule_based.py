@@ -3,7 +3,10 @@ from ...classifiers.classifier import Classifier
 
 
 class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
-    """MembershipInferenceBlackBoxRuleBasedAttack class."""
+    """MembershipInferenceBlackBoxRuleBasedAttack class.
+
+    For information about this attacks outcome, please see to membership_inference.py.
+    """
 
     _ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS = "MembershipInferenceBlackBoxRuleBased"
 
