@@ -22,9 +22,9 @@ class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
 
         :param target_model: Target model to be attacked.
         :param x_train: Data which was used to train the target model.
-        :param y_train: True, one-hot encoded labels for `x_train`.
+        :param y_train: One-hot encoded labels for `x_train`.
         :param x_test: Data that was not used to train the target model.
-        :param y_test: True, one-hot encoded labels for `x_test`.
+        :param y_test: One-hot encoded labels for `x_test`.
         :param attack_model_type: Type of the attack model. On of "rf", "gb", "nn".
         :raises TypeError: If `attack_model_type` is of invalid type.
         :raises ValueError: If `attack_model_type` is none of `rf`, `gb`, `nn`.
