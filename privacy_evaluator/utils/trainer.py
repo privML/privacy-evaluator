@@ -1,3 +1,4 @@
+import logging
 import tensorflow as tf
 from tensorflow import keras
 import torch
@@ -5,17 +6,22 @@ from torch import nn
 from torch.utils.data import DataLoader
 import numpy as np
 from typing import Tuple, Dict, Union
-from privacy_evaluator.utils.metric import cross_entropy_loss, accuracy
+from ..utils.metric import cross_entropy_loss, accuracy
+from tqdm import tqdm
+import sys
+import logging
 
 
 def trainer(
     train_set: Union[Tuple[np.ndarray, np.ndarray], torch.utils.data.Dataset],
     size_dict: Dict[int, int],
     model: Union[nn.Module, keras.Model],
+    logger: logging.Logger = None,
     batch_size: int = 250,
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
+    verbose: int = 0,
 ):
     """
     Train a given model on a given training set `train_set` under customized 
@@ -31,7 +37,7 @@ def trainer(
         batch_size: The number of data points (i.e. images) that are simultaneously \ 
             processed during training, so as to give statistical gradient among a \
             batch and accelerate training.
-        num_epochs: The number of times each data point in `train_set` has been iterated.
+        num_epochs: The number of times each data point in `train_set` is iterated during training.
         learning_rate: The coefficient that decides the amplitude of the next gradient \
             descent.
         weight_decay: The coefficient of regularization-loss for trainable parameters.\
@@ -42,20 +48,28 @@ def trainer(
             train_set,
             size_dict,
             model,
+            logger,
             batch_size,
             num_epochs,
             learning_rate,
             weight_decay,
+            verbose,
         )
     elif isinstance(model, nn.Module):
+        # for torch, convert [0, 255] scale to [0, 1] (float)
+        if np.issubdtype(train_set[0].dtype, np.integer):
+            train_X, train_y = train_set[0] / 255.0, train_set[1]
+            train_set = (train_X, train_y)
         return _trainer_torch(
             train_set,
             size_dict,
             model,
+            logger,
             batch_size,
             num_epochs,
             learning_rate,
             weight_decay,
+            verbose,
         )
     else:
         raise TypeError("Only torch and tensorflow models are accepted inputs.")
@@ -71,21 +85,32 @@ def tester(
     if isinstance(model, keras.Model):
         return _tester_tf(test_set, size_dict, model, batch_size)
     elif isinstance(model, nn.Module):
+        # for torch, convert [0, 255] scale to [0, 1] (float)
+        if np.issubdtype(test_set[0].dtype, np.integer):
+            test_X, test_y = test_set[0] / 255.0, test_set[1]
+            test_set = (test_X, test_y)
         return _tester_torch(test_set, size_dict, model, batch_size)
+    else:
+        raise TypeError("Only torch and tensorflow models are accepted inputs.")
 
 
 def _trainer_tf(
     train_set: Tuple[np.ndarray, np.ndarray],
     size_dict: Dict[int, int],
     model: keras.Model,
+    logger: logging.Logger = None,
     batch_size: int = 500,
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
+    verbose: int = 0,
 ):
     """
     Train the given model on the given dataset.
     """
+    if not logger:
+        logger = logging.getLogger(__name__)
+        logger.setLevel(logging.WARNING)
 
     # set device
     gpus = tf.config.experimental.list_physical_devices("GPU")
@@ -106,7 +131,10 @@ def _trainer_tf(
     class_encoding = {class_id: i for i, (class_id, _) in enumerate(size_dict.items())}
 
     # start training
-    for _ in range(num_epochs):
+    logger.info("Training TensorFlow model in {} epochs.".format(num_epochs))
+    for _ in tqdm(
+        range(num_epochs), file=sys.stdout, disable=(logger.level > logging.INFO)
+    ):
         for images, labels in train_loader:
             labels = np.vectorize(lambda id: class_encoding[id])(labels)
             with tf.GradientTape() as g:
@@ -128,20 +156,24 @@ def _trainer_torch(
     train_set: Union[Tuple[np.ndarray, np.ndarray], torch.utils.data.Dataset],
     size_dict: Dict[int, int],
     model: nn.Module,
+    logger: logging.Logger = None,
     batch_size: int = 500,
     num_epochs: int = 20,
     learning_rate: float = 0.001,
     weight_decay: float = 0,
+    verbose: int = 0,
 ):
     """
     Train the given model on the given dataset.
     """
+    if not logger:
+        logger = logging.getLogger(__name__)
+        logger.setLevel(logging.WARNING)
     # convert np.array datasets into torch dataset
     if isinstance(train_set, tuple):
         train_x, train_y = train_set
         train_x, train_y = map(torch.tensor, (train_x, train_y))
         train_set = torch.utils.data.TensorDataset(train_x, train_y)
-
     # create data-loader
     train_loader = DataLoader(
         dataset=train_set,
@@ -166,13 +198,15 @@ def _trainer_torch(
     class_encoding = {class_id: i for i, (class_id, _) in enumerate(size_dict.items())}
 
     # start training
-    for _ in range(num_epochs):
+    logger.info("Training PyTorch model in {} epochs.".format(num_epochs))
+    for _ in tqdm(
+        range(num_epochs), file=sys.stdout, disable=(logger.level > logging.INFO)
+    ):
         model.train()
         for images, labels in train_loader:
-            labels = labels.apply_(lambda id: class_encoding[id])
-            images = images / 255.0
-            labels = labels.to(torch.long)
-            images, labels = images.to(device), labels.to(device)
+            labels = labels.apply_(lambda id: class_encoding[id]).flatten()
+            images = images.to(device=device, dtype=torch.float)
+            labels = labels.to(device=device, dtype=torch.long)
 
             # forward pass
             pred = model(images)
@@ -232,8 +266,9 @@ def _tester_torch(
     model.eval()
     with torch.no_grad():
         for images, labels in test_loader:
-            labels = labels.apply_(lambda id: class_encoding[id])
-            images, labels = images.to(device), labels.to(device)
+            labels = labels.apply_(lambda id: class_encoding[id]).flatten()
+            images = images.to(device=device, dtype=torch.float)
+            labels = labels.to(device=device, dtype=torch.long)
 
             # forward pass
             pred = model(images)

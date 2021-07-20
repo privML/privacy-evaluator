@@ -94,6 +94,7 @@ class MembershipInferenceAttackAnalysis:
             y_train=self.input_data.y_train,
             x_test=self.input_data.x_test,
             y_test=self.input_data.y_test,
+            **self.attack_kwargs,
         )
 
         results = []
