@@ -34,7 +34,8 @@ class Slice:
             (
                 "Slice(",
                 "  indices: "
-                + np.array2string(self.indices, threshold=10, edgeitems=2),
+                + np.array2string(self.indices, threshold=10, edgeitems=2)
+                + f" ({len(self.indices)} items)",
                 "  desc: " + self.desc,
                 ")",
             )
