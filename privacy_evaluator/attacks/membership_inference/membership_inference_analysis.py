@@ -108,7 +108,7 @@ class MembershipInferenceAttackAnalysis:
             )
 
             # Calculate the advantage score as in tensorflow privacy package.
-            logger.info('calculating advantage score for {}'.format(slice.desc))
+            logger.info("calculating advantage score for {}".format(slice.desc))
             tpr, fpr, _ = metrics.roc_curve(
                 membership[slice.indices],
                 membership_prediction,
@@ -162,16 +162,17 @@ def slices(x: np.ndarray, y: np.ndarray, target_model: Classifier, slicing: Slic
                 desc=f"Class={label}",
             )
 
+
 def _generate_logging_info(slicing: Slicing, logger):
     info_string = ""
-    if(slicing.by_class):
+    if slicing.by_class:
         info_string += " by class"
-    if(slicing.by_classification_correctness):
-        if (info_string !=""):
+    if slicing.by_classification_correctness:
+        if info_string != "":
             info_string += " and"
         info_string += " by classification correctness"
-    if(slicing.entire_dataset):
-        if (info_string !=""):
+    if slicing.entire_dataset:
+        if info_string != "":
             info_string += " and"
         info_string += " for entrie dataset"
-    logger.info("generating slices "+info_string)
+    logger.info("generating slices " + info_string)

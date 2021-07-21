@@ -14,6 +14,7 @@ from ...output.user_output_inference_attack import UserOutputInferenceAttack
 
 import logging
 
+
 class MembershipInferenceAttack(Attack):
     """MembershipInferenceAttack base class.
 

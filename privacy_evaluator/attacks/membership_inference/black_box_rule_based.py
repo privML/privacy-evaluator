@@ -3,6 +3,7 @@ from ...classifiers.classifier import Classifier
 
 import logging
 
+
 class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
     """MembershipInferenceBlackBoxRuleBasedAttack class."""
 

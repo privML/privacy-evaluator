@@ -5,6 +5,7 @@ from ...classifiers.classifier import Classifier
 
 import logging
 
+
 class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
     """MembershipInferenceBlackBoxAttack class."""
 
