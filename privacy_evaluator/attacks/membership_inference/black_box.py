@@ -5,26 +5,25 @@ from ...classifiers.classifier import Classifier
 
 
 class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
-    """MembershipInferenceBlackBoxAttack class."""
+    """MembershipInferenceBlackBoxAttack class.
+
+    For information about this attacks outcome, please see to membership_inference.py.
+    """
 
     _ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS = "MembershipInferenceBlackBox"
 
     def __init__(
         self,
         target_model: Classifier,
-        x_train: np.ndarray,
-        y_train: np.ndarray,
-        x_test: np.ndarray,
-        y_test: np.ndarray,
         attack_model_type: str = "nn",
     ):
         """Initializes a MembershipInferenceBlackBoxAttack class.
 
         :param target_model: Target model to be attacked.
         :param x_train: Data which was used to train the target model.
-        :param y_train: True, one-hot encoded labels for `x_train`.
+        :param y_train: One-hot encoded labels for `x_train`.
         :param x_test: Data that was not used to train the target model.
-        :param y_test: True, one-hot encoded labels for `x_test`.
+        :param y_test: One-hot encoded labels for `x_test`.
         :param attack_model_type: Type of the attack model. On of "rf", "gb", "nn".
         :raises TypeError: If `attack_model_type` is of invalid type.
         :raises ValueError: If `attack_model_type` is none of `rf`, `gb`, `nn`.
@@ -39,17 +38,24 @@ class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
             )
         super().__init__(
             target_model,
-            x_train,
-            y_train,
-            x_test,
-            y_test,
             attack_model_type=attack_model_type,
         )
 
     @MembershipInferenceAttack._fit_decorator
-    def fit(self, **kwargs):
+    def fit(
+        self,
+        x_train: np.ndarray,
+        y_train: np.ndarray,
+        x_test: np.ndarray,
+        y_test: np.ndarray,
+        **kwargs,
+    ):
         """Fits the attack model.
 
-        :param kwargs: Further keyword arguments for fitting the attack model.:param kwargs: Keyword arguments for the fitting.
+        :param x_train: Data which was used to train the target model and will be used for training the attack model.
+        :param y_train: True, one-hot encoded labels for `x_train`.
+        :param x_test: Data that was not used to train the target model and will be used for training the attack model.
+        :param y_test: True, one-hot encoded labels for `x_test`.
+        :param kwargs: Keyword arguments for the fitting.
         """
-        self._art_attack.fit(self.x_train, self.y_train, self.x_test, self.y_test)
+        self._art_attack.fit(x_train, y_train, x_test, y_test)
