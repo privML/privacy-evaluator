@@ -17,10 +17,6 @@ class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
         """Initializes a MembershipInferenceBlackBoxRuleBasedAttack class.
 
         :param target_model: Target model to be attacked.
-        :param x_train: Data which was used to train the target model.
-        :param y_train: One-hot encoded labels for `x_train`.
-        :param x_test: Data that was not used to train the target model.
-        :param y_test: One-hot encoded labels for `x_test`.
         """
         super().__init__(target_model)
         self._art_attack_model_fitted = True
@@ -29,7 +25,8 @@ class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
     def fit(self, *args, **kwargs):
         """Fits the attack model.
 
-        :param args: Arguments for the fitting.
-        :param kwargs: Keyword arguments for the fitting.
+        :param args: Arguments for the fitting. Currently, there are no additional arguments provided.
+        :param kwargs: Keyword arguments for fitting the attack model. Currently, there are no additional keyword
+        arguments provided.
         """
         pass
