@@ -5,7 +5,10 @@ from ...classifiers.classifier import Classifier
 
 
 class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
-    """MembershipInferenceBlackBoxAttack class."""
+    """MembershipInferenceBlackBoxAttack class.
+
+    For information about this attacks outcome, please see to membership_inference.py.
+    """
 
     _ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS = "MembershipInferenceBlackBox"
 
