@@ -74,6 +74,7 @@ class MembershipInferenceAttackAnalysis:
         y: np.ndarray,
         membership: np.ndarray,
         slicing: Slicing = Slicing(entire_dataset=True),
+        **kwargs,
     ) -> Iterable[UserOutputInferenceAttackAnalysis]:
         """Runs the membership inference attack and calculates attacker's advantage for each slice.
 
@@ -82,6 +83,7 @@ class MembershipInferenceAttackAnalysis:
         :param y: True labels for `x`.
         :param membership: Labels representing the membership for each data sample in `x`. 1 for member and 0 for non-member.
         :param slicing: Slicing specification. The slices will be created according to the specification and the attack will be run on each slice.
+        :param kwargs: kwargs that will be passed to the `fit` method of the attack.
         """
 
         # Instantiate an object of the given attack type.
@@ -95,7 +97,7 @@ class MembershipInferenceAttackAnalysis:
             y_train=self.input_data.y_train,
             x_test=self.input_data.x_test,
             y_test=self.input_data.y_test,
-            **self.attack_kwargs,
+            **kwargs,
         )
 
         results = []
