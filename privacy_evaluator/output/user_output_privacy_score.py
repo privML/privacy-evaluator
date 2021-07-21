@@ -73,7 +73,7 @@ class UserOutputPrivacyScore(UserOutput):
                 all_counts = np.append(all_counts, count[index[0]])
         if show_diagram:
             plt.bar(all_labels, all_counts)
-            plt.title("Histogram for top {} points per label".format(k))
+            plt.title("Histogram for top {} points".format(k))
             plt.yticks(np.arange(0, np.int_(max(all_counts)) + 1, 1))
             if (
                 label_names is not None
