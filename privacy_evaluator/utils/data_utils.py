@@ -1,6 +1,7 @@
 import numpy as np
 from tensorflow.keras.datasets import cifar10, mnist
 from typing import Tuple, Optional, Dict
+from .data_adaptation import adapt_images
 
 
 def dataset_downloader(
@@ -17,8 +18,13 @@ def dataset_downloader(
         train_dataset, test_dataset = cifar10.load_data()
     elif dataset_name == "MNIST":
         (X_train, y_train), (X_test, y_test) = mnist.load_data()
+        # convert image shape from (28, 28) to (28, 28, 1) if color channel is missing
+        X_train = np.expand_dims(X_train, axis=-1)
+        X_test = np.expand_dims(X_test, axis=-1)
         train_dataset = (X_train, y_train)
         test_dataset = (X_test, y_test)
+    else:
+        raise ValueError("This dataset not supported!")
     return train_dataset, test_dataset
 
 
@@ -84,3 +90,50 @@ def new_dataset_from_size_dict(
     new_dataset = (new_data_x, new_data_y)
 
     return new_dataset
+
+
+def split_data_set_with_ratio(
+    data_set: Tuple[np.ndarray, np.ndarray], ratio: float
+) -> Tuple[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]]:
+    """
+    Splits a data set in two datsets according to given ratio.
+    :param data_set: Input data set.
+    :param ratio: A ratio how to split the data set. Describes size of new_data_set1.
+    """
+    assert ratio <= 1 and ratio >= 0
+    num_samples = len(data_set[0])
+
+    idx = np.random.choice(num_samples, int(num_samples * ratio), replace=False)
+    new_data_set1 = (data_set[0][idx], data_set[1][idx])
+
+    mask = np.ones(num_samples, np.bool)
+    mask[idx] = 0
+    new_data_set2 = (data_set[0][mask], data_set[1][mask])
+
+    return new_data_set1, new_data_set2
+
+
+def create_new_dataset_with_adaptation(
+    data_set: Tuple[np.ndarray, np.ndarray], ratio: float, adaptation: str, **kwargs
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Creates a new data set with adapted samples according to given ratio.
+    :param data_set: Input data set.
+    :param ratio: A ratio for the number of adapted samples.
+    :param adaptation: The type of adaptation. ('mask', 'random_noise', 'brightness')
+    :params **kwargs: Optional parameters for the specified adaptation.
+
+    Optional params:
+    :params box_len: Involved when `adaptation` is "mask", the side length of masking boxes.
+    :params brightness: Involved when `adaptation` is "brightness", the amount the brightness should be raised or lowered
+    :params mean: Involved when `adaptation` is "random_noise", the mean of the added noise.
+    :params mean: Involved when `adaptation` is "random_noise", the standard deviation of the added noise.
+    """
+    # size of data1 is according to ratio, size of data2 is according to (1-ratio)
+    data1, data2 = split_data_set_with_ratio(data_set, ratio)
+    adapted_dataset = (adapt_images(data1[0], adaptation, **kwargs), data1[1])
+    new_data_set = (
+        np.concatenate((adapted_dataset[0], data2[0])),
+        np.concatenate((adapted_dataset[1], data2[1])),
+    )
+    return new_data_set

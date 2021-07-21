@@ -23,13 +23,16 @@ class MembershipInferenceAttack(Attack):
     Attack Model Accuracy:
     The attack model accuracy specifies how well the membership attack model performs in predicting if a given data
     point was used for training the target model. Since we have a two-class classification problem that the attack model
-    solves (member or non-member), the lowest possible accuracy is 50% (random guessing for each sample). The best
-    accuracy is at 100% if the model predicts every data point is sees right as member or non-member.
+    solves (member or non-member), the lowest possible accuracy is 50%, which is equal to randomly guessing the class of
+    a sample.  Theoretically, accuracy can also go below 50%, down to 0%. In this case, an inversion of the prediction
+    of the labels can yield better results. E.g. if the accuracy is 40%, an inversion of the predicted labels yields 60%
+    accuracy, hence 50% is considered the worst, or lowest possible accuracy. The best accuracy is at 100% if the model
+    predicts every data point is sees right as member or non-member.
 
     Train-Test-Gap (difference):
     If your model has a train-test-gap larger than 5%, this could be a sign that your model overfits. Overfitting can be
     beneficial for successful membership inference attacks [1]. Therefore, you might want to reduce it by introducing
-    regularization methods in your training, or using specific privacy methods[2,3], such as Differential Privacy [4].
+    regularization methods in your training, or using specific privacy methods [2,3], such as Differential Privacy [4].
 
     [1]S. Yeom, I. Giacomelli, M. Fredrikson, and S. Jha. \Privacy Risk in Machine Learning: Analyzing the Connection
     to Overfitting". In: 2018 IEEE 31st Computer Security Foundations Symposium (CSF). July 2018, pp. 268{282.

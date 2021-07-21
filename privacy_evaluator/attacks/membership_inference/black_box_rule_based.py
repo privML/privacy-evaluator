@@ -5,7 +5,10 @@ import logging
 
 
 class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
-    """MembershipInferenceBlackBoxRuleBasedAttack class."""
+    """MembershipInferenceBlackBoxRuleBasedAttack class.
+
+    For information about this attacks outcome, please see to membership_inference.py.
+    """
 
     _ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS = "MembershipInferenceBlackBoxRuleBased"
 
@@ -16,6 +19,10 @@ class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
         """Initializes a MembershipInferenceBlackBoxRuleBasedAttack class.
 
         :param target_model: Target model to be attacked.
+        :param x_train: Data which was used to train the target model.
+        :param y_train: One-hot encoded labels for `x_train`.
+        :param x_test: Data that was not used to train the target model.
+        :param y_test: One-hot encoded labels for `x_test`.
         """
         super().__init__(target_model)
         self._art_attack_model_fitted = True

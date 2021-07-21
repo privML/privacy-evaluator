@@ -13,18 +13,23 @@ class UserOutputPrivacyScore(UserOutput):
     Interpretation of Outcome:
 
     Vulnerability of individual data points:
+    The privacy risk score is an individual sample’s likelihood of being a training member, which allows an adversary to
+    identify samples with high privacy risks and perform membership inference attacks with high confidence [1].
+
     The training data points that exhibit an increased membership privacy risk might differ from their classes mean
     samples (outliers) [2]. You could check them again, see if they have the correct label, or if they exhibit any
     non-standard properties for the class. If so, correct them. It was also shown that points with an high influence on
-    the decision boundary are more vulnerable to membership inference attacks [1]. Therefore, these points might be
+    the decision boundary are more vulnerable to membership inference attacks [3]. Therefore, these points might be
     important. If you want to protect them, you might add several similar training samples as they are to the class.
 
     References:
-    [1] Stacey Truex, Ling Liu, Mehmet Emre Gursoy, Lei Yu, and Wenqi Wei. 2019.Demystifying Membership Inference
-    Attacks in Machine Learning as a Service.IEEE Transactions on Services Computing(2019)
+    [1] Song, Liwei and Prateek Mittal. “Systematic Evaluation of Privacy Risks of Machine Learning Models.” ArXiv
+    abs/2003.10595 (2020): n. pag
     [2] Yunhui Long, Vincent Bindschaedler, Lei Wang, Diyue Bu, Xiaofeng Wang, HaixuTang, Carl A. Gunter, and Kai Chen.
     2018.   Understanding Membership In-ferences on Well-Generalized Learning Models.CoRRabs/1802.04889
     (2018).arXiv:1802.04889  http://arxiv.org/abs/1802.0
+    [3] Stacey Truex, Ling Liu, Mehmet Emre Gursoy, Lei Yu, and Wenqi Wei. 2019.Demystifying Membership Inference
+    Attacks in Machine Learning as a Service.IEEE Transactions on Services Computing(2019)
     """
 
     def __init__(self, attack_data_y: np.ndarray, privacy_risk: np.ndarray):
@@ -68,7 +73,7 @@ class UserOutputPrivacyScore(UserOutput):
                 all_counts = np.append(all_counts, count[index[0]])
         if show_diagram:
             plt.bar(all_labels, all_counts)
-            plt.title("Histogram for top {} points per label".format(k))
+            plt.title("Histogram for top {} points".format(k))
             plt.yticks(np.arange(0, np.int_(max(all_counts)) + 1, 1))
             if (
                 label_names is not None

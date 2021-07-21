@@ -1,6 +1,7 @@
 """
 Module providing utils.
 """
-from privacy_evaluator.utils import data_utils
-from privacy_evaluator.utils import trainer
-from privacy_evaluator.utils import metric
+from . import data_utils
+from . import trainer
+from . import metric
+from . import model_utils
