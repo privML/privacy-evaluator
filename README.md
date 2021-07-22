@@ -114,13 +114,6 @@ For example, knowing that a certain data record was used to train a model which 
 
 Given here are three types of membership inference attacks, all able to work with the assumption of having only black-box access to a given target model, meaning no prior knowledge about the to-be-attacked models is needed. However, to perform each of the attacks, it is necessary to have access to, or be able to generate, samples from the same or a related data distribution beforehand.  In case of having to generate such data, please refer to Section V-C of  [Shokri et al.]([https://arxiv.org/abs/1610.05820](https://arxiv.org/abs/1610.05820)) for a couple of methods for doing so.
 
-To quantifiably measure a membership inference attack, two metrics are used:
-
-
-
-*   ‘Precision’ describes the fraction of records inferred as members that are indeed members of the training set.
-*   ‘Recall’ describes the fraction of the training dataset’s members that are correctly inferred as members of the training set by an attacker.
-
 All three attacks are generic and not based on any particular dataset or model type.
 
 #### Membership Inference Back-Box
