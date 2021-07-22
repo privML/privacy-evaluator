@@ -137,10 +137,13 @@ Once the meta-classifier is trained, it can be used to infer membership status o
 
 The current implementation gives the user the choice of the attack model meta-classifier. The default is a neural network, but random forests and gradient boosting models can be chosen as well.
 
+For a better understanding, the following two graphics visualize the functionality of the attack. The first one, the table, summarizes which model has seen which dataset. The second one, visualizes the attack flow.
+
 | | (X,y)<sub>target</sub> | (X,y)<sub>attack</sub> |
 |:-------------:|:-------------:|:-------------:|
 | target model | **yes**, <br />the model is trained on this dataset | **in general no**, <br />but this dataset should preferably be overlapping with the dataset the target model is trained on |
 | attack model | **in general no**, <br />but this dataset should preferably be overlapping with the dataset the attack model is trained on | **yes**, <br />the model is trained on this dataset |
+
 
 ![](docs/mia_blackbox.png)
 
@@ -151,6 +154,8 @@ This is the implementation of the original idea of a black-box membership infere
 Provided a model, the target model (trained on an unknown labeled set of data _(X,y)<sub>target</sub>_), and a separate labeled set of data _(X,y)<sub>attack</sub>_, preferably most similar to the one that the target model was trained on, this attack uses several iterations of data augmentation to generate abbreviations for each point. For example, by iteratively augmenting each point (x, y<sub>true</sub>) of _(X,y)<sub>attack</sub>_, additional points _{x’<sub>1</sub>, …, x’<sub>N</sub>}_ are generated. By querying the target model _h_ with all generated data records (including the original ones _(x, y<sub>true</sub>)_) the labels _(y<sub>0</sub>, …, y<sub>N</sub>) ← (h(x), h(x’<sub>1</sub>), …, h(x’<sub>N</sub>))_ are obtained, yielding a function _b<sub>i</sub> ← (y<sub>true</sub> = (y<sub>i</sub>))_, which indicates whether a i-th queried generated point was misclassified. Afterwards, a prediction model _f(b<sub>0</sub>, …, b<sub>N</sub>) → {0, 1}_ is applied and used, by the means of transfer learning, to train a shadow model _h’_. _h’_, and its inherent correlation between the amount of iterations of data augmentations needed and the likelihood of a data record being a member of the training set of _h_, is then being used to infer membership of any data record in respect to the training set of _h_.
 
 Once the shadow model is trained, it can be used to infer membership status on an array of one or more unknown unlabeled data records _X<sub>unkown</sub>_, returning for each record either  a 1, indicating a member, or a 0, indicating a non-member of the target model’s training set _(X,y)<sub>target</sub>_
+
+For a better understanding, the following two graphics visualize the functionality of the attack. The first one, the table, summarizes which model has seen which dataset. The second one, visualizes the attack flow.
 
 | | (X,y)<sub>target</sub> | (X,y)<sub>attack</sub> |
 |:-------------:|:-------------:|:-------------:|
@@ -164,6 +169,8 @@ Once the shadow model is trained, it can be used to infer membership status on a
 The attack uses a simple rule: if the target model’s prediction for a given input is correct then that input is considered to be a member of the population underlying the target model’s dataset and not a member otherwise.
 
 Provided a model, the target model (trained on an unknown labeled set of data _(X,y)<sub>target</sub>_), and a separate labeled set of data _(X,y)<sub>unkown</sub>_, this attack iterates over each labeled data record of _(X,y)<sub>unkown</sub>_, returning for each record either  a 1, if classified correctly by the target model, indicating a member of the population of _(X,y)<sub>target</sub>_, or a 0, if classified incorrectly by the target model, indicating a non-member of the population of _(X,y)<sub>target</sub>_.
+
+For a better understanding, the following two graphics visualize the functionality of the attack. The first one, the table, summarizes which model has seen which dataset. The second one, visualizes the attack flow.
 
 | | (X,y)<sub>target</sub> | (X,y)<sub>attack</sub> |
 |:--------------------:|:------------------:|:-------------:|
