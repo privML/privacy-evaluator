@@ -40,3 +40,32 @@ class Slice:
                 ")",
             )
         )
+
+
+@dataclass
+class SlicePoints:
+    """Single slice that is created by the membership inference attack analysis."""
+
+    # Indices of the data samples that are part of this slice.
+    indices_test: np.ndarray
+
+    # Indices of the data samples that are part of this slice.
+    indices_train: np.ndarray
+
+    # Human-readable description of the slice.
+    desc: str
+
+    def __str__(self):
+        """Returns a humand-readable representation of the slice."""
+
+        return "\n".join(
+            (
+                "Slice(",
+                "  indices: "
+                + np.array2string(self.indices_test, threshold=10, edgeitems=2)
+                + np.array2string(self.indices_train, threshold=10, edgeitems=2)
+                + f" ({len(self.indices)} items)",
+                "  desc: " + self.desc,
+                ")",
+            )
+        )
