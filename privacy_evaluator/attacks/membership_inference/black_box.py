@@ -3,6 +3,8 @@ import numpy as np
 from .membership_inference import MembershipInferenceAttack
 from ...classifiers.classifier import Classifier
 
+import logging
+
 
 class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
     """MembershipInferenceBlackBoxAttack class.
@@ -58,4 +60,6 @@ class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
         :param y_test: True, one-hot encoded labels for `x_test`.
         :param kwargs: Keyword arguments for the fitting.
         """
+        logger = logging.getLogger(__name__)
+        logger.info("fiting MembershipInferenceBlackBoxAttack")
         self._art_attack.fit(x_train, y_train, x_test, y_test)

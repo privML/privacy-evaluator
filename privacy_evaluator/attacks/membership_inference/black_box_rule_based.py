@@ -1,6 +1,8 @@
 from .membership_inference import MembershipInferenceAttack
 from ...classifiers.classifier import Classifier
 
+import logging
+
 
 class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
     """MembershipInferenceBlackBoxRuleBasedAttack class.
@@ -32,4 +34,8 @@ class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
         :param args: Arguments for the fitting.
         :param kwargs: Keyword arguments for the fitting.
         """
+        logger = logging.getLogger(__name__)
+        logger.debug(
+            "Trying to fit MembershipInferenceBlackBoxRuleBasedAttack, nothing to fit."
+        )
         pass
