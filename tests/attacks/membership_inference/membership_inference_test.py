@@ -21,4 +21,4 @@ def test_membership_inference_attack():
     )
 
     with pytest.raises(AttributeError):
-        MembershipInferenceAttack(target_model, x_train, y_train, x_test, y_test)
+        MembershipInferenceAttack(target_model)

@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from ...output.user_output_inference_attack_analysis import (
     UserOutputInferenceAttackAnalysis,
 )
@@ -18,7 +17,7 @@ class MembershipInferenceAttackAnalysis:
     Interpretation of Outcome:
 
     Advantage Score:
-    The attacker advantageis a score that relies on comparing the model output on member and non-member data points.
+    The attacker advantage is a score that relies on comparing the model output on member and non-member data points.
     The model outputs are probability values over all classes, and they are often different on member and non-member
     data points. Usually, the model is more confident on member data points, because it has seen them during training.
     When trying to find a threshold value to tell apart member and non-member samples by their different model outputs,
@@ -37,11 +36,12 @@ class MembershipInferenceAttackAnalysis:
     Specific classes can be differently vulnerable. It may seem that the membership inference attack is more successful
     on some classes than on the other classes. Research has shown that the class distribution (and also the distribution
     of data points within one class) are factors that influence the vulnerability of a class for membership inference
-    attacks [1]. Also, small classes (belonging to minority groups) can be more prone to membership inference attacks[2].
-    One reason for this could be, that there is less data for that class, and therefore, the model overfits within this
-    class. It might make sense to look into the vulnerable classes of your model again, and maybe add more data to them,
-    use private synthetic data, or introduce privacy methods like Differential Privacy [2]. Attention, the use of
-    Differential Privacy could have a negative influence on the performance of your model for the minority classes.
+    attacks [1]. Also, small classes (belonging to minority groups) can be more prone to membership inference
+    attacks [2]. One reason for this could be, that there is less data for that class, and therefore, the model overfits
+    within this class. It might make sense to look into the vulnerable classes of your model again, and maybe add more
+    data to them, use private synthetic data, or introduce privacy methods like Differential Privacy [2]. Attention, the
+    use of Differential Privacy could have a negative influence on the performance of your model for the minority
+    classes.
 
     References:
     [1] Stacey Truex, Ling Liu, Mehmet Emre Gursoy, Lei Yu, and Wenqi Wei. 2019.Demystifying Membership Inference
@@ -74,6 +74,7 @@ class MembershipInferenceAttackAnalysis:
         y: np.ndarray,
         membership: np.ndarray,
         slicing: Slicing = Slicing(entire_dataset=True),
+        **kwargs,
     ) -> Iterable[UserOutputInferenceAttackAnalysis]:
         """Runs the membership inference attack and calculates attacker's advantage for each slice.
 
@@ -82,18 +83,22 @@ class MembershipInferenceAttackAnalysis:
         :param y: True labels for `x`.
         :param membership: Labels representing the membership for each data sample in `x`. 1 for member and 0 for non-member.
         :param slicing: Slicing specification. The slices will be created according to the specification and the attack will be run on each slice.
+        :param kwargs: kwargs that will be passed to the `fit` method of the attack.
         """
 
         # Instantiate an object of the given attack type.
         attack = self.attack_type(
             target_model=target_model,
+            **self.attack_kwargs,
+        )
+
+        attack.fit(
             x_train=self.input_data.x_train,
             y_train=self.input_data.y_train,
             x_test=self.input_data.x_test,
             y_test=self.input_data.y_test,
-            **self.attack_kwargs,
+            **kwargs,
         )
-        attack.fit()
 
         results = []
         for slice in slices(x, y, target_model, slicing):

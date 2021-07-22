@@ -5,6 +5,9 @@ from privacy_evaluator.output.user_output_privacy_score import UserOutputPrivacy
 from privacy_evaluator.output.user_output_inference_attack import (
     UserOutputInferenceAttack,
 )
+from privacy_evaluator.output.user_output_property_inference_attack import (
+    UserOutputPropertyInferenceAttack,
+)
 
 
 def test_output_priv_score_function():
@@ -51,4 +54,20 @@ def test_output_inference_attack_function():
             ["target_model_train_accuracy", "target_model_test_accuracy"]
         )
         == '{"target_model_train_accuracy": 0.9, "target_model_test_accuracy": 0.8}'
+    )
+
+
+def test_output_property_inference_attack_function():
+    user_output = UserOutputPropertyInferenceAttack(
+        "The most probable property is class 0: 0.2, class 1: 0.8 with a probability of 0.5000389218330383.",
+        {
+            "class 0: 0.95, class 1: 0.05": 0.5000125,
+            "class 0: 0.9, class 1: 0.1": 0.50000596,
+        },
+    )
+
+    assert (
+        user_output.to_json()
+        == '{"max_message": "The most probable property is class 0: 0.2, class 1: 0.8 with a probability of 0.5000389218330383.",'
+        ' "output": {"class 0: 0.95, class 1: 0.05": 0.5000125, "class 0: 0.9, class 1: 0.1": 0.50000596}}'
     )

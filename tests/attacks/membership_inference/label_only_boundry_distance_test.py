@@ -18,10 +18,16 @@ def test_inference_label_only_decision_boundary_attack():
         loss=torch.nn.CrossEntropyLoss(reduction="none"),
     )
 
-    attack = MembershipInferenceLabelOnlyDecisionBoundaryAttack(
-        target_model, x_train[:1], y_train[:1], x_test[:1], y_test[:1]
-    )
+    attack = MembershipInferenceLabelOnlyDecisionBoundaryAttack(target_model)
 
-    attack.fit(max_iter=1, max_eval=1, init_eval=1)
+    attack.fit(
+        x_train[:1],
+        y_train[:1],
+        x_test[:1],
+        y_test[:1],
+        max_iter=1,
+        max_eval=1,
+        init_eval=1,
+    )
     attack.attack(x_train[1:2], y_train[1:2])
     attack.attack(x_test[1:2], y_test[1:2])
