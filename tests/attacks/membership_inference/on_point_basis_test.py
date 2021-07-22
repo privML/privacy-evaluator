@@ -112,7 +112,6 @@ def test_on_point_basis(models_path):
     high_risk_attack = MembershipInferenceAttackOnPointBasis(low_risk_classifier)
 
     # run risk evaluation on high risk model
-
     high_risk_train_probs, high_risk_test_probs = low_risk_attack.attack(
         x_train[:300], y_train[:300], x_test[:300], y_test[:300]
     )
@@ -121,11 +120,6 @@ def test_on_point_basis(models_path):
         x_train[:100], y_train[:100], x_test[:100], y_test[:100]
     )
 
-    # run risk evaluation on high risk model
-
-    high_risk_train_probs, high_risk_test_probs = low_risk_attack.attack()
-    # run risk evaluation on low risk model
-    low_risk_train_probs, low_risk_test_probs = high_risk_attack.attack()
     # assert that the low privacy model has a lower privacy risk score on the training then on the test data
     assert high_risk_train_probs.sum() / len(
         high_risk_train_probs
