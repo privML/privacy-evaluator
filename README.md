@@ -137,7 +137,7 @@ Once the meta-classifier is trained, it can be used to infer membership status o
 
 The current implementation gives the user the choice of the attack model meta-classifier. The default is a neural network, but random forests and gradient boosting models can be chosen as well.
 
-For a better understanding, the following two graphics visualize the functionality of the attack. The first one, the table, summarizes which model has seen which dataset. The second one, visualizes the attack flow.
+For a better understanding, the following two graphics visualize the functionality of the attack. The first one, the table, summarizes which model has seen which dataset. The second one visualizes the attack flow.
 
 | | (X,y)<sub>target</sub> | (X,y)<sub>attack</sub> |
 |:-------------:|:-------------:|:-------------:|
@@ -155,7 +155,7 @@ Provided a model, the target model (trained on an unknown labeled set of data _(
 
 Once the shadow model is trained, it can be used to infer membership status on an array of one or more unknown unlabeled data records _X<sub>unkown</sub>_, returning for each record either  a 1, indicating a member, or a 0, indicating a non-member of the target model’s training set _(X,y)<sub>target</sub>_
 
-For a better understanding, the following two graphics visualize the functionality of the attack. The first one, the table, summarizes which model has seen which dataset. The second one, visualizes the attack flow.
+For a better understanding, the following two graphics visualize the functionality of the attack. The first one, the table, summarizes which model has seen which dataset. The second one visualizes the attack flow.
 
 | | (X,y)<sub>target</sub> | (X,y)<sub>attack</sub> |
 |:-------------:|:-------------:|:-------------:|
@@ -170,7 +170,7 @@ The attack uses a simple rule: if the target model’s prediction for a given in
 
 Provided a model, the target model (trained on an unknown labeled set of data _(X,y)<sub>target</sub>_), and a separate labeled set of data _(X,y)<sub>unkown</sub>_, this attack iterates over each labeled data record of _(X,y)<sub>unkown</sub>_, returning for each record either  a 1, if classified correctly by the target model, indicating a member of the population of _(X,y)<sub>target</sub>_, or a 0, if classified incorrectly by the target model, indicating a non-member of the population of _(X,y)<sub>target</sub>_.
 
-For a better understanding, the following two graphics visualize the functionality of the attack. The first one, the table, summarizes which model has seen which dataset. The second one, visualizes the attack flow.
+For a better understanding, the following two graphics visualize the functionality of the attack. The first one, the table, summarizes which model has seen which dataset. The second one visualizes the attack flow.
 
 | | (X,y)<sub>target</sub> | (X,y)<sub>attack</sub> |
 |:--------------------:|:------------------:|:-------------:|
