@@ -171,6 +171,7 @@ class UserOutputPrivacyScore(UserOutput):
         slices: np.ndarray,
         slices_priv_risk: np.ndarray,
         show_diagram: bool = True,
+        name: str = None 
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Draw histogram of class distribution of the k points with highest privacy risk score, relative to the size of the classes
@@ -183,8 +184,11 @@ class UserOutputPrivacyScore(UserOutput):
         for priv_risk in slices_priv_risk:
             avg_scores = np.append(avg_scores, np.average(priv_risk))
         if show_diagram:
+            title_name = ""
+            if(name is not None):
+                title_name = "for "+name+" data"
             plt.bar(slices, avg_scores)
-            plt.title("Histogram for the average score on each slice")
+            plt.title("Histogram for the average score on each slice "+title_name)
             plt.xlabel("Slices")
             plt.ylabel("Average Privacy Score")
             plt.show()

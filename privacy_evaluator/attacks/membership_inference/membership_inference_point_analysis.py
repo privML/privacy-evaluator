@@ -88,6 +88,9 @@ class MembershipInferencePointAnalysis:
         )
 
         results = []
+        slices_names = []
+        slcies_avg_train = []
+        slcies_avg_test = []
         for slice in self.slices_point(target_model, slicing):
             membership_prediction = attack.attack(
                 self.input_data.x_train[slice.indices_train],
@@ -97,14 +100,19 @@ class MembershipInferencePointAnalysis:
                 num_bins,
             )
 
+            slices_names.append(slice.desc)
+            slcies_avg_train.append(np.mean(membership_prediction[0]))
+            slcies_avg_test.append(np.mean(membership_prediction[1]))
+
             output = UserOutputPrivacyScore(
                 np.argmax(self.input_data.y_train[slice.indices_train], axis=1),
                 membership_prediction[0],
             )
-            output.histogram_distribution()
+            output.histogram_distribution(class_name=slice.desc)
+            results.append(str(output))
 
-            results.append(output)
-
+        output.histogram_slices(slices_names, slcies_avg_test, name = "test")
+        output.histogram_slices(slices_names, slcies_avg_train, name = "train")
         return results
 
     def slices_point(self, target_model: Classifier, slicing: Slicing):
