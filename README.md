@@ -157,9 +157,16 @@ Provided a model, the target model (trained on an unknown labeled set of data _(
 
 ![](docs/mia_blackbox_rule_based.png)
 
+#### Membership Inference Attack on Point basis (Privacy Risk score)
+
+This is the membership Inference Attack on Point described in *Systematic Evaluation of Privacy Risks of Machine Learning Models*  [(arXiv:2003.10595)](https://arxiv.org/abs/2003.10595). The attack performs an empirical measurement of the posterior probability that a singular datapoint is from the training set, observing the target model’s behavior over that sample. An on point basis result or privacy risk score for a given sample of zero means that it's propability of beeing a member is estimated to be zero. 
+
+The calculation of the privacy risk score is grounded in bayesian principles. For the details of the calculation see the paper linked above.
+
 #### Membership Attacker's Advantage Score
 
 The metric represents the attacker's advantage score.  It represents the degree to which a learning algorithm, i.e. a model, reveals membership to an adversary. The score calculation is based on Definition 4 from [Yeom, Samuel, et al.](https://arxiv.org/pdf/1709.01604.pdf).
+
 
 
 ## Getting Involved
