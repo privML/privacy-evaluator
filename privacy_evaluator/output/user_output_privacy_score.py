@@ -149,7 +149,7 @@ class UserOutputPrivacyScore(UserOutput):
         show_diagram: bool = True,
     ) -> np.ndarray:
         """
-        Draw histogram of the highest privacy risk score of the given data
+        Draws a historgram of the privacy risk score of the given data
         :param class_name: Name of the Class shown in the diagram
         :param show_diagram: determines if the diagram should be shown, default: True
         :return: the data that is being ploted
@@ -173,26 +173,22 @@ class UserOutputPrivacyScore(UserOutput):
         name: str = None,
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Draw histogram of class distribution of the k points with highest privacy risk score, relative to the size of the classes
+        Plots the classes with their average privacy score
         :param slices: The names of the slices to be ploted
         :param slices_priv_risk: a list of the privacy risk scores whitin the slices
         :param show_diagram: determines if the diagram should be shown, default: True
         :param name: Name of the data set (training/test).
         :return: All Slice names with the average privacy risk score
         """
-        avg_scores = np.array([])
-        for priv_risk in slices_priv_risk:
-            avg_scores = np.append(avg_scores, np.average(priv_risk))
+
         if show_diagram:
             title_name = ""
             if name is not None:
                 title_name = "for " + name + " data"
-            plt.bar(slices, avg_scores)
+            plt.bar(slices, slices_priv_risk)
             plt.title("Histogram for the average score on each slice " + title_name)
             plt.xlabel("Slices")
             plt.ylabel("Average Privacy Score")
-
             plt.xticks(slices, rotation=(40), va="top", ha="right")
             plt.show()
-
-        return slices, avg_scores
+        return slices, slices_priv_risk
