@@ -116,6 +116,8 @@ Given here are three types of membership inference attacks, all able to work wit
 
 All three attacks are generic and not based on any particular dataset or model type.
 
+For a tutorial to each of the following attacks have a look at the collection of notebooks [here]([https://github.com/privML/privacy-evaluator/tree/main/notebooks](privacy-evaluator/notebooks/)).
+
 #### Membership Inference Back-Box
 
 This is the implementation of the original idea of a black-box membership inference attack as provided by [Shokri et al.](https://arxiv.org/abs/1610.05820). It aims to abuse the abnormal confidence of a target model when queried on their training data to differentiate between members and non-members of a model’s training set. The confidence is a vector of probabilities, the confidence values, one value per class, estimating the likelihood of a given input data record belonging to a certain class.
