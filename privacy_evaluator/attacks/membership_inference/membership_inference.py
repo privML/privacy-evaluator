@@ -60,12 +60,7 @@ class MembershipInferenceAttack(Attack):
         :raises Exception: If attack model is not fitted.
         """
 
-        validate_parameters(
-            "attack",
-            target_model=self.target_model,
-            x=x,
-            y=y,
-        )
+        validate_parameters("attack", target_model=self.target_model, x=x, y=y)
         if self._art_attack_model_fitted is False:
             raise Exception(
                 "The attack model needs to be fitted first. Please run `fit()` on the attack."

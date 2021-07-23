@@ -2,9 +2,7 @@ from privacy_evaluator.attacks.property_inference_attack.property_inference_data
     PropertyInferenceDataAugmentationAttack,
 )
 from privacy_evaluator.classifiers.classifier import Classifier
-from privacy_evaluator.utils.data_utils import (
-    dataset_downloader,
-)
+from privacy_evaluator.utils.data_utils import dataset_downloader
 from privacy_evaluator.output.user_output_property_inference_attack import (
     UserOutputPropertyInferenceAttack,
 )
@@ -113,7 +111,9 @@ def test_property_inference_data_augmentation_attack(
     assert (
         attack.amount_sets == amount_sets
     ), "Number of shadow classifiers are not equal to input."
-    assert attack.size_shadow_training_set == size_shadow_training_set, "Number of samples is not equal to input."
+    assert (
+        attack.size_shadow_training_set == size_shadow_training_set
+    ), "Number of samples is not equal to input."
     assert attack.adaptation == adaptation, "Classes are not equal to input classes."
     assert len(output.output) == len(
         ratios_for_attack

@@ -44,6 +44,9 @@ CLASSES = [0, 1]
 # number of epochs for training the meta classifier
 NUM_EPOCHS_META_CLASSIFIER = 20
 
+# ratio of negation of property
+NEGATIVE_RATIO = 0.5
+
 
 class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
     def __init__(
@@ -53,6 +56,7 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
         amount_sets: int = AMOUNT_SETS,
         size_shadow_training_set: int = SIZE_SHADOW_TRAINING_SET,
         ratios_for_attack: List[int] = RATIOS_FOR_ATTACK,
+        negative_ratio: int = NEGATIVE_RATIO,
         classes: List[int] = CLASSES,
         verbose: int = 0,
         num_epochs_meta_classifier: int = NUM_EPOCHS_META_CLASSIFIER,
@@ -65,11 +69,14 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
         :param size_shadow_training_set: ratio and size for unbalanced data sets
         :param ratios_for_attack: ratios for different properties in sub-attacks
         with concatenation [test_features, test_labels]
+        :param negative_ratio: ratio of negation of property (where in the case of two classes the ratio is applied to
+        the second class and (1-ratio) to the first one)
         :param classes: classes the attack should be performed on
         :param verbose: 0: no information; 1: backbone (most important) information; 2: utterly detailed information will be printed
         :param num_epochs_meta_classifier: number of epochs for training the meta classifier
         """
 
+        self.negative_ratio = negative_ratio
         self.classes = classes
         if len(self.classes) != 2:
             raise ValueError("Currently attack only works with two classes.")
@@ -86,7 +93,12 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
                     "Warning: Number of samples for class {} is {}. "
                     "This is smaller than the given size set ({}). "
                     "{} is now the new size set."
-                ).format(i, length_class, size_shadow_training_set_old, size_shadow_training_set)
+                ).format(
+                    i,
+                    length_class,
+                    size_shadow_training_set_old,
+                    size_shadow_training_set,
+                )
                 self.logger.warning(warning_message)
 
         super().__init__(
@@ -100,8 +112,7 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
         )
 
     def create_shadow_training_sets(
-        self,
-        num_elements_per_class: Dict[int, int],
+        self, num_elements_per_class: Dict[int, int]
     ) -> List[Tuple[np.ndarray, np.ndarray]]:
         """
         Create the shadow training sets with given ratio.
@@ -136,8 +147,7 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
 
         # create classifiers with trained models based on given data set
         shadow_classifiers = self.train_shadow_classifiers(
-            shadow_training_sets,
-            num_elements_per_classes,
+            shadow_training_sets, num_elements_per_classes
         )
         return shadow_classifiers
 
@@ -173,18 +183,24 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
             )
         else:
             if list(predictions_ratios.values())[0][0][0] > 0.5:
-                max_message = "The given distribution is more likely than a balanced distribution. " "The given distribution is class {}: {}, class {}: {}".format(
-                    self.classes[0],
-                    round(1 - self.ratios_for_attack[0], 5),
-                    self.classes[1],
-                    round(self.ratios_for_attack[0], 5),
+                max_message = (
+                    "The given distribution is more likely than a balanced distribution. "
+                    "The given distribution is class {}: {}, class {}: {}".format(
+                        self.classes[0],
+                        round(1 - self.ratios_for_attack[0], 5),
+                        self.classes[1],
+                        round(self.ratios_for_attack[0], 5),
+                    )
                 )
             else:
-                max_message = "A balanced distribution is more likely than the given distribution. " "The given distribution is class {}: {}, class {}: {}".format(
-                    self.classes[0],
-                    round(1 - self.ratios_for_attack[0], 5),
-                    self.classes[1],
-                    round(self.ratios_for_attack[0], 5),
+                max_message = (
+                    "A balanced distribution is more likely than the given distribution. "
+                    "The given distribution is class {}: {}, class {}: {}".format(
+                        self.classes[0],
+                        round(1 - self.ratios_for_attack[0], 5),
+                        self.classes[1],
+                        round(self.ratios_for_attack[0], 5),
+                    )
                 )
             if abs(list(predictions_ratios.values())[0][0][0] - 0.5) <= 0.05:
                 self.logger.warning(
@@ -224,10 +240,7 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
         )
 
         # create meta classifier
-        meta_classifier = self.train_meta_classifier(
-            meta_features,
-            meta_labels,
-        )
+        meta_classifier = self.train_meta_classifier(meta_features, meta_labels)
 
         # get prediction
         prediction = self.perform_prediction(
@@ -249,23 +262,28 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
         self.logger.info(
             "{} --- features extracted from the target model.".format(
                 feature_extraction_target_model.shape
-            ),
+            )
         )
 
         # balanced ratio
         num_elements = int(round(self.size_shadow_training_set / len(self.classes)))
-        neg_property_num_elements_per_class = {i: num_elements for i in self.classes}
+
+        # negation of property of given ratio, only two classes allowed right now
+        neg_property_num_elements_per_class = {
+            self.classes[0]: int(
+                (1 - self.negative_ratio) * self.size_shadow_training_set
+            ),
+            self.classes[1]: int(self.negative_ratio * self.size_shadow_training_set),
+        }
 
         self.logger.info(
             "Creating set of {} balanced shadow classifier(s) ... ".format(
                 int(self.amount_sets / 2)
-            ),
+            )
         )
         # create balanced shadow classifiers negation property
-        shadow_classifiers_neg_property = (
-            self.create_shadow_classifier_from_training_set(
-                neg_property_num_elements_per_class
-            )
+        shadow_classifiers_neg_property = self.create_shadow_classifier_from_training_set(
+            neg_property_num_elements_per_class
         )
 
         self.ratios_for_attack.sort()
@@ -284,9 +302,7 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
         ):
             self.logger.info(f"Sub-attack for ratio {ratio} ... ")
             predictions[ratio] = self.prediction_on_specific_property(
-                feature_extraction_target_model,
-                shadow_classifiers_neg_property,
-                ratio,
+                feature_extraction_target_model, shadow_classifiers_neg_property, ratio
             )
         self.logger.info("PIA completed!")
         return self.output_attack(predictions)

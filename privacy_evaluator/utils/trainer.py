@@ -132,10 +132,7 @@ def _trainer_tf(
     # start training
     logger.info("Training a {} in {} epochs...".format(desc, num_epochs))
     with logging_redirect_tqdm():
-        for _ in tqdm(
-            range(num_epochs),
-            disable=(logger.level > logging.INFO),
-        ):
+        for _ in tqdm(range(num_epochs), disable=(logger.level > logging.INFO)):
             for images, labels in train_loader:
                 labels = np.vectorize(lambda id: class_encoding[id])(labels)
                 with tf.GradientTape() as g:
@@ -200,10 +197,7 @@ def _trainer_torch(
     # start training
     logger.info("Training a {} in {} epochs ...".format(desc, num_epochs))
     with logging_redirect_tqdm():
-        for _ in tqdm(
-            range(num_epochs),
-            disable=(logger.level > logging.INFO),
-        ):
+        for _ in tqdm(range(num_epochs), disable=(logger.level > logging.INFO)):
             model.train()
             for images, labels in train_loader:
                 labels = labels.apply_(lambda id: class_encoding[id]).flatten()
