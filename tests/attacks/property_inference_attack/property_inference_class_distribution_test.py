@@ -34,6 +34,8 @@ CLASSES = [4, 5]
 VERBOSE = 1
 # number of epochs for training the meta classifier
 NUM_EPOCHS_META_CLASSIFIER = 2
+# ratio of negation of property
+NEGATIVE_RATIO = 0.5
 
 
 def test_property_inference_class_distribution_attack(
@@ -44,6 +46,7 @@ def test_property_inference_class_distribution_attack(
     amount_sets: int = AMOUNT_SETS,
     size_shadow_training_set: int = SIZE_SHADOW_TRAINING_SET,
     ratios_for_attack: List[float] = RATIOS_FOR_ATTACK,
+    negative_ratio: int = NEGATIVE_RATIO,
     classes: List[int] = CLASSES,
     verbose: int = VERBOSE,
     num_epochs_meta_classifier: int = NUM_EPOCHS_META_CLASSIFIER,
@@ -81,6 +84,7 @@ def test_property_inference_class_distribution_attack(
         amount_sets=amount_sets,
         size_shadow_training_set=size_shadow_training_set,
         ratios_for_attack=ratios_for_attack,
+        negative_ratio=negative_ratio,
         classes=classes,
         verbose=verbose,
         num_epochs_meta_classifier=num_epochs_meta_classifier,
@@ -104,7 +108,9 @@ def test_property_inference_class_distribution_attack(
     assert (
         attack.amount_sets == amount_sets
     ), "Number of shadow classifiers are not equal to input."
-    assert attack.size_shadow_training_set == size_shadow_training_set, "Number of samples is not equal to input."
+    assert (
+        attack.size_shadow_training_set == size_shadow_training_set
+    ), "Number of samples is not equal to input."
     assert attack.classes == classes, "Classes are not equal to input classes."
     assert len(output.output) == len(
         ratios_for_attack
