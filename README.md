@@ -116,7 +116,7 @@ Given here are three types of membership inference attacks, all able to work wit
 
 All three attacks are generic and not based on any particular dataset or model type.
 
-For a tutorial to each of the following attacks have a look at the collection of notebooks [here]([privacy-evaluator/notebooks/](https://github.com/privML/privacy-evaluator/tree/main/notebooks)).
+For a tutorial to each of the following attacks have a look at the collection of notebooks [here](https://github.com/privML/privacy-evaluator/tree/main/notebooks).
 
 #### Membership Inference Back-Box
 
