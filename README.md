@@ -130,13 +130,12 @@ Once the meta-classifier is trained, it can be used to infer membership status o
 
 The current implementation gives the user the choice of the attack model meta-classifier. The default is a neural network, but random forests and gradient boosting models can be chosen as well.
 
-For a better understanding, the following two graphics visualize the functionality of the attack. The first one, the table, summarizes which model has seen which dataset. The second one visualizes the attack flow.
+For a better understanding, the following two graphics visualize the functionality of the attack. The first one, the table, summarizes the purpose of each model and which dataset it is associated with. The second one visualizes the attack flow.
 
-| | (X,y)<sub>target</sub> | (X,y)<sub>attack</sub> |
+| | Purpose and Dataset |
 |:-------------:|:-------------:|:-------------:|
-| target model | **yes**, <br />the model is trained on this dataset | **in general no**, <br />but this dataset should preferably be overlapping with the dataset the target model is trained on |
-| attack model | **in general no**, <br />but this dataset should preferably be overlapping with the dataset the attack model is trained on | **yes**, <br />the model is trained on this dataset |
-
+| target model | this model was trained on an unknown dataset (X,y)<sub>target</sub> of which members are to be infered via the attack |
+| attack model | this model is used to attack the target model and is trained on a datset (X,y)<sub>attack</sub> which should preferably be as similar as possible to (X,y)<sub>target</sub> |
 
 ![](docs/mia_blackbox.png)
 
@@ -148,12 +147,12 @@ Provided a model, the target model (trained on an unknown labeled set of data _(
 
 Once the shadow model is trained, it can be used to infer membership status on an array of one or more unknown unlabeled data records _X<sub>unkown</sub>_, returning for each record either  a 1, indicating a member, or a 0, indicating a non-member of the target model’s training set _(X,y)<sub>target</sub>_
 
-For a better understanding, the following two graphics visualize the functionality of the attack. The first one, the table, summarizes which model has seen which dataset. The second one visualizes the attack flow.
+For a better understanding, the following two graphics visualize the functionality of the attack. The first one, the table, summarizes the purpose of each model and which dataset it is associated with. The second one visualizes the attack flow.
 
-| | (X,y)<sub>target</sub> | (X,y)<sub>attack</sub> |
+| | Purpose and Dataset |
 |:-------------:|:-------------:|:-------------:|
-| target model | **yes**, <br />the model is trained on this dataset | **in general no**, <br />but this dataset should preferably be overlapping with the dataset the target model is trained on |
-| attack model | **in general no**, <br />but this dataset should preferably be overlapping with the dataset the attack model is trained on | **yes**, <br />the model is trained on this dataset |
+| target model | this model was trained on an unknown dataset (X,y)<sub>target</sub> of which members are to be infered via the attack |
+| attack model | this model is used to attack the target model and is trained on a datset (X,y)<sub>attack</sub> which should preferably be as similar as possible to (X,y)<sub>target</sub> |
 
 ![](docs/mia_blackbox_decision_boundary.png)
 
@@ -163,12 +162,13 @@ The attack uses a simple rule: if the target model’s prediction for a given in
 
 Provided a model, the target model (trained on an unknown labeled set of data _(X,y)<sub>target</sub>_), and a separate labeled set of data _(X,y)<sub>unkown</sub>_, this attack iterates over each labeled data record of _(X,y)<sub>unkown</sub>_, returning for each record either  a 1, if classified correctly by the target model, indicating a member of the population of _(X,y)<sub>target</sub>_, or a 0, if classified incorrectly by the target model, indicating a non-member of the population of _(X,y)<sub>target</sub>_.
 
-For a better understanding, the following two graphics visualize the functionality of the attack. The first one, the table, summarizes which model has seen which dataset. The second one visualizes the attack flow.
+For a better understanding, the following two graphics visualize the functionality of the attack. The first one, the table, summarizes the purpose of each model and which dataset it is associated with. The second one visualizes the attack flow.
 
-| | (X,y)<sub>target</sub> | (X,y)<sub>attack</sub> |
-|:--------------------:|:------------------:|:-------------:|
-| target model | **yes**, <br />the model was trained on this dataset | **n/a**, <br />there do not exist a separate attack model |
-| attack model | **n/a**, <br />there do not exist a separate attack model | **n/a**, <br />there do not exist a separate attack model |
+| | Purpose and Dataset |
+|:-------------:|:-------------:|:-------------:|
+| target model | this model was trained on an unknown dataset (X,y)<sub>target</sub> of which members are to be infered via the attack |
+| attack model | no attack model is used for this attack, as records of _(X,y)<sub>unkown</sub>_ are inferred as member/non-member of (X,y)<sub>target</sub> based on the target model's classification correctness |
+
 
 ![](docs/mia_blackbox_rule_based.png)
 
