@@ -12,6 +12,8 @@ from ...validators.attack import validate_parameters
 
 from ...output.user_output_inference_attack import UserOutputInferenceAttack
 
+import logging
+
 
 class MembershipInferenceAttack(Attack):
     """MembershipInferenceAttack base class.
@@ -89,6 +91,8 @@ class MembershipInferenceAttack(Attack):
                 "The attack model needs to be fitted first. Please run `fit()` on the attack."
             )
 
+        logger = logging.getLogger(__name__)
+        logger.info("running the Attack on the model")
         membership_pred = self._art_attack.infer(
             x, y, probabilities=probabilities, **kwargs
         )
@@ -130,9 +134,12 @@ class MembershipInferenceAttack(Attack):
         validate_parameters(
             "attack_output", target_model=self.target_model, x=x, y=y, y_attack=y_attack
         )
-
+        logger = logging.getLogger(__name__)
+        logger.info("calculating train_accuracy")
         train_accuracy = accuracy(y_train, self.target_model.predict(x_train))
+        logger.info("calculating test_accuracy")
         test_accuracy = accuracy(y_test, self.target_model.predict(x_test))
+        logger.info("calculating attack_prediction")
         y_attack_prediction = self.attack(x, y)
 
         return UserOutputInferenceAttack(

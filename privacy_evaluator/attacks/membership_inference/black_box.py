@@ -3,6 +3,8 @@ import numpy as np
 from .membership_inference import MembershipInferenceAttack
 from ...classifiers.classifier import Classifier
 
+import logging
+
 
 class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
     """MembershipInferenceBlackBoxAttack class.
@@ -55,4 +57,6 @@ class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
         :param kwargs: Keyword arguments for fitting the attack model. Currently, there are no additional keyword
         arguments provided.
         """
+        logger = logging.getLogger(__name__)
+        logger.info("fiting MembershipInferenceBlackBoxAttack")
         self._art_attack.fit(x_train, y_train, x_test, y_test)

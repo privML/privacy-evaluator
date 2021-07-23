@@ -3,6 +3,8 @@ import numpy as np
 from .membership_inference import MembershipInferenceAttack
 from ...classifiers.classifier import Classifier
 
+import logging
+
 
 class MembershipInferenceLabelOnlyDecisionBoundaryAttack(MembershipInferenceAttack):
     """MembershipInferenceLabelOnlyDecisionBoundaryAttack class.
@@ -44,6 +46,8 @@ class MembershipInferenceLabelOnlyDecisionBoundaryAttack(MembershipInferenceAtta
         :kwargs init_eval: Initial number of evaluations for estimating gradient for HopSkipJump.
         :kwargs init_size: Maximum number of trials for initial generation of adversarial examples for HopSkipJump.
         """
+        logger = logging.getLogger(__name__)
+        logger.info("fiting MembershipInferenceLabelOnlyDecisionBoundaryAttack")
         self._art_attack.calibrate_distance_threshold(
             x_train, y_train, x_test, y_test, **kwargs
         )

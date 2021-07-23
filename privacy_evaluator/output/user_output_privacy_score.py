@@ -37,7 +37,6 @@ class UserOutputPrivacyScore(UserOutput):
         Initilaizes the Class with values
         :param attack_data_y: An Array of the labels of the attck data
         :param privacy_risk: the Privacy risk corresponding to the attack data
-        :param all_labels: All labels that are in the training set
         """
         self.attack_data_y = attack_data_y
         self.privacy_risk = privacy_risk
@@ -143,3 +142,53 @@ class UserOutputPrivacyScore(UserOutput):
                 plt.xticks(all_labels)
             plt.show()
         return all_labels, relative_values
+
+    def histogram_distribution(
+        self,
+        class_name: str = None,
+        show_diagram: bool = True,
+    ) -> np.ndarray:
+        """
+        Draws a historgram of the privacy risk score of the given data
+        :param class_name: Name of the Class shown in the diagram
+        :param show_diagram: determines if the diagram should be shown, default: True
+        :return: the data that is being ploted
+        """
+        if show_diagram:
+            plt.hist(self.privacy_risk)
+            if class_name is None:
+                plt.title("Histogram for the whole data")
+            else:
+                plt.title("Histogram for data of {}".format(class_name))
+            plt.ylabel("Number of occurences")
+            plt.xlabel("Privacy risk score")
+            plt.show()
+        return self.privacy_risk
+
+    def histogram_slices(
+        self,
+        slices: np.ndarray,
+        slices_priv_risk: np.ndarray,
+        show_diagram: bool = True,
+        name: str = None,
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Plots the classes with their average privacy score
+        :param slices: The names of the slices to be ploted
+        :param slices_priv_risk: a list of the privacy risk scores whitin the slices
+        :param show_diagram: determines if the diagram should be shown, default: True
+        :param name: Name of the data set (training/test).
+        :return: All Slice names with the average privacy risk score
+        """
+
+        if show_diagram:
+            title_name = ""
+            if name is not None:
+                title_name = "for " + name + " data"
+            plt.bar(slices, slices_priv_risk)
+            plt.title("Histogram for the average score on each slice " + title_name)
+            plt.xlabel("Slices")
+            plt.ylabel("Average Privacy Score")
+            plt.xticks(slices, rotation=(40), va="top", ha="right")
+            plt.show()
+        return slices, slices_priv_risk
