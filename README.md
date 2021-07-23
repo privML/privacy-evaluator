@@ -167,7 +167,7 @@ For a better understanding, the following two graphics visualize the functionali
 | | Purpose and Dataset |
 |:-------------:|:-------------:|
 | target model | this model was trained on an unknown dataset (X,y)<sub>target</sub> of which members are to be infered via the attack |
-| attack model | no attack model is used for this attack, as records of _(X,y)<sub>unkown</sub>_ are inferred as member/non-member of (X,y)<sub>target</sub> based on the target model's classification correctness |
+| attack model | no attack model is used for this attack, as records of (X,y)<sub>unkown</sub> are inferred as member/non-member of (X,y)<sub>target</sub> based on the target model's classification correctness |
 
 
 ![](docs/mia_blackbox_rule_based.png)
