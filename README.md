@@ -132,7 +132,7 @@ The current implementation gives the user the choice of the attack model meta-cl
 
 For a better understanding, the following two graphics visualize the functionality of the attack. The first one, the table, summarizes the purpose of each model and which dataset it is associated with. The second one visualizes the attack flow.
 
-| | Purpose and Dataset |
+| Model | Purpose and Dataset |
 |:-------------:|:-------------:|
 | target model | this model was trained on an unknown dataset (X,y)<sub>target</sub> of which members are to be infered via the attack |
 | attack model | this model is used to attack the target model and is trained on a datset (X,y)<sub>attack</sub> which should preferably be as similar as possible to (X,y)<sub>target</sub> |
@@ -149,7 +149,7 @@ Once the shadow model is trained, it can be used to infer membership status on a
 
 For a better understanding, the following two graphics visualize the functionality of the attack. The first one, the table, summarizes the purpose of each model and which dataset it is associated with. The second one visualizes the attack flow.
 
-| | Purpose and Dataset |
+| Model | Purpose and Dataset |
 |:-------------:|:-------------:|
 | target model | this model was trained on an unknown dataset (X,y)<sub>target</sub> of which members are to be infered via the attack |
 | attack model | this model is used to attack the target model and is trained on a datset (X,y)<sub>attack</sub> which should preferably be as similar as possible to (X,y)<sub>target</sub> |
@@ -164,7 +164,7 @@ Provided a model, the target model (trained on an unknown labeled set of data _(
 
 For a better understanding, the following two graphics visualize the functionality of the attack. The first one, the table, summarizes the purpose of each model and which dataset it is associated with. The second one visualizes the attack flow.
 
-| | Purpose and Dataset |
+| Model | Purpose and Dataset |
 |:-------------:|:-------------:|
 | target model | this model was trained on an unknown dataset (X,y)<sub>target</sub> of which members are to be infered via the attack |
 | attack model | no attack model is used for this attack, as records of (X,y)<sub>unkown</sub> are inferred as member/non-member of (X,y)<sub>target</sub> based on the target model's classification correctness |
