@@ -91,8 +91,7 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
         )
 
     def create_shadow_training_sets(
-        self,
-        ratio: int,
+        self, ratio: int
     ) -> List[Tuple[np.ndarray, np.ndarray]]:
         """
         Create the shadow training sets with given ratio.
@@ -118,7 +117,9 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
         self.logger.info("Creating shadow training sets")
 
         for _ in range(int(self.amount_sets / 2)):
-            idx = np.random.choice(len(self.dataset[0]), self.size_shadow_training_set, replace=False)
+            idx = np.random.choice(
+                len(self.dataset[0]), self.size_shadow_training_set, replace=False
+            )
             smaller_data_set = (self.dataset[0][idx], self.dataset[1][idx])
             shadow_training_set = data_utils.create_new_dataset_with_adaptation(
                 smaller_data_set, ratio, self.adaptation, **self.kwargs
@@ -128,10 +129,7 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
 
         return training_sets
 
-    def create_shadow_classifier_from_training_set(
-        self,
-        ratio: int,
-    ) -> list:
+    def create_shadow_classifier_from_training_set(self, ratio: int) -> list:
         # create training sets
         shadow_training_sets = self.create_shadow_training_sets(ratio)
 
@@ -140,8 +138,7 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
         )
         # create classifiers with trained models based on given data set
         shadow_classifiers = self.train_shadow_classifiers(
-            shadow_training_sets,
-            num_elements_per_classes,
+            shadow_training_sets, num_elements_per_classes
         )
         return shadow_classifiers
 
@@ -165,24 +162,33 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
             output[key] = predictions_ratios[ratio][0][0]
 
         if len(self.ratios_for_attack) >= 2:
-            max_message = "The most probable property with a probability of {} has {} samples adapted with type {}" " and {} samples unmodified.".format(
-                predictions_ratios[max_property[0]][0][0],
-                round(max_property[0], 5),
-                self.adaptation,
-                round(1 - max_property[0], 5),
+            max_message = (
+                "The most probable property with a probability of {} has {} samples adapted with type {}"
+                " and {} samples unmodified.".format(
+                    predictions_ratios[max_property[0]][0][0],
+                    round(max_property[0], 5),
+                    self.adaptation,
+                    round(1 - max_property[0], 5),
+                )
             )
         else:
             if list(predictions_ratios.values())[0][0][0] > 0.5:
-                max_message = "The given distribution is more likely than a balanced distribution. " "The given distribution has {} samples adapted with type {} and {} unmodified samples.".format(
-                    round(self.ratios_for_attack[0], 5),
-                    self.adaptation,
-                    round(1 - self.ratios_for_attack[0], 5),
+                max_message = (
+                    "The given distribution is more likely than a balanced distribution. "
+                    "The given distribution has {} samples adapted with type {} and {} unmodified samples.".format(
+                        round(self.ratios_for_attack[0], 5),
+                        self.adaptation,
+                        round(1 - self.ratios_for_attack[0], 5),
+                    )
                 )
             else:
-                max_message = "A balanced distribution is more likely than the given distribution. " "The given distribution has {} samples adapted with type {} and {} unmodified samples.".format(
-                    round(self.ratios_for_attack[0], 5),
-                    self.adaptation,
-                    round(1 - self.ratios_for_attack[0], 5),
+                max_message = (
+                    "A balanced distribution is more likely than the given distribution. "
+                    "The given distribution has {} samples adapted with type {} and {} unmodified samples.".format(
+                        round(self.ratios_for_attack[0], 5),
+                        self.adaptation,
+                        round(1 - self.ratios_for_attack[0], 5),
+                    )
                 )
             if abs(list(predictions_ratios.values())[0][0][0] - 0.5) <= 0.05:
                 self.logger.warning(
@@ -207,7 +213,7 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
 
         # create shadow classifiers with trained models with unbalanced data set
         shadow_classifiers_property = self.create_shadow_classifier_from_training_set(
-            ratio,
+            ratio
         )
 
         # create meta training set
@@ -216,10 +222,7 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
         )
 
         # create meta classifier
-        meta_classifier = self.train_meta_classifier(
-            meta_features,
-            meta_labels,
-        )
+        meta_classifier = self.train_meta_classifier(meta_features, meta_labels)
 
         # get prediction
         prediction = self.perform_prediction(
@@ -241,23 +244,21 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
         self.logger.info(
             "{} --- features extracted from the target model.".format(
                 feature_extraction_target_model.shape
-            ),
+            )
         )
 
         self.logger.info(
             "Creating set of {} balanced shadow classifier(s) ... ".format(
                 int(self.amount_sets / 2)
-            ),
+            )
         )
 
         # negation property ratio
         negation_property_ratio = 0.5
 
         # create shadow classifiers negation property
-        shadow_classifiers_neg_property = (
-            self.create_shadow_classifier_from_training_set(
-                negation_property_ratio,
-            )
+        shadow_classifiers_neg_property = self.create_shadow_classifier_from_training_set(
+            negation_property_ratio
         )
 
         self.ratios_for_attack.sort()
@@ -276,9 +277,7 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
         ):
             self.logger.info(f"Sub-attack for ratio {ratio} ... ")
             predictions[ratio] = self.prediction_on_specific_property(
-                feature_extraction_target_model,
-                shadow_classifiers_neg_property,
-                ratio,
+                feature_extraction_target_model, shadow_classifiers_neg_property, ratio
             )
         self.logger.info("PIA completed!")
         return self.output_attack(predictions)

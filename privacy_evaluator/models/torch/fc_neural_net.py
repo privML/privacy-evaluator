@@ -25,14 +25,7 @@ def FCNeuralNet(
     """
     if input_shape == (32, 32, 3):
         return FCNeuralNet32X32X3(num_classes, dropout)
-    elif input_shape in [
-        (28, 28),
-        (
-            28,
-            28,
-        ),
-        (28, 28, 1),
-    ]:
+    elif input_shape in [(28, 28), (28, 28), (28, 28, 1)]:
         return FCNeuralNet28X28X1(num_classes, dropout)
     else:
         raise ValueError(
@@ -42,11 +35,7 @@ def FCNeuralNet(
 
 
 class FCNeuralNet32X32X3(nn.Module):
-    def __init__(
-        self,
-        num_classes: int = 2,
-        dropout: float = 0,
-    ):
+    def __init__(self, num_classes: int = 2, dropout: float = 0):
         super(FCNeuralNet32X32X3, self).__init__()
         self.flatten = nn.Flatten()
         self.fc = nn.Sequential(
@@ -66,11 +55,7 @@ class FCNeuralNet32X32X3(nn.Module):
 
 
 class FCNeuralNet28X28X1(nn.Module):
-    def __init__(
-        self,
-        num_classes: int = 2,
-        dropout: float = 0,
-    ):
+    def __init__(self, num_classes: int = 2, dropout: float = 0):
         super(FCNeuralNet28X28X1, self).__init__()
         self.flatten = nn.Flatten()
         self.fc = nn.Sequential(

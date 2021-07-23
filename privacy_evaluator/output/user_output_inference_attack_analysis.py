@@ -10,12 +10,7 @@ from .user_output import UserOutput
 class UserOutputInferenceAttackAnalysis(UserOutput):
     """Result of the membership inference attack analysis for a single slice."""
 
-    def __init__(
-        self,
-        slice: Slice,
-        advantage: float,
-        accuracy: float,
-    ):
+    def __init__(self, slice: Slice, advantage: float, accuracy: float):
         self.slice = slice
         self.advantage = advantage
         self.accuracy = accuracy
@@ -26,25 +21,15 @@ class UserOutputInferenceAttackAnalysis(UserOutput):
         :param include_indices: If True, slice indices will be included in the output.
         """
         if include_indices:
-            slice = Slice(
-                indices=self.slice.indices.tolist(),
-                desc=self.slice.desc,
-            )
+            slice = Slice(indices=self.slice.indices.tolist(), desc=self.slice.desc)
         else:
-            slice = Slice(
-                indices=[],
-                desc=self.slice.desc,
-            )
+            slice = Slice(indices=[], desc=self.slice.desc)
 
         output = UserOutputInferenceAttackAnalysis(
-            slice=slice.__dict__,
-            advantage=self.advantage,
-            accuracy=self.accuracy,
+            slice=slice.__dict__, advantage=self.advantage, accuracy=self.accuracy
         )
 
-        return UserOutput._to_json(
-            output,
-        )
+        return UserOutput._to_json(output)
 
     def __str__(self) -> str:
         return "\n".join(

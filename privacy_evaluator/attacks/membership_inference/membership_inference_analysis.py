@@ -70,9 +70,7 @@ class MembershipInferenceAttackAnalysis:
 
             results.append(
                 UserOutputInferenceAttackAnalysis(
-                    slice=slice,
-                    advantage=advantage,
-                    accuracy=accuracy,
+                    slice=slice, advantage=advantage, accuracy=accuracy
                 )
             )
 

@@ -13,11 +13,7 @@ install_requires = [
     "tqdm==4.61.0",
 ]
 
-development_requires = [
-    "black",
-    "googledrivedownloader",
-    "pytest",
-]
+development_requires = ["black", "googledrivedownloader", "pytest"]
 
 setup(
     name="privacy-evaluator",

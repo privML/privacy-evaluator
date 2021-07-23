@@ -216,9 +216,7 @@ class PropertyInferenceAttack(Attack):
         return meta_features, meta_labels
 
     def train_meta_classifier(
-        self,
-        meta_training_X: np.ndarray,
-        meta_training_y: np.ndarray,
+        self, meta_training_X: np.ndarray, meta_training_y: np.ndarray
     ) -> TensorFlowV2Classifier:
         """
         Train meta-classifier with the meta-training set.
