@@ -2,6 +2,7 @@ from .membership_inference import MembershipInferenceAttack
 from ...classifiers.classifier import Classifier
 import numpy as np
 from typing import Tuple
+import logging
 
 
 class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
@@ -21,9 +22,14 @@ class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
     def fit(self, *args, **kwargs):
         """Fits the attack model.
 
-        :param args: Arguments for the fitting.
-        :param kwargs: Keyword arguments for the fitting.
+        :param args: Arguments for the fitting. Currently, there are no additional arguments provided.
+        :param kwargs: Keyword arguments for fitting the attack model. Currently, there are no additional keyword
+        arguments provided.
         """
+        logger = logging.getLogger(__name__)
+        logger.debug(
+            "Trying to fit MembershipInferenceAttackOnPointBasis, nothing to fit."
+        )
         pass
 
     def attack(
@@ -53,8 +59,15 @@ class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
         :param num_bins: the number of bins used to compute the training/test histogram
         :return: membership probability results
         """
+        logger = logging.getLogger(__name__)
+        logger.info("Running MembershipInferenceAttackOnPointBasis")
+        logger.debug("Computing Loss for target Model")
         loss_train = self.target_model.art_classifier.compute_loss(x_train, y_train)
         loss_test = self.target_model.art_classifier.compute_loss(x_test, y_test)
+
+        logger.debug(
+            "Computing membership probability per point with %d bins" % num_bins
+        )
         return self._compute_membership_probability(loss_train, loss_test, num_bins)
 
     @staticmethod

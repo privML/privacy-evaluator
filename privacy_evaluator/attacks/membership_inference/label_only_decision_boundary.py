@@ -3,6 +3,8 @@ import numpy as np
 from .membership_inference import MembershipInferenceAttack
 from ...classifiers.classifier import Classifier
 
+import logging
+
 
 class MembershipInferenceLabelOnlyDecisionBoundaryAttack(MembershipInferenceAttack):
     """MembershipInferenceLabelOnlyDecisionBoundaryAttack class.
@@ -19,10 +21,6 @@ class MembershipInferenceLabelOnlyDecisionBoundaryAttack(MembershipInferenceAtta
         """Initializes a MembershipInferenceLabelOnlyDecisionBoundaryAttack class.
 
         :param target_model: Target model to be attacked.
-        :param x_train: Data which was used to train the target model.
-        :param y_train: One-hot encoded labels for `x_train`.
-        :param x_test: Data that was not used to train the target model.
-        :param y_test: One-hot encoded labels for `x_test`.
         """
         super().__init__(target_model)
 
@@ -41,8 +39,15 @@ class MembershipInferenceLabelOnlyDecisionBoundaryAttack(MembershipInferenceAtta
         :param y_train: True, one-hot encoded labels for `x_train`.
         :param x_test: Data that was not used to train the target model and will be used for training the attack model.
         :param y_test: True, one-hot encoded labels for `x_test`.
-        :param kwargs: Keyword arguments for the fitting.
+        :param kwargs: Keyword arguments for fitting the attack model. Possible kwargs are:
+        :kwargs norm: Order of the norm for HopSkipJump. Possible values: "inf", np.inf or 2.
+        :kwargs max_iter: Maximum number of iterations for HopSkipJump.
+        :kwargs max_eval: Maximum number of evaluations for estimating gradient for HopSkipJump.
+        :kwargs init_eval: Initial number of evaluations for estimating gradient for HopSkipJump.
+        :kwargs init_size: Maximum number of trials for initial generation of adversarial examples for HopSkipJump.
         """
+        logger = logging.getLogger(__name__)
+        logger.info("fiting MembershipInferenceLabelOnlyDecisionBoundaryAttack")
         self._art_attack.calibrate_distance_threshold(
             x_train, y_train, x_test, y_test, **kwargs
         )

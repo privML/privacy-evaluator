@@ -3,6 +3,8 @@ import numpy as np
 from .membership_inference import MembershipInferenceAttack
 from ...classifiers.classifier import Classifier
 
+import logging
+
 
 class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
     """MembershipInferenceBlackBoxAttack class.
@@ -20,10 +22,6 @@ class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
         """Initializes a MembershipInferenceBlackBoxAttack class.
 
         :param target_model: Target model to be attacked.
-        :param x_train: Data which was used to train the target model.
-        :param y_train: One-hot encoded labels for `x_train`.
-        :param x_test: Data that was not used to train the target model.
-        :param y_test: One-hot encoded labels for `x_test`.
         :param attack_model_type: Type of the attack model. On of "rf", "gb", "nn".
         :raises TypeError: If `attack_model_type` is of invalid type.
         :raises ValueError: If `attack_model_type` is none of `rf`, `gb`, `nn`.
@@ -56,6 +54,9 @@ class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
         :param y_train: True, one-hot encoded labels for `x_train`.
         :param x_test: Data that was not used to train the target model and will be used for training the attack model.
         :param y_test: True, one-hot encoded labels for `x_test`.
-        :param kwargs: Keyword arguments for the fitting.
+        :param kwargs: Keyword arguments for fitting the attack model. Currently, there are no additional keyword
+        arguments provided.
         """
+        logger = logging.getLogger(__name__)
+        logger.info("fiting MembershipInferenceBlackBoxAttack")
         self._art_attack.fit(x_train, y_train, x_test, y_test)
