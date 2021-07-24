@@ -22,8 +22,9 @@ class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
     def fit(self, *args, **kwargs):
         """Fits the attack model.
 
-        :param args: Arguments for the fitting.
-        :param kwargs: Keyword arguments for the fitting.
+        :param args: Arguments for the fitting. Currently, there are no additional arguments provided.
+        :param kwargs: Keyword arguments for fitting the attack model. Currently, there are no additional keyword
+        arguments provided.
         """
         logger = logging.getLogger(__name__)
         logger.debug(

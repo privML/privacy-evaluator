@@ -102,7 +102,7 @@ performance.
 Because the parameters in neural networks are usually randomly initialized and even after training, the order of 
 parameters is arbitrary. Thus, the meta classifier must be trained on this so that it is able to recognize pattern between 
 the parameters of the shadow classifiers. As a result, all the parameters of each shadow classifier represent the 
-feature representation F<sub>k</sub>. The feature representation form together the training set for the meta classifer 
+feature representation F<sub>k</sub>. The feature representation form together the training set for the meta classifier 
 where each is labeled correspondingly as either P or ¬P. The training algorithm for the meta-classifier can 
 be arbitrarily chosen.
 
@@ -116,8 +116,6 @@ Given here are three types of membership inference attacks, all able to work wit
 
 To quantifiably measure a membership inference attack, two metrics are used:
 
-
-
 *   ‘Precision’ describes the fraction of records inferred as members that are indeed members of the training set.
 *   ‘Recall’ describes the fraction of the training dataset’s members that are correctly inferred as members of the training set by an attacker.
 
@@ -129,7 +127,7 @@ This is the implementation of the original idea of a black-box membership infere
 
 Provided a model, the target model (trained on an unknown labeled set of data _(X,y)<sub>target</sub>_), and a separate labeled set of data _(X,y)<sub>attack</sub>_, which can be derived via various methods and which is preferably most similar to the one that the target model was trained on, the original attack trains a binary meta-classifier, using _(X,y)<sub>attack</sub>_ in conjunction with a multitude of so-called shadow models, and uses the meta-classifier to decide whether or not a data point was part of the target model’s training set or not. 
 
-In the original attack, the seperate, labeled set of data _(X,y)<sub>attack</sub>_ is meant to be drawn from the same distribution as _(X,y)<sub>target</sub>_, and utilizes the training of shadow models on (disjunct and possibly overlapping) partitions of _(X,y)<sub>attack</sub>_, each imitating the behaviour of the target model, whilst knowing the “ground truth” for each shadow model. Using the shadow models to classify a data point that was not part of _(X,y)<sub>target</sub>_, and comparing the “unseen data confidence” of the shadow models with the one of the target model, the attack is able to recognize the occurrence of abnormal confidence values in the target model, indicating when a data point was part of the data that the target model was trained on.
+In the original attack, the separate, labeled set of data _(X,y)<sub>attack</sub>_ is meant to be drawn from the same distribution as _(X,y)<sub>target</sub>_, and utilizes the training of shadow models on (disjunct and possibly overlapping) partitions of _(X,y)<sub>attack</sub>_, each imitating the behaviour of the target model, whilst knowing the “ground truth” for each shadow model. Using the shadow models to classify a data point that was not part of _(X,y)<sub>target</sub>_, and comparing the “unseen data confidence” of the shadow models with the one of the target model, the attack is able to recognize the occurrence of abnormal confidence values in the target model, indicating when a data point was part of the data that the target model was trained on.
 
 The implementation provided here uses ARTs Blackbox MIA, which assumes what was originally done via shadow models to be done external and a priori, as recent research has shown that both, the requirement of having data from the same distribution as _(X,y)<sub>target</sub>_ and the usage of shadow models at all can be relaxed. Instead, the target model itself can be used to generate a set _(X,y)<sub>target</sub>_ ([Salem et al.](https://arxiv.org/abs/1806.01246)), which is then used in this implementation.
 

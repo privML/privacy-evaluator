@@ -154,7 +154,7 @@ class MembershipInferenceAttack(Attack):
         """Fits the attack model.
 
         :param args: Arguments for the fitting.
-        :param kwargs: Keyword arguments for the fitting.
+        :param kwargs: Keyword arguments for fitting the attack model.
         """
         raise NotImplementedError(
             "Method `attack()` needs to be implemented in subclass"
