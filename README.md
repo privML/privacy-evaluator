@@ -154,7 +154,7 @@ For a better understanding, the following two graphics visualize the functionali
 | Model | Purpose and Dataset |
 |:-------------:|:-------------:|
 | target model | this model was trained on an unknown dataset (X,y)<sub>target</sub> of which members are to be infered via the attack |
-| attack model | this model is used to attack the target model and is trained on a datset (X,y)<sub>attack</sub> which should preferably be as similar as possible to (X,y)<sub>target</sub> |
+| attack model | this model is used to attack the target model and is trained on a dataset (X,y)<sub>attack</sub> which should preferably be as similar as possible to (X,y)<sub>target</sub> |
 
 ![](docs/mia_blackbox_decision_boundary.png)
 
@@ -174,11 +174,16 @@ For a better understanding, the following two graphics visualize the functionali
 
 ![](docs/mia_blackbox_rule_based.png)
 
-#### Membership Inference Attack on Point basis (Privacy Risk score)
+#### Membership Inference Attack on Point Basis (Privacy Risk Score)
 
-This is the implementation of the original idea of a membership Inference Attack on Point provided by *Systematic Evaluation of Privacy Risks of Machine Learning Models*  [(arXiv:2003.10595)](https://arxiv.org/abs/2003.10595) described there as privacy risk score. The attack performs an empirical measurement of the posterior probability that a singular datapoint  _(X,y)<sub>target</sub>_ is from the training set, observing the target model’s behavior over that sample. An on point basis result or privacy risk score for a given sample of zero means that it's propability of beeing a member is estimated to be zero. 
+This is the implementation of the original idea of a Membership Inference Attack on Point Basis provided by *Systematic Evaluation of Privacy Risks of Machine Learning Models*  [(arXiv:2003.10595)](https://arxiv.org/abs/2003.10595) described there as Privacy Risk Score. The attack performs an empirical measurement of the posterior probability that a singular datapoint of _(X,y)<sub>target</sub>_ or _(X,y)<sub>non-target</sub>_ is from the training set, observing the target model's behavior over that sample. A Privacy Risk Score for a given sample of zero means that it's probability of being a member is estimated to be zero. 
 
-The calculation of the privacy risk score is grounded in bayesian principles. For the details of the calculation see the paper linked above.
+The calculation of the Privacy Risk Score is based on Bayesian Principles and needs both a _(X,y)<sub>target</sub>_ and _(X,y)<sub>non-target</sub>_ dataset in order to work properly.  _(X,y)<sub>non-target</sub>_ is a dataset that was not used to train the target model. For the details of the calculation see the paper linked above.
+
+| Model | Purpose and Dataset |
+|:-------------:|:-------------:|
+| target model | this model was trained on an dataset (X,y)<sub>target</sub> and is used to calculate the privacy risk scores |
+| attack model | no attack model is used for this attack, as a privacy risk score is calculated based on the target model's behaviour with respect to both dataset _(X,y)<sub>target</sub>_ and _(X,y)<sub>non-target</sub>_ |
 
 #### Membership Attacker's Advantage Score
 
