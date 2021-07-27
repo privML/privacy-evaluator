@@ -168,7 +168,7 @@ For a better understanding, the following two graphics visualize the functionali
 
 | Model | Purpose and Dataset |
 |:-------------:|:-------------:|
-| target model | this model was trained on an unknown dataset (X,y)<sub>target</sub> of which members are to be infered via the attack |
+| target model | this model was trained on an unknown dataset (X,y)<sub>target</sub> of which members are to be inferred via the attack |
 | attack model | no attack model is used for this attack, as records of (X,y)<sub>unkown</sub> are inferred as member/non-member of (X,y)<sub>target</sub> based on the target model's classification correctness |
 
 
@@ -188,8 +188,6 @@ The calculation of the Privacy Risk Score is based on Bayesian Principles and ne
 #### Membership Attacker's Advantage Score
 
 The metric represents the attacker's advantage score.  It represents the degree to which a learning algorithm, i.e. a model, reveals membership to an adversary. The score calculation is based on Definition 4 from [Yeom, Samuel, et al.](https://arxiv.org/pdf/1709.01604.pdf).
-
-
 
 ## Getting Involved
 If you want to contribute in any way, please visit our [Contribution Guidelines](./CONTRIBUTING.md) to get started. Please have also a look at our [Code of Conduct](./CODE_OF_CONDUCT.md). 
