@@ -1,8 +1,8 @@
 from art.estimators.classification import TensorFlowV2Classifier, PyTorchClassifier
-from typing import Union, Tuple
 import numpy as np
 import tensorflow as tf
 import torch
+from typing import Union, Tuple
 
 
 class Classifier:

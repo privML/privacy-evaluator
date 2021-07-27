@@ -1,10 +1,7 @@
 from textwrap import indent
-from typing import Tuple
 
-import numpy as np
-
-from ..attacks.membership_inference.data_structures.slicing import Slice
 from .user_output import UserOutput
+from ..attacks.membership_inference.data_structures.slicing import Slice
 
 
 class UserOutputInferenceAttackAnalysis(UserOutput):

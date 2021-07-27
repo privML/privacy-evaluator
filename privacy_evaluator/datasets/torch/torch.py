@@ -1,7 +1,6 @@
 import numpy as np
 from torch.utils.data import DataLoader
-from typing import Tuple, Union
-from itertools import islice
+from typing import Tuple
 
 
 class TorchDataset:

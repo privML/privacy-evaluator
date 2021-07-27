@@ -1,7 +1,7 @@
+import logging
+
 from .membership_inference import MembershipInferenceAttack
 from ...classifiers.classifier import Classifier
-
-import logging
 
 
 class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):

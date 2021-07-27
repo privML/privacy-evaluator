@@ -1,13 +1,11 @@
-from ...output.user_output_privacy_score import UserOutputPrivacyScore
-from ..membership_inference.on_point_basis import MembershipInferenceAttackOnPointBasis
-from typing import Iterable, Type
 import numpy as np
-from . import MembershipInferenceAttack
+from typing import Iterable
+
 from .data_structures.attack_input_data import AttackInputData
+from .data_structures.slicing import SlicePoints, Slicing
+from ..membership_inference.on_point_basis import MembershipInferenceAttackOnPointBasis
 from ...classifiers import Classifier
-from .data_structures.slicing import Slicing
-from .data_structures.slicing import SlicePoints
-from sklearn import metrics
+from ...output.user_output_privacy_score import UserOutputPrivacyScore
 
 
 class MembershipInferencePointAnalysis:

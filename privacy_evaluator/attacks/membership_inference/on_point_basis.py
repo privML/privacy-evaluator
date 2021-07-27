@@ -1,8 +1,9 @@
-from .membership_inference import MembershipInferenceAttack
-from ...classifiers.classifier import Classifier
+import logging
 import numpy as np
 from typing import Tuple
-import logging
+
+from .membership_inference import MembershipInferenceAttack
+from ...classifiers.classifier import Classifier
 
 
 class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):

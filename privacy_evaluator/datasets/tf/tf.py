@@ -1,6 +1,6 @@
-from typing import Tuple
-import tensorflow as tf
 import numpy as np
+import tensorflow as tf
+from typing import Tuple
 
 
 class TFDataset:

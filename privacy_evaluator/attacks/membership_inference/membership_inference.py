@@ -1,18 +1,16 @@
-from typing import Callable
+import logging
 import numpy as np
+from typing import Callable
 
+from ..attack import Attack
+from ...classifiers.classifier import Classifier
 from ...metrics.basics import (
     accuracy,
     train_to_test_accuracy_gap,
     train_to_test_accuracy_ratio,
 )
-from ..attack import Attack
-from ...classifiers.classifier import Classifier
-from ...validators.attack import validate_parameters
-
 from ...output.user_output_inference_attack import UserOutputInferenceAttack
-
-import logging
+from ...validators.attack import validate_parameters
 
 
 class MembershipInferenceAttack(Attack):

@@ -1,9 +1,8 @@
+import logging
 import numpy as np
 
 from .membership_inference import MembershipInferenceAttack
 from ...classifiers.classifier import Classifier
-
-import logging
 
 
 class MembershipInferenceLabelOnlyDecisionBoundaryAttack(MembershipInferenceAttack):

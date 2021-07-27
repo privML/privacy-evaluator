@@ -1,16 +1,15 @@
+import logging
+import numpy as np
+from sklearn import metrics
+from typing import Iterable, Type
+
+from . import MembershipInferenceAttack
+from .data_structures.attack_input_data import AttackInputData
+from .data_structures.slicing import Slice, Slicing
+from ...classifiers import Classifier
 from ...output.user_output_inference_attack_analysis import (
     UserOutputInferenceAttackAnalysis,
 )
-from typing import Iterable, Type
-import numpy as np
-from . import MembershipInferenceAttack
-from .data_structures.attack_input_data import AttackInputData
-from ...classifiers import Classifier
-from .data_structures.slicing import Slicing
-from .data_structures.slicing import Slice
-from sklearn import metrics
-
-import logging
 
 
 class MembershipInferenceAttackAnalysis:
