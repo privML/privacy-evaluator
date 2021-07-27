@@ -181,7 +181,7 @@ class UserOutputPrivacyScore(UserOutput):
         :param slices_priv_risk: A list of the privacy risk scores within the slices.
         :param show_diagram: Determines if the diagram should be shown, default: True.
         :param name: Name of the data set (training/test).
-        :return: All Slice names with the average privacy risk score.
+        :return: All slice names with the privacy risk score.
         """
 
         if show_diagram:

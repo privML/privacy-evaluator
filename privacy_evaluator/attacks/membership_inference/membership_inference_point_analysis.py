@@ -80,7 +80,7 @@ class MembershipInferencePointAnalysis:
         """Generates slices according to the specification.
 
         :param target_model: Target model to attack.
-        :param slicing: Slicing specification.
+        :param slicing: Slicing specification. Note that the by_classification_correctness property will not be accounted for
         """
 
         if slicing.entire_dataset:
