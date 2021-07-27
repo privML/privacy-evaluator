@@ -35,4 +35,3 @@ class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
         logger.debug(
             "Trying to fit MembershipInferenceBlackBoxRuleBasedAttack, nothing to fit."
         )
-        pass

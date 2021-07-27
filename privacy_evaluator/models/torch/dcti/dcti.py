@@ -13,7 +13,7 @@ class Block(nn.Module):
             nn.ReLU(inplace=True),
         )
 
-    def forward(self, x: torch.Tensor, **kwargs) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, **_) -> torch.Tensor:
         return self.model(x)
 
 
@@ -51,7 +51,7 @@ class DCTI(nn.Module):
             nn.Softmax(dim=1),
         )
 
-    def forward(self, x: torch.Tensor, **kwargs) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, **_) -> torch.Tensor:
         return self.model(x)
 
 

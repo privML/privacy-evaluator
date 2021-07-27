@@ -31,7 +31,6 @@ class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
         logger.debug(
             "Trying to fit MembershipInferenceAttackOnPointBasis, nothing to fit."
         )
-        pass
 
     def attack(
         self,
