@@ -6,9 +6,9 @@ from ...classifiers.classifier import Classifier
 
 
 class MembershipInferenceLabelOnlyDecisionBoundaryAttack(MembershipInferenceAttack):
-    """MembershipInferenceLabelOnlyDecisionBoundaryAttack class.
+    """`MembershipInferenceLabelOnlyDecisionBoundaryAttack` class.
 
-    For information about this attacks outcome, please see to membership_inference.py.
+    For information about this attacks outcome, please see to `membership_inference.py`.
     """
 
     _ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS = "LabelOnlyDecisionBoundary"
@@ -17,7 +17,7 @@ class MembershipInferenceLabelOnlyDecisionBoundaryAttack(MembershipInferenceAtta
         self,
         target_model: Classifier,
     ):
-        """Initializes a MembershipInferenceLabelOnlyDecisionBoundaryAttack class.
+        """Initializes a `MembershipInferenceLabelOnlyDecisionBoundaryAttack` class.
 
         :param target_model: Target model to be attacked.
         """

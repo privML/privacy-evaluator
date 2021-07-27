@@ -8,7 +8,7 @@ from ...classifiers.classifier import Classifier
 class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
     """MembershipInferenceBlackBoxAttack class.
 
-    For information about this attacks outcome, please see to membership_inference.py.
+    For information about this attacks outcome, please see to `membership_inference.py`.
     """
 
     _ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS = "MembershipInferenceBlackBox"
@@ -18,7 +18,7 @@ class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
         target_model: Classifier,
         attack_model_type: str = "nn",
     ):
-        """Initializes a MembershipInferenceBlackBoxAttack class.
+        """Initializes a `MembershipInferenceBlackBoxAttack` class.
 
         :param target_model: Target model to be attacked.
         :param attack_model_type: Type of the attack model. On of "rf", "gb", "nn".

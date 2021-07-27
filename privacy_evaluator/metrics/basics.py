@@ -6,7 +6,7 @@ def accuracy(y: np.ndarray, y_prediction: np.ndarray) -> np.float32:
 
     :params y: True labels.
     :params y_prediction: Predicted labels.
-    :return: Accuracy
+    :return: Calculated accuracy.
     :raises ValueError: If `y` and `y_prediction` are not of the same shape.
     """
     if y.shape != y_prediction.shape:

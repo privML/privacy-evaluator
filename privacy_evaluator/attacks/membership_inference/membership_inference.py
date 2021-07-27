@@ -14,7 +14,7 @@ from ...validators.attack import validate_parameters
 
 
 class MembershipInferenceAttack(Attack):
-    """MembershipInferenceAttack base class.
+    """`MembershipInferenceAttack` class.
 
     Interpretation of Outcome:
 
@@ -51,7 +51,7 @@ class MembershipInferenceAttack(Attack):
     def __init__(
         self, target_model: Classifier, init_art_attack: bool = True, **kwargs
     ):
-        """Initializes a MembershipInferenceAttack class.
+        """Initializes a `MembershipInferenceAttack` class.
 
         :param target_model: Target model to be attacked.
         :param init_art_attack: Indicates if belonging ART attack should be initialized.
@@ -68,13 +68,10 @@ class MembershipInferenceAttack(Attack):
 
         :param x: Data to be attacked.
         :param y: True, one-hot encoded labels for `x`.
-        :param probabilities: If `True`, the method returns the probability for each
-            data sample being a member.
+        :param probabilities: If `True`, the method returns the probability for each data sample being a member.
         :param kwargs: Keyword arguments of the attack.
-        :return: An array holding the inferred membership status, 1 indicates a member
-            and 0 indicates non-member.
-            A value between 0 and 1 indicates the probability of being a member
-            if `probabilities` is set to `True`.
+        :return: An array holding the inferred membership status, 1 indicates a member and 0 indicates non-member. A
+            value between 0 and 1 indicates the probability of being a member if `probabilities` is set to `True`.
         :raises Exception: If attack model is not fitted.
         """
 
@@ -126,7 +123,7 @@ class MembershipInferenceAttack(Attack):
         :param y_test: True, one-hot encoded labels for `x_test`.
         :param y_attack: True, non one-hot encoded labels for the attack model (e.g. the membership status).
         :return: An dict with attack output metrics including the target model train and test accuracy, target model
-        train to test accuracy gap and ratio and the attack model accuracy.
+            train to test accuracy gap and ratio and the attack model accuracy.
         """
 
         validate_parameters(

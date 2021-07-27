@@ -9,16 +9,16 @@ from ...output.user_output_privacy_score import UserOutputPrivacyScore
 
 
 class MembershipInferencePointAnalysis:
-    """Represents the membership inference attack on point basis analysis class.
+    """`MembershipInferencePointAnalysis` class.
 
-    This class makes it possible to apply slicing to `MembershipInferenceAttackOnPointBasis` attack class.
+    `MembershipInferencePointAnalysis` makes it possible to apply slicing to `MembershipInferenceAttackOnPointBasis`.
     """
 
     def __init__(
         self,
         input_data: AttackInputData,
     ) -> None:
-        """Initializes a MembershipInferencePointAnalysis class.
+        """Initializes a `MembershipInferencePointAnalysis` class.
 
         :param input_data: Data for the membership inference attack on point basis.
         """
@@ -33,7 +33,8 @@ class MembershipInferencePointAnalysis:
         """Runs the membership inference on point basis attack.
 
         :param target_model: Target model to attack.
-        :param slicing: Slicing specification. The slices will be created according to the specification and the attack will be run on each slice.
+        :param slicing: Slicing specification. The slices will be created according to the specification and the attack
+            will be run on each slice.
         :param num_bins: See `MembershipInferenceAttackOnPointBasis.attack` for details.
         """
 

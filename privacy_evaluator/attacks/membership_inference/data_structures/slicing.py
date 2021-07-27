@@ -4,7 +4,7 @@ import numpy as np
 
 @dataclass
 class Slicing:
-    """Slicing specification for the membership inference attack analysis."""
+    """Slicing specification for `MembershipInferenceAttackAnalysis` and `MembershipInferencePointAnalysis`."""
 
     # If true, the analysis will produce a slice of the whole dataset.
     entire_dataset: bool = True
@@ -19,7 +19,7 @@ class Slicing:
 
 @dataclass
 class Slice:
-    """Single slice that is created by the membership inference attack analysis."""
+    """Single slice that is created by `MembershipInferenceAttackAnalysis`."""
 
     # Indices of the data samples that are part of this slice.
     indices: np.ndarray
@@ -44,7 +44,7 @@ class Slice:
 
 @dataclass
 class SlicePoints:
-    """Single slice that is created by the membership inference attack on point basis analysis class."""
+    """Single slice that is created by `MembershipInferencePointAnalysis`."""
 
     # Indices of the data samples that are part of this slice that belong to the train set.
     indices_train: np.ndarray

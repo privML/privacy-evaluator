@@ -31,7 +31,9 @@ class Block(tf.keras.Model):
 
 
 class DCTI(tf.keras.Model):
-    """DCTI model architecture from `"Lightweight Deep Convolutional Network for Tiny Object Recognition" <https://www.scitepress.org/Papers/2018/67520/67520.pdf>`."""
+    """DCTI model architecture from `"Lightweight Deep Convolutional Network for Tiny Object Recognition"
+    <https://www.scitepress.org/Papers/2018/67520/67520.pdf>`.
+    """
 
     def __init__(self):
         super().__init__()
@@ -70,7 +72,8 @@ class DCTI(tf.keras.Model):
 def load_dcti(pretrained: bool = True) -> DCTI:
     """Loads a TensorFlow DCTI model.
 
-    Note: The pre-trained model expects inputs to be first scaled to [0, 1] and then normalized with tensorflow.image.per_image_standardization.
+    Note: The pre-trained model expects inputs to be first scaled to [0, 1] and then normalized with
+    tensorflow.image.per_image_standardization.
 
     :param pretrained: If True, returns a model pre-trained on CIFAR-10.
     :return: Loaded TensorFlow DCTI model.

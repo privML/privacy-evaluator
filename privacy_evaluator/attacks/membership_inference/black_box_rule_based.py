@@ -5,9 +5,9 @@ from ...classifiers.classifier import Classifier
 
 
 class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
-    """MembershipInferenceBlackBoxRuleBasedAttack class.
+    """`MembershipInferenceBlackBoxRuleBasedAttack` class.
 
-    For information about this attacks outcome, please see to membership_inference.py.
+    For information about this attacks outcome, please see to `membership_inference.py`.
     """
 
     _ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS = "MembershipInferenceBlackBoxRuleBased"
@@ -16,7 +16,7 @@ class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
         self,
         target_model: Classifier,
     ):
-        """Initializes a MembershipInferenceBlackBoxRuleBasedAttack class.
+        """Initializes a `MembershipInferenceBlackBoxRuleBasedAttack` class.
 
         :param target_model: Target model to be attacked.
         """

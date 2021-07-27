@@ -62,7 +62,7 @@ def load_dcti(
     """Loads a PyTorch DCTI model.
 
     :param pretrained: If True, returns a model pre-trained on CIFAR-10.
-    :param device: Device on which the model is loaded. Either cpu or gpu.
+    :param device: Device on which the model is loaded. Either CPU or GPU.
     :return: Loaded PyTorch DCTI model.
     """
     model = DCTI()

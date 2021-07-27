@@ -13,7 +13,9 @@ from ...output.user_output_inference_attack_analysis import (
 
 
 class MembershipInferenceAttackAnalysis:
-    """Represents the membership inference attack analysis class.
+    """`MembershipInferenceAttackAnalysis` class.
+
+    `MembershipInferenceAttackAnalysis` makes it possible to apply slicing to `MembershipInferenceAttack`s.
 
     Interpretation of Outcome:
 
@@ -58,7 +60,7 @@ class MembershipInferenceAttackAnalysis:
         input_data: AttackInputData,
         **kwargs,
     ) -> None:
-        """Initializes a MembershipInferenceAttackAnalysis class.
+        """Initializes a `MembershipInferenceAttackAnalysis` class.
 
         :param attack_type: Type of membership inference attack to analyse.
         :param input_data: Data for the membership inference attack.
@@ -82,8 +84,10 @@ class MembershipInferenceAttackAnalysis:
         :param target_model: Target model to attack.
         :param x: Input data to attack.
         :param y: True labels for `x`.
-        :param membership: Labels representing the membership for each data sample in `x`. 1 for member and 0 for non-member.
-        :param slicing: Slicing specification. The slices will be created according to the specification and the attack will be run on each slice.
+        :param membership: Labels representing the membership for each data sample in `x`. 1 for member and 0 for
+            non-member.
+        :param slicing: Slicing specification. The slices will be created according to the specification and the attack
+            will be run on each slice.
         :param kwargs: kwargs that will be passed to the `fit` method of the attack.
         """
 
