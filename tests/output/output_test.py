@@ -1,10 +1,8 @@
-import numpy as np
-
 from privacy_evaluator.metrics.basics import *
-from privacy_evaluator.output.user_output_privacy_score import UserOutputPrivacyScore
 from privacy_evaluator.output.user_output_inference_attack import (
     UserOutputInferenceAttack,
 )
+from privacy_evaluator.output.user_output_privacy_score import UserOutputPrivacyScore
 from privacy_evaluator.output.user_output_property_inference_attack import (
     UserOutputPropertyInferenceAttack,
 )

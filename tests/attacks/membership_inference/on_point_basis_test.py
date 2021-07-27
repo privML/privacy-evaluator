@@ -1,14 +1,13 @@
 import json
 import os
 import tensorflow as tf
-import logging
 
-from privacy_evaluator.classifiers.classifier import Classifier
-from privacy_evaluator.datasets.tf.mnist import TFMNIST
+
 from privacy_evaluator.attacks.membership_inference import (
     MembershipInferenceAttackOnPointBasis,
 )
-
+from privacy_evaluator.classifiers.classifier import Classifier
+from privacy_evaluator.datasets.tf.mnist import TFMNIST
 from ...fixtures import tests_tmp_path, models_path
 
 

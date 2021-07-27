@@ -3,9 +3,9 @@ import torch
 from privacy_evaluator.attacks.membership_inference.label_only_decision_boundary import (
     MembershipInferenceLabelOnlyDecisionBoundaryAttack,
 )
-from privacy_evaluator.models.torch.dcti.dcti import load_dcti
-from privacy_evaluator.datasets.torch.cifar10 import TorchCIFAR10
 from privacy_evaluator.classifiers.classifier import Classifier
+from privacy_evaluator.datasets.torch.cifar10 import TorchCIFAR10
+from privacy_evaluator.models.torch.dcti.dcti import load_dcti
 
 
 def test_inference_label_only_decision_boundary_attack():

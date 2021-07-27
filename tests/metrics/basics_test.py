@@ -1,5 +1,4 @@
 import pytest
-import numpy as np
 
 from privacy_evaluator.metrics.basics import *
 
