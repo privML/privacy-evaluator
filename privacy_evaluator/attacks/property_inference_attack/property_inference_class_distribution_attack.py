@@ -183,24 +183,18 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
             )
         else:
             if list(predictions_ratios.values())[0][0][0] > 0.5:
-                max_message = (
-                    "The given distribution is more likely than a balanced distribution. "
-                    "The given distribution is class {}: {}, class {}: {}".format(
-                        self.classes[0],
-                        round(1 - self.ratios_for_attack[0], 5),
-                        self.classes[1],
-                        round(self.ratios_for_attack[0], 5),
-                    )
+                max_message = "The given distribution is more likely than a balanced distribution. " "The given distribution is class {}: {}, class {}: {}".format(
+                    self.classes[0],
+                    round(1 - self.ratios_for_attack[0], 5),
+                    self.classes[1],
+                    round(self.ratios_for_attack[0], 5),
                 )
             else:
-                max_message = (
-                    "A balanced distribution is more likely than the given distribution. "
-                    "The given distribution is class {}: {}, class {}: {}".format(
-                        self.classes[0],
-                        round(1 - self.ratios_for_attack[0], 5),
-                        self.classes[1],
-                        round(self.ratios_for_attack[0], 5),
-                    )
+                max_message = "A balanced distribution is more likely than the given distribution. " "The given distribution is class {}: {}, class {}: {}".format(
+                    self.classes[0],
+                    round(1 - self.ratios_for_attack[0], 5),
+                    self.classes[1],
+                    round(self.ratios_for_attack[0], 5),
                 )
             if abs(list(predictions_ratios.values())[0][0][0] - 0.5) <= 0.05:
                 self.logger.warning(
@@ -282,8 +276,10 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
             )
         )
         # create balanced shadow classifiers negation property
-        shadow_classifiers_neg_property = self.create_shadow_classifier_from_training_set(
-            neg_property_num_elements_per_class
+        shadow_classifiers_neg_property = (
+            self.create_shadow_classifier_from_training_set(
+                neg_property_num_elements_per_class
+            )
         )
 
         self.ratios_for_attack.sort()
