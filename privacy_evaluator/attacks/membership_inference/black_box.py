@@ -27,7 +27,8 @@ class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
         """
         if not isinstance(attack_model_type, str):
             raise TypeError(
-                f"Expected `attack_model_type` to be an instance of {str(str)}, received {str(type(attack_model_type))} instead."
+                f"Expected `attack_model_type` to be an instance of {str(str)}, received {str(type(attack_model_type))}"
+                f" instead."
             )
         if attack_model_type not in ["rf", "gb", "nn"]:
             raise ValueError(
@@ -57,5 +58,5 @@ class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
         arguments provided.
         """
         logger = logging.getLogger(__name__)
-        logger.info("fiting MembershipInferenceBlackBoxAttack")
+        logger.info("fitting MembershipInferenceBlackBoxAttack")
         self._art_attack.fit(x_train, y_train, x_test, y_test)

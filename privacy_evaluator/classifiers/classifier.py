@@ -74,5 +74,6 @@ class Classifier:
             )
         else:
             raise TypeError(
-                f"Expected `classifier` to be an instance of {str(torch.nn.Module)} or {str(tf.Module)}, received {str(type(classifier))} instead."
+                f"Expected `classifier` to be an instance of {str(torch.nn.Module)} or {str(tf.Module)}, received "
+                f"{str(type(classifier))} instead. "
             )

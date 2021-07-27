@@ -163,7 +163,7 @@ class UserOutputPrivacyScore(UserOutput):
                 plt.title("Histogram for the whole data")
             else:
                 plt.title("Histogram for data of {}".format(class_name))
-            plt.ylabel("Number of occurences")
+            plt.ylabel("Number of occurrences")
             plt.xlabel("Privacy risk score")
             plt.show()
         return self.privacy_risk
@@ -192,6 +192,6 @@ class UserOutputPrivacyScore(UserOutput):
             plt.title("Histogram for the average score on each slice " + title_name)
             plt.xlabel("Slices")
             plt.ylabel("Average Privacy Score")
-            plt.xticks(slices, rotation=(40), va="top", ha="right")
+            plt.xticks(slices, rotation=40, va="top", ha="right")
             plt.show()
         return slices, slices_priv_risk

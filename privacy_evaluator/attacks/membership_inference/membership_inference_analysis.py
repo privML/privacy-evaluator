@@ -181,5 +181,5 @@ def _generate_logging_info(slicing: Slicing, logger):
     if slicing.entire_dataset:
         if info_string != "":
             info_string += " and"
-        info_string += " for entrie dataset"
+        info_string += " for entire dataset"
     logger.info("generating slices " + info_string)
