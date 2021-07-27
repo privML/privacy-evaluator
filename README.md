@@ -2,7 +2,7 @@
 [![Python 3.7](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-370/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Gitter](https://badges.gitter.im/fairlearn/community.svg)](https://gitter.im/fairlearn/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Gitter](https://badges.gitter.im/privML/community.svg)](https://gitter.im/privML/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 
 The *privML Privacy Evaluator* is a tool that assesses a ML model's levels of privacy by running different privacy attacks on it. The tool builds upon the [Adversarial Robustness Toolbox (ART)](https://github.com/Trusted-AI/adversarial-robustness-toolbox) and aims at extending it by implementing additional privacy attacks as well as providing easy-to-use Jupyter Notebooks which offer understandable output metrics even for non-ML experts.
@@ -78,12 +78,8 @@ pip install -e .[development]
 ```
 
 ## How to use the Privacy Evaluator?
-- tbd
 
-
-### Example
-- tbd
-
+Check out our [/notebooks](/notebooks), all usages are descibed there. 
 
 ## Attacks
 
@@ -116,7 +112,7 @@ Given here are three types of membership inference attacks, all able to work wit
 
 All three attacks are generic and not based on any particular dataset or model type.
 
-For a tutorial to each of the following attacks have a look at the collection of notebooks [here](https://github.com/privML/privacy-evaluator/tree/main/notebooks).
+For a tutorial to each of the following attacks have a look at the collection of notebooks [here](/notebooks).
 
 #### Membership Inference Back-Box
 
@@ -202,8 +198,6 @@ See a list of our [Supporters](./SUPPORTER_LIST.md).
 
 ## License
 This library is available under the [MIT License](https://github.com/git/git-scm.com/blob/master/MIT-LICENSE.txt).
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
--which is the correct link?
 
 ## References
 Ganju, Karan, Qi Wang, Wei Yang, Carl A. Gunter, und Nikita Borisov. „Property Inference Attacks on Fully Connected Neural Networks Using Permutation Invariant Representations“. In Proceedings of the 2018 ACM SIGSAC Conference on Computer and Communications Security, 619–33. Toronto Canada: ACM, 2018. https://doi.org/10.1145/3243734.3243834.
