@@ -4,7 +4,10 @@ from typing import Tuple
 
 
 class TorchDataset:
-    """PyTorch Dataset base class."""
+    """`TorchDataset` class.
+
+    Represents a dataset class for PyTorch.
+    """
 
     DATA_ROOT = "./data"
 
@@ -18,7 +21,7 @@ class TorchDataset:
         """Loads train and test dataset for given model type as a numpy arrays.
 
         :param one_hot_encode: If data should be one-hot-encoded.
-        :param transformers: Transformers for the dataset; either `default` or `training`
+        :param transformers: Transformers for the dataset; either `default` or `training`.
         :param take: Percentage of the data set to use.
         :return: Train and Test data and labels as numpy arrays.
         """
@@ -57,7 +60,7 @@ class TorchDataset:
         :param train_batch_size: Batch size of the train data loader.
         :param test_batch_size: Batch size of the test data loader.
         :param one_hot_encode: If data should be one-hot-encoded.
-        :param transformers: Transformers for the dataset; either `default` or `training`
+        :param transformers: Transformers for the dataset; either `default` or `training`.
         :param shuffle: If training data should be shuffled.
         :return: Train and test data loaders.
         """
