@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import numpy as np
+from typing import Any
 
 
 @dataclass
@@ -22,7 +23,7 @@ class Slice:
     """Single slice that is created by `MembershipInferenceAttackAnalysis`."""
 
     # Indices of the data samples that are part of this slice.
-    indices: np.ndarray
+    indices: Any[list, np.ndarray]
 
     # Human-readable description of the slice.
     desc: str
