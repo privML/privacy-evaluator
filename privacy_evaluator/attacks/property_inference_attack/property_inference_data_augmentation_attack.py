@@ -162,33 +162,24 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
             output[key] = predictions_ratios[ratio][0][0]
 
         if len(self.ratios_for_attack) >= 2:
-            max_message = (
-                "The most probable property with a probability of {} has {} samples adapted with type {}"
-                " and {} samples unmodified.".format(
-                    predictions_ratios[max_property[0]][0][0],
-                    round(max_property[0], 5),
-                    self.adaptation,
-                    round(1 - max_property[0], 5),
-                )
+            max_message = "The most probable property with a probability of {} has {} samples adapted with type {}" " and {} samples unmodified.".format(
+                predictions_ratios[max_property[0]][0][0],
+                round(max_property[0], 5),
+                self.adaptation,
+                round(1 - max_property[0], 5),
             )
         else:
             if list(predictions_ratios.values())[0][0][0] > 0.5:
-                max_message = (
-                    "The given distribution is more likely than a balanced distribution. "
-                    "The given distribution has {} samples adapted with type {} and {} unmodified samples.".format(
-                        round(self.ratios_for_attack[0], 5),
-                        self.adaptation,
-                        round(1 - self.ratios_for_attack[0], 5),
-                    )
+                max_message = "The given distribution is more likely than a balanced distribution. " "The given distribution has {} samples adapted with type {} and {} unmodified samples.".format(
+                    round(self.ratios_for_attack[0], 5),
+                    self.adaptation,
+                    round(1 - self.ratios_for_attack[0], 5),
                 )
             else:
-                max_message = (
-                    "A balanced distribution is more likely than the given distribution. "
-                    "The given distribution has {} samples adapted with type {} and {} unmodified samples.".format(
-                        round(self.ratios_for_attack[0], 5),
-                        self.adaptation,
-                        round(1 - self.ratios_for_attack[0], 5),
-                    )
+                max_message = "A balanced distribution is more likely than the given distribution. " "The given distribution has {} samples adapted with type {} and {} unmodified samples.".format(
+                    round(self.ratios_for_attack[0], 5),
+                    self.adaptation,
+                    round(1 - self.ratios_for_attack[0], 5),
                 )
             if abs(list(predictions_ratios.values())[0][0][0] - 0.5) <= 0.05:
                 self.logger.warning(
@@ -257,8 +248,8 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
         negation_property_ratio = 0.5
 
         # create shadow classifiers negation property
-        shadow_classifiers_neg_property = self.create_shadow_classifier_from_training_set(
-            negation_property_ratio
+        shadow_classifiers_neg_property = (
+            self.create_shadow_classifier_from_training_set(negation_property_ratio)
         )
 
         self.ratios_for_attack.sort()
