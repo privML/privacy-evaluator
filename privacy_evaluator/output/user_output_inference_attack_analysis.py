@@ -16,8 +16,7 @@ class UserOutputInferenceAttackAnalysis(UserOutput):
         advantage: float,
         accuracy: float,
     ):
-        """Initializes a `UserOutputInferenceAttackAnalysis` class.
-        """
+        """Initializes a `UserOutputInferenceAttackAnalysis` class."""
         self.slice = slice
         self.advantage = advantage
         self.accuracy = accuracy

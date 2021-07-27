@@ -7,7 +7,7 @@ install_requires = [
     "numpy",
     "pandas",
     "pillow==8.2.0",
-    "sklearn"
+    "sklearn",
     "tensorflow",
     "torch",
     "torchvision",

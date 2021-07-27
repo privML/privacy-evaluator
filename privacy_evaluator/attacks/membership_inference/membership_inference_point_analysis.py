@@ -67,8 +67,12 @@ class MembershipInferencePointAnalysis:
             output.histogram_distribution(class_name=slice.desc)
             results.append(output)
 
-        output.histogram_slices(np.array(slices_names), np.array(slices_avg_train), name="train")
-        output.histogram_slices(np.array(slices_names), np.array(slices_avg_test), name="test")
+        output.histogram_slices(
+            np.array(slices_names), np.array(slices_avg_train), name="train"
+        )
+        output.histogram_slices(
+            np.array(slices_names), np.array(slices_avg_test), name="test"
+        )
 
         return results
 

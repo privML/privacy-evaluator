@@ -49,6 +49,5 @@ class UserOutput:
         return self.__dict__
 
     def __str__(self) -> str:
-        """Overwrite the String method so the output looks nicer.
-        """
+        """Overwrite the String method so the output looks nicer."""
         return self.to_json()

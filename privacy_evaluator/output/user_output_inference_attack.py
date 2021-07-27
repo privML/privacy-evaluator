@@ -15,8 +15,7 @@ class UserOutputInferenceAttack(UserOutput):
         target_model_train_to_test_accuracy_ratio: float,
         attack_model_accuracy: float,
     ):
-        """Initializes a `UserOutputInferenceAttack` class.
-        """
+        """Initializes a `UserOutputInferenceAttack` class."""
         self.target_model_train_accuracy = target_model_train_accuracy
         self.target_model_test_accuracy = target_model_test_accuracy
         self.target_model_train_to_test_accuracy_gap = (

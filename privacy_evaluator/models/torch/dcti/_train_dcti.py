@@ -37,7 +37,7 @@ def test(net, loader):
         for i, (data, _) in enumerate(loader):
             data = data.to(device)
             output = net(data).argmax(dim=1).cpu()
-            prediction[i * batch_size: i * batch_size + len(output):] = output
+            prediction[i * batch_size : i * batch_size + len(output) :] = output
 
     return prediction
 
