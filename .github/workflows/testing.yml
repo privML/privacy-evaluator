@@ -8,7 +8,8 @@ on:
       - edited
       - synchronize
   push:
-    - team2sprint6
+    branches:
+      - team2sprint6
 
 jobs:
   build:
