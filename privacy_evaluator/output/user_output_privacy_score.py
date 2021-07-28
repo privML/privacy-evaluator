@@ -1,14 +1,15 @@
+from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
-
 from typing import Tuple
 
 from .user_output import UserOutput
 
 
 class UserOutputPrivacyScore(UserOutput):
-    """User Output Class
+    """`UserOutputPrivacyScore` class
+
+    Contains the result of a `MembershipInferencePointAnalysis`.
 
     Interpretation of Outcome:
 
@@ -33,10 +34,10 @@ class UserOutputPrivacyScore(UserOutput):
     """
 
     def __init__(self, attack_data_y: np.ndarray, privacy_risk: np.ndarray):
-        """
-        Initilaizes the Class with values
-        :param attack_data_y: An Array of the labels of the attck data
-        :param privacy_risk: the Privacy risk corresponding to the attack data
+        """Initializes a `UserOutputPrivacyScore` class.
+
+        :param attack_data_y: An Array of the labels of the attack data.
+        :param privacy_risk: The Privacy risk corresponding to the attack data.
         """
         self.attack_data_y = attack_data_y
         self.privacy_risk = privacy_risk
@@ -48,13 +49,13 @@ class UserOutputPrivacyScore(UserOutput):
         label_names: np.ndarray = None,
         show_diagram: bool = True,
     ) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        Draw histogram of class distribution of the k points with highest privacy risk score
-        :param all_labels: all the labels of the input data
-        :param k: the number of points to consider, default 10
-        :param label_names: Labels to display on the x axis of the Histogam
-        :param show_diagram: determines if the diagram should be shown, default: True
-        :return: All lables of the data with the number of points that are in the top k
+        """Draw histogram of class distribution of the k points with highest privacy risk score.
+
+        :param all_labels: All the labels of the input data.
+        :param k: The number of points to consider, default 10.
+        :param label_names: Labels to display on the x axis of the histogram.
+        :param show_diagram: Determines if the diagram should be shown, default: True.
+        :return: All labels of the data with the number of points that are in the top k.
         """
         sorting = np.argsort(self.privacy_risk)
         sorting = np.flip(sorting)
@@ -94,13 +95,15 @@ class UserOutputPrivacyScore(UserOutput):
         label_names: np.ndarray = None,
         show_diagram: bool = True,
     ) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        Draw histogram of class distribution of the k points with highest privacy risk score, relative to the size of the classes
-        :param all_labels: all the labels of the input data
-        :param k: the number of points to consider, default 10
-        :param label_names: Labels to display on the x axis of the Histogam
-        :param show_diagram: determines if the diagram should be shown, default: True
-        :return: All lables of the data with the number of points that are in the top k, relative to the size of the classes
+        """Draw histogram of class distribution of the k points with highest privacy risk score, relative to the size of
+         the classes.
+
+        :param all_labels: All the labels of the input data.
+        :param k: The number of points to consider, default 10.
+        :param label_names: Labels to display on the x axis of the histogram.
+        :param show_diagram: Determines if the diagram should be shown, default: True.
+        :return: All labels of the data with the number of points that are in the top k, relative to the size of the
+            classes.
         """
         sorting = np.argsort(self.privacy_risk)
         sorting = np.flip(sorting)
@@ -148,11 +151,11 @@ class UserOutputPrivacyScore(UserOutput):
         class_name: str = None,
         show_diagram: bool = True,
     ) -> np.ndarray:
-        """
-        Draws a historgram of the privacy risk score of the given data
-        :param class_name: Name of the Class shown in the diagram
-        :param show_diagram: determines if the diagram should be shown, default: True
-        :return: the data that is being ploted
+        """Draws a histogram of the privacy risk score of the given data.
+
+        :param class_name: Name of the class shown in the diagram.
+        :param show_diagram: Determines if the diagram should be shown, default: True.
+        :return: The data that is being plotted.
         """
         if show_diagram:
             plt.hist(self.privacy_risk)
@@ -160,7 +163,7 @@ class UserOutputPrivacyScore(UserOutput):
                 plt.title("Histogram for the whole data")
             else:
                 plt.title("Histogram for data of {}".format(class_name))
-            plt.ylabel("Number of occurences")
+            plt.ylabel("Number of occurrences")
             plt.xlabel("Privacy risk score")
             plt.show()
         return self.privacy_risk
@@ -172,13 +175,13 @@ class UserOutputPrivacyScore(UserOutput):
         show_diagram: bool = True,
         name: str = None,
     ) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        Plots the classes with their average privacy score
-        :param slices: The names of the slices to be ploted
-        :param slices_priv_risk: a list of the privacy risk scores whitin the slices
-        :param show_diagram: determines if the diagram should be shown, default: True
+        """Plots the classes with their average privacy score.
+
+        :param slices: The names of the slices to be plotted.
+        :param slices_priv_risk: A list of the privacy risk scores within the slices.
+        :param show_diagram: Determines if the diagram should be shown, default: True.
         :param name: Name of the data set (training/test).
-        :return: All Slice names with the average privacy risk score
+        :return: All slice names with the privacy risk score.
         """
 
         if show_diagram:
@@ -189,6 +192,6 @@ class UserOutputPrivacyScore(UserOutput):
             plt.title("Histogram for the average score on each slice " + title_name)
             plt.xlabel("Slices")
             plt.ylabel("Average Privacy Score")
-            plt.xticks(slices, rotation=(40), va="top", ha="right")
+            plt.xticks(slices, rotation=40, va="top", ha="right")
             plt.show()
         return slices, slices_priv_risk

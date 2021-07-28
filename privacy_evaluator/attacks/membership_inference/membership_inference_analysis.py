@@ -1,20 +1,21 @@
+import logging
+import numpy as np
+from sklearn import metrics
+from typing import Iterable, Type
+
+from . import MembershipInferenceAttack
+from .data_structures.attack_input_data import AttackInputData
+from .data_structures.slicing import Slice, Slicing
+from ...classifiers import Classifier
 from ...output.user_output_inference_attack_analysis import (
     UserOutputInferenceAttackAnalysis,
 )
-from typing import Iterable, Type
-import numpy as np
-from . import MembershipInferenceAttack
-from .data_structures.attack_input_data import AttackInputData
-from ...classifiers import Classifier
-from .data_structures.slicing import Slicing
-from .data_structures.slicing import Slice
-from sklearn import metrics
-
-import logging
 
 
 class MembershipInferenceAttackAnalysis:
-    """Represents the membership inference attack analysis class.
+    """`MembershipInferenceAttackAnalysis` class.
+
+    `MembershipInferenceAttackAnalysis` makes it possible to apply slicing to `MembershipInferenceAttack`s.
 
     Interpretation of Outcome:
 
@@ -59,7 +60,7 @@ class MembershipInferenceAttackAnalysis:
         input_data: AttackInputData,
         **kwargs,
     ) -> None:
-        """Initializes a MembershipInferenceAttackAnalysis class.
+        """Initializes a `MembershipInferenceAttackAnalysis` class.
 
         :param attack_type: Type of membership inference attack to analyse.
         :param input_data: Data for the membership inference attack.
@@ -83,8 +84,10 @@ class MembershipInferenceAttackAnalysis:
         :param target_model: Target model to attack.
         :param x: Input data to attack.
         :param y: True labels for `x`.
-        :param membership: Labels representing the membership for each data sample in `x`. 1 for member and 0 for non-member.
-        :param slicing: Slicing specification. The slices will be created according to the specification and the attack will be run on each slice.
+        :param membership: Labels representing the membership for each data sample in `x`. 1 for member and 0 for
+            non-member.
+        :param slicing: Slicing specification. The slices will be created according to the specification and the attack
+            will be run on each slice.
         :param kwargs: kwargs that will be passed to the `fit` method of the attack.
         """
 
@@ -178,5 +181,5 @@ def _generate_logging_info(slicing: Slicing, logger):
     if slicing.entire_dataset:
         if info_string != "":
             info_string += " and"
-        info_string += " for entrie dataset"
+        info_string += " for entire dataset"
     logger.info("generating slices " + info_string)

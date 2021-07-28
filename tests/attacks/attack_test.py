@@ -1,11 +1,10 @@
 import pytest
+import torch.nn as nn
 
 from privacy_evaluator.attacks.attack import Attack
-from privacy_evaluator.models.torch.dcti.dcti import load_dcti
-from privacy_evaluator.datasets.torch.cifar10 import TorchCIFAR10
 from privacy_evaluator.classifiers.classifier import Classifier
-
-import torch.nn as nn
+from privacy_evaluator.datasets.torch.cifar10 import TorchCIFAR10
+from privacy_evaluator.models.torch.dcti.dcti import load_dcti
 
 
 def test_attack():

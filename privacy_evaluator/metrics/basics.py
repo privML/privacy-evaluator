@@ -6,12 +6,13 @@ def accuracy(y: np.ndarray, y_prediction: np.ndarray) -> np.float32:
 
     :params y: True labels.
     :params y_prediction: Predicted labels.
-    :return: Accuracy
+    :return: Calculated accuracy.
     :raises ValueError: If `y` and `y_prediction` are not of the same shape.
     """
     if y.shape != y_prediction.shape:
         raise ValueError(
-            f"Expected `y` and `y_prediction` to be of same shape, received `y` with shape {str(y.shape)} and y_prediction` with shape {str(y_prediction.shape)} instead."
+            f"Expected `y` and `y_prediction` to be of same shape, received `y` with shape {str(y.shape)} and "
+            f"`y_prediction` with shape {str(y_prediction.shape)} instead."
         )
 
     if len(y.shape) != 1:

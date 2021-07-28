@@ -1,4 +1,3 @@
-import pytest
 import numpy as np
 
 from privacy_evaluator.datasets.torch.cifar10 import TorchCIFAR10

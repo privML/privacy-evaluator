@@ -3,9 +3,9 @@ import torch
 from privacy_evaluator.attacks.membership_inference.black_box import (
     MembershipInferenceBlackBoxAttack,
 )
-from privacy_evaluator.models.torch.dcti.dcti import load_dcti
-from privacy_evaluator.datasets.torch.cifar10 import TorchCIFAR10
 from privacy_evaluator.classifiers.classifier import Classifier
+from privacy_evaluator.datasets.torch.cifar10 import TorchCIFAR10
+from privacy_evaluator.models.torch.dcti.dcti import load_dcti
 
 
 def test_membership_inference_black_box_attack():

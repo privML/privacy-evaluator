@@ -1,10 +1,13 @@
-from typing import Tuple
-import tensorflow as tf
 import numpy as np
+import tensorflow as tf
+from typing import Tuple
 
 
 class TFDataset:
-    """TensorFlow Dataset base class."""
+    """`TFDataset` class.
+
+    Represents a dataset class for TensorFlow.
+    """
 
     @classmethod
     def numpy(

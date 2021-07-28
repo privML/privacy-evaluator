@@ -1,13 +1,13 @@
+import logging
+
 from .membership_inference import MembershipInferenceAttack
 from ...classifiers.classifier import Classifier
 
-import logging
-
 
 class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
-    """MembershipInferenceBlackBoxRuleBasedAttack class.
+    """`MembershipInferenceBlackBoxRuleBasedAttack` class.
 
-    For information about this attacks outcome, please see to membership_inference.py.
+    For information about this attacks outcome, please see to `membership_inference.py`.
     """
 
     _ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS = "MembershipInferenceBlackBoxRuleBased"
@@ -16,7 +16,7 @@ class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
         self,
         target_model: Classifier,
     ):
-        """Initializes a MembershipInferenceBlackBoxRuleBasedAttack class.
+        """Initializes a `MembershipInferenceBlackBoxRuleBasedAttack` class.
 
         :param target_model: Target model to be attacked.
         """
@@ -35,4 +35,3 @@ class MembershipInferenceBlackBoxRuleBasedAttack(MembershipInferenceAttack):
         logger.debug(
             "Trying to fit MembershipInferenceBlackBoxRuleBasedAttack, nothing to fit."
         )
-        pass

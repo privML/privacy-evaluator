@@ -4,13 +4,13 @@ from ..classifiers.classifier import Classifier
 
 
 class Attack:
-    """Attack base class."""
+    """`Attack` class."""
 
     def __init__(
         self,
         target_model: Classifier,
     ):
-        """Initializes a Attack class.
+        """Initializes an `Attack` class.
 
         :param target_model: Target model to be attacked.
         """

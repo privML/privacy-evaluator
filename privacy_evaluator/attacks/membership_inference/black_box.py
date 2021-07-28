@@ -1,15 +1,14 @@
+import logging
 import numpy as np
 
 from .membership_inference import MembershipInferenceAttack
 from ...classifiers.classifier import Classifier
 
-import logging
-
 
 class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
     """MembershipInferenceBlackBoxAttack class.
 
-    For information about this attacks outcome, please see to membership_inference.py.
+    For information about this attacks outcome, please see to `membership_inference.py`.
     """
 
     _ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS = "MembershipInferenceBlackBox"
@@ -19,7 +18,7 @@ class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
         target_model: Classifier,
         attack_model_type: str = "nn",
     ):
-        """Initializes a MembershipInferenceBlackBoxAttack class.
+        """Initializes a `MembershipInferenceBlackBoxAttack` class.
 
         :param target_model: Target model to be attacked.
         :param attack_model_type: Type of the attack model. On of "rf", "gb", "nn".
@@ -28,7 +27,8 @@ class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
         """
         if not isinstance(attack_model_type, str):
             raise TypeError(
-                f"Expected `attack_model_type` to be an instance of {str(str)}, received {str(type(attack_model_type))} instead."
+                f"Expected `attack_model_type` to be an instance of {str(str)}, received {str(type(attack_model_type))}"
+                f" instead."
             )
         if attack_model_type not in ["rf", "gb", "nn"]:
             raise ValueError(
@@ -58,5 +58,5 @@ class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
         arguments provided.
         """
         logger = logging.getLogger(__name__)
-        logger.info("fiting MembershipInferenceBlackBoxAttack")
+        logger.info("fitting MembershipInferenceBlackBoxAttack")
         self._art_attack.fit(x_train, y_train, x_test, y_test)

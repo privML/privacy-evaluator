@@ -1,15 +1,14 @@
+import logging
 import numpy as np
 
 from .membership_inference import MembershipInferenceAttack
 from ...classifiers.classifier import Classifier
 
-import logging
-
 
 class MembershipInferenceLabelOnlyDecisionBoundaryAttack(MembershipInferenceAttack):
-    """MembershipInferenceLabelOnlyDecisionBoundaryAttack class.
+    """`MembershipInferenceLabelOnlyDecisionBoundaryAttack` class.
 
-    For information about this attacks outcome, please see to membership_inference.py.
+    For information about this attacks outcome, please see to `membership_inference.py`.
     """
 
     _ART_MEMBERSHIP_INFERENCE_ATTACK_CLASS = "LabelOnlyDecisionBoundary"
@@ -18,7 +17,7 @@ class MembershipInferenceLabelOnlyDecisionBoundaryAttack(MembershipInferenceAtta
         self,
         target_model: Classifier,
     ):
-        """Initializes a MembershipInferenceLabelOnlyDecisionBoundaryAttack class.
+        """Initializes a `MembershipInferenceLabelOnlyDecisionBoundaryAttack` class.
 
         :param target_model: Target model to be attacked.
         """
@@ -45,6 +44,9 @@ class MembershipInferenceLabelOnlyDecisionBoundaryAttack(MembershipInferenceAtta
         :kwargs max_eval: Maximum number of evaluations for estimating gradient for HopSkipJump.
         :kwargs init_eval: Initial number of evaluations for estimating gradient for HopSkipJump.
         :kwargs init_size: Maximum number of trials for initial generation of adversarial examples for HopSkipJump.
+
+        For more details about the HopSkipJump parameters, please read the following paper:
+        https://arxiv.org/pdf/1904.02144.pdf
         """
         logger = logging.getLogger(__name__)
         logger.info("fiting MembershipInferenceLabelOnlyDecisionBoundaryAttack")
