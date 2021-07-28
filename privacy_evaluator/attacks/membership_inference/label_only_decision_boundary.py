@@ -44,6 +44,9 @@ class MembershipInferenceLabelOnlyDecisionBoundaryAttack(MembershipInferenceAtta
         :kwargs max_eval: Maximum number of evaluations for estimating gradient for HopSkipJump.
         :kwargs init_eval: Initial number of evaluations for estimating gradient for HopSkipJump.
         :kwargs init_size: Maximum number of trials for initial generation of adversarial examples for HopSkipJump.
+
+        For more details about the HopSkipJump parameters, please read the following paper:
+        https://arxiv.org/pdf/1904.02144.pdf
         """
         logger = logging.getLogger(__name__)
         logger.info("fiting MembershipInferenceLabelOnlyDecisionBoundaryAttack")
