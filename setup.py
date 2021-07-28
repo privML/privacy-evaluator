@@ -3,7 +3,7 @@ from setuptools import setup
 
 install_requires = [
     "adversarial-robustness-toolbox[pytorch,tensorflow]==1.7.1",
-    "matplotlib==3.4.1",
+    "matplotlib==3.1.3",
     "numpy",
     "pandas",
     "pillow==8.2.0",
