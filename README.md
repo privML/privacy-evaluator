@@ -183,7 +183,14 @@ The calculation of the Privacy Risk Score is based on Bayesian Principles and ne
 
 #### Membership Attacker's Advantage Score
 
-The metric represents the attacker's advantage score.  It represents the degree to which a learning algorithm, i.e. a model, reveals membership to an adversary. The score calculation is based on Definition 4 from [Yeom, Samuel, et al.](https://arxiv.org/pdf/1709.01604.pdf).
+This metric represents the attacker's advantage score, which is the degree to which a learning algorithm, i.e. a model, reveals membership to an adversary. The score calculation is based on Definition 4 from [Yeom, Samuel, et al.](https://arxiv.org/pdf/1709.01604.pdf).
+
+Basically, the membership advantage _Adv<sup>M</sup>_ expresses the difference between an adversaries true-positive and false-positive rates:
+<center>
+<em>Adv<sup>M</sup> = Pr[A = 0 | b = 0] - Pr[A = 0 | b = 1]</em>
+</center>
+
+
 
 ## Getting Involved
 If you want to contribute in any way, please visit our [Contribution Guidelines](./CONTRIBUTING.md) to get started. Please have also a look at our [Code of Conduct](./CODE_OF_CONDUCT.md). 
