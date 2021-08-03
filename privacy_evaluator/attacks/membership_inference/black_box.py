@@ -51,9 +51,9 @@ class MembershipInferenceBlackBoxAttack(MembershipInferenceAttack):
         """Fits the attack model.
 
         :param x_train: Data which was used to train the target model and will be used for training the attack model.
-        :param y_train: True, one-hot encoded labels for `x_train`.
+        :param y_train: One-hot encoded labels for `x_train`.
         :param x_test: Data that was not used to train the target model and will be used for training the attack model.
-        :param y_test: True, one-hot encoded labels for `x_test`.
+        :param y_test: One-hot encoded labels for `x_test`.
         :param kwargs: Keyword arguments for fitting the attack model. Currently, there are no additional keyword
         arguments provided.
         """

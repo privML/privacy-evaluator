@@ -51,9 +51,9 @@ class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
         https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/membership_inference_attack/membership_inference_attack.py#L217)
 
         :param x_train: Data which was used to train the target model.
-        :param y_train: True, one-hot encoded labels for `x_train`.
+        :param y_train: One-hot encoded labels for `x_train`.
         :param x_test: Data that was not used to train the target model.
-        :param y_test: True, one-hot encoded labels for `x_test`.
+        :param y_test: One-hot encoded labels for `x_test`.
         :param num_bins: The number of bins used to compute the training/test histogram.
         :return: Membership probability results.
         """

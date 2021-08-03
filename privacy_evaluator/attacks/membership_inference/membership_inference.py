@@ -67,7 +67,7 @@ class MembershipInferenceAttack(Attack):
         """Performs the membership inference attack on the target model.
 
         :param x: Data to be attacked.
-        :param y: True, one-hot encoded labels for `x`.
+        :param y: One-hot encoded labels for `x`.
         :param probabilities: If `True`, the method returns the probability for each data sample being a member.
         :param kwargs: Keyword arguments of the attack.
         :return: An array holding the inferred membership status, 1 indicates a member and 0 indicates non-member. A
@@ -116,12 +116,12 @@ class MembershipInferenceAttack(Attack):
         """Creates attack output metrics in an extractable format.
 
         :param x: Data to be attacked.
-        :param y: True, one-hot encoded labels for `x`.
+        :param y: One-hot encoded labels for `x`.
         :param x_train: Data which was used to train the target model and will be used for training the attack model.
-        :param y_train: True, one-hot encoded labels for `x_train`.
+        :param y_train: One-hot encoded labels for `x_train`.
         :param x_test: Data that was not used to train the target model and will be used for training the attack model.
-        :param y_test: True, one-hot encoded labels for `x_test`.
-        :param y_attack: True, non one-hot encoded labels for the attack model (e.g. the membership status).
+        :param y_test: One-hot encoded labels for `x_test`.
+        :param y_attack: Non one-hot encoded labels for the attack model (e.g. the membership status).
         :return: An dict with attack output metrics including the target model train and test accuracy, target model
             train to test accuracy gap and ratio and the attack model accuracy.
         """

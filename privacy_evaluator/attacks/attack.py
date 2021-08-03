@@ -20,7 +20,7 @@ class Attack:
         """Performs the attack on the target model.
 
         :param x: Data to be attacked.
-        :param y: True, one-hot encoded labels for `x`.
+        :param y: One-hot encoded labels for `x`.
         :param kwargs: Keyword arguments of the attack.
         :return: An array holding the results of the attack.
         """
