@@ -29,19 +29,18 @@ class MembershipInferenceAttack(Attack):
 
     Train-Test-Gap (difference):
     If your model has a train-test-gap larger than 5%, this could be a sign that your model overfits. Overfitting can be
-    beneficial for successful membership inference attacks [1]. Therefore, you might want to reduce it by introducing
-    regularization methods in your training, or using specific privacy methods [2,3], such as Differential Privacy [4].
+    beneficial for successful membership inference attacks. Therefore, you might want to reduce it by introducing
+    regularization methods in your training, or using specific privacy methods, such as Differential Privacy.
 
-    [1]S. Yeom, I. Giacomelli, M. Fredrikson, and S. Jha. \Privacy Risk in Machine Learning: Analyzing the Connection
-    to Overfitting". In: 2018 IEEE 31st Computer Security Foundations Symposium (CSF). July 2018, pp. 268{282.
-    doi:10.1109/CSF.2018.00027.
-    [2] Reza Shokri, Marco Stronati, Congzheng Song, and Vitaly Shmatikov. 2017. Mem-bership Inference Attacks Against
-    Machine Learning Models. In2017 IEEE Sym-posium on Security and Privacy (SP). 3–18.
-    [3] Milad Nasr, Reza Shokri, and Amir Houmansadr. 2018. Machine Learning withMembership Privacy Using Adversarial
-    Regularization. InProceedings of the 2018ACM SIGSAC Conference on Computer and Communications
-    Security(Toronto,Canada)(CCS ’18). Association for Computing Machinery, New York, NY, USA,634–64
-    [4] Cynthia Dwork. 2006.  Differential Privacy. InAutomata, Languages and Pro-gramming, Michele Bugliesi,
-    Bart Preneel, Vladimiro Sassone, and Ingo Wegener(Eds.). Springer Berlin Heidelberg, Berlin, Heidelberg
+    For more details about the dependence of successful membership inference attack on overfitting, please read the
+    following paper:
+    https://arxiv.org/abs/1709.01604
+
+    For more details about specific privacy methods, please read the following papers:
+    https://arxiv.org/abs/1610.05820, https://arxiv.org/abs/1807.05852
+
+    For more details about differential privacy, please read the following chapter:
+    https://link.springer.com/chapter/10.1007/11787006_1
     """
 
     _ART_MEMBERSHIP_INFERENCE_ATTACK_MODULE = (

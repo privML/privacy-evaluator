@@ -15,22 +15,24 @@ class UserOutputPrivacyScore(UserOutput):
 
     Vulnerability of individual data points:
     The privacy risk score is an individual sample’s likelihood of being a training member, which allows an adversary to
-    identify samples with high privacy risks and perform membership inference attacks with high confidence [1].
+    identify samples with high privacy risks and perform membership inference attacks with high confidence.
+
+    For more details about the privacy risk score, please read the following paper:
+    https://arxiv.org/abs/2003.10595
 
     The training data points that exhibit an increased membership privacy risk might differ from their classes mean
-    samples (outliers) [2]. You could check them again, see if they have the correct label, or if they exhibit any
-    non-standard properties for the class. If so, correct them. It was also shown that points with an high influence on
-    the decision boundary are more vulnerable to membership inference attacks [3]. Therefore, these points might be
+    samples (outliers). You could check them again, see if they have the correct label, or if they exhibit any
+    non-standard properties for the class. If so, correct them. It was also shown that points with a high influence on
+    the decision boundary are more vulnerable to membership inference attacks. Therefore, these points might be
     important. If you want to protect them, you might add several similar training samples as they are to the class.
 
-    References:
-    [1] Song, Liwei and Prateek Mittal. “Systematic Evaluation of Privacy Risks of Machine Learning Models.” ArXiv
-    abs/2003.10595 (2020): n. pag
-    [2] Yunhui Long, Vincent Bindschaedler, Lei Wang, Diyue Bu, Xiaofeng Wang, HaixuTang, Carl A. Gunter, and Kai Chen.
-    2018.   Understanding Membership In-ferences on Well-Generalized Learning Models.CoRRabs/1802.04889
-    (2018).arXiv:1802.04889  http://arxiv.org/abs/1802.0
-    [3] Stacey Truex, Ling Liu, Mehmet Emre Gursoy, Lei Yu, and Wenqi Wei. 2019.Demystifying Membership Inference
-    Attacks in Machine Learning as a Service.IEEE Transactions on Services Computing(2019)
+    For more details about increased membership privacy risk of data points that differ from their classes' mean
+    samples, please read the following paper:
+    https://arxiv.org/abs/1802.04889
+
+    For more details about the increased vulnerability to membership inference attacks of points with a high influence
+    on the decision boundary, please read the following paper:
+    https://arxiv.org/abs/1807.09173
     """
 
     def __init__(self, attack_data_y: np.ndarray, privacy_risk: np.ndarray):
