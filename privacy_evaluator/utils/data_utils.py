@@ -99,6 +99,7 @@ def split_data_set_with_ratio(
     Splits a data set in two datsets according to given ratio.
     :param data_set: Input data set.
     :param ratio: A ratio how to split the data set. Describes size of new_data_set1.
+    :return: split datasets
     """
     assert ratio <= 1 and ratio >= 0
     num_samples = len(data_set[0])
@@ -128,6 +129,8 @@ def create_new_dataset_with_adaptation(
     :params brightness: Involved when `adaptation` is "brightness", the amount the brightness should be raised or lowered
     :params mean: Involved when `adaptation` is "random_noise", the mean of the added noise.
     :params mean: Involved when `adaptation` is "random_noise", the standard deviation of the added noise.
+
+    :return: data set with adapted samples according to given ratio
     """
     # size of data1 is according to ratio, size of data2 is according to (1-ratio)
     data1, data2 = split_data_set_with_ratio(data_set, ratio)

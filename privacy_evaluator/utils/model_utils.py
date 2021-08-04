@@ -87,6 +87,7 @@ def create_and_train_torch_ConvNet_model(
     :param data_set: Input data set.
     :param num_channels: Number of input channels.
     :param num_epochs: The number of times each data point in `data_set` is iterated during training.
+    :return: trained torch ConvNet model
     """
     num_elements_per_classes = dict(zip(*np.unique(data_set[1], return_counts=True)))
     num_classes = len(num_elements_per_classes)
