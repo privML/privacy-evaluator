@@ -187,9 +187,9 @@ This metric represents the attacker's advantage score, which is the degree to wh
 
 Basically, the membership advantage _Adv<sup>M</sup>_ expresses the difference between an adversaries true-positive and false-positive rates:
 <p align="center">
-<em>Adv<sup>M</sup> = Pr[A = 0 | b = 0] - Pr[A = 0 | b = 1]</em>
+<em>Adv<sup>M</sup> = Pr[A = 0 | b = 0] - Pr[A = 0 | b = 1]</em>,
 </p>
-
+where A is the adversary choosing from {0,1} and b choosing uniformly at random from {0,1}.
 
 ## Getting Involved
 If you want to contribute in any way, please visit our [Contribution Guidelines](./CONTRIBUTING.md) to get started. Please have also a look at our [Code of Conduct](./CODE_OF_CONDUCT.md). 
