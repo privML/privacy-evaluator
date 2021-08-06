@@ -7,6 +7,9 @@ on:
       - opened
       - edited
       - synchronize
+  push:
+    branches:
+      - team2sprint6
 
 jobs:
   build:

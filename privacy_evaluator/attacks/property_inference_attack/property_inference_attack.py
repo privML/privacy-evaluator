@@ -38,7 +38,6 @@ class PropertyInferenceAttack(Attack):
         :param amount_sets: count of shadow training sets, must be even
         :param size_shadow_training_set: ratio and size for unbalanced data sets
         :param ratios_for_attack: ratios for different properties in sub-attacks
-        with concatenation [test_features, test_labels]
         :param num_epochs_meta_classifier: number of epochs for training the meta classifier
         :param verbose: 0: no information; 1: backbone (most important) information; 2: utterly detailed information will be printed
         """
@@ -98,11 +97,11 @@ class PropertyInferenceAttack(Attack):
     ):
         """
         Train shadow classifiers with each shadow training set (follows property or negation of property).
-        :param shadow_training_sets: datasets fulfilling the a specific ratio to train shadow_classifiers
+        :param shadow_training_sets: datasets fulfilling a specific ratio to train shadow_classifiers on
         :param num_elements_per_classes: specific class distribution
         :return: list of shadow classifiers,
                  accuracies for the classifiers
-        :rtype: Tuple[  List[:class:.art.estimators.estimator.BaseEstimator]
+        :rtype: Tuple[  List[:class:.art.estimators.estimator.BaseEstimator]]
         """
 
         shadow_classifiers = []
@@ -141,7 +140,6 @@ class PropertyInferenceAttack(Attack):
         Extract the features of a given model.
         :param model: a model from which the features should be extracted
         :type model: :class:`.art.estimators.estimator.BaseEstimator`
-            # BaseEstimator is very general and could be specified to art.classifier
         :return: feature extraction
         :rtype: np.ndarray
         """
@@ -223,7 +221,7 @@ class PropertyInferenceAttack(Attack):
         :param meta_training_X: Set of feature representation of each shadow classifier.
         :param meta_training_y: Set of labels for each shadow classifier,
                                 according to whether property is fullfilled (1) or not (0)
-        :return: Art Meta classifier
+        :return: ART Meta classifier
         """
         # reshaping train data to fit models input
         meta_training_X = meta_training_X.reshape(
@@ -283,7 +281,7 @@ class PropertyInferenceAttack(Attack):
         """
         "Actual" attack: Meta classifier gets feature extraction of target model as input, outputs
         property prediction.
-        :param meta_classifier: A classifier
+        :param meta_classifier: A meta classifier
         :type meta_classifier: "CLASSIFIER_TYPE" (to be found in .art.estimators)
         :param feature_extraction_target_model: extracted features of target model
         :type feature_extraction_target_model: np.ndarray

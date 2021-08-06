@@ -8,7 +8,9 @@ class UserOutputPropertyInferenceAttack(UserOutput):
 
     def __init__(self, max_message: str, output: Dict[str, float]):
         """
-        Initilaizes the Class with values
+        Initilizes the Class with values
+        :param max_message: message with prediction of attack (most probable property)
+        :param output: whole output, includes: max_message, predictions for all subattacks
         """
         self.max_message = max_message
         self.output = output

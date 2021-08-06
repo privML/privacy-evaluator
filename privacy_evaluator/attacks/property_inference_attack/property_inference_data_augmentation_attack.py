@@ -69,7 +69,6 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
         :param amount_sets: count of shadow training sets, must be even
         :param size_shadow_training_set: ratio and size for unbalanced data sets
         :param ratios_for_attack: ratios for different properties in sub-attacks
-        with concatenation [test_features, test_labels]
         :param verbose: 0: no information; 1: backbone (most important) information; 2: utterly detailed information will be printed
         :param num_epochs_meta_classifier: number of epochs for training the meta classifier
         :params adaptation: The type of adaptation.
@@ -77,7 +76,7 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
 
         Optional params:
         :params box_len: Involved when `adaptation` is "mask", the side length of masking boxes.
-        :params brightness: Involved when `adaptation` is "brightness", the amount the brightness should be raised or lowered
+        :params brightness: Involved when `adaptation` is "brightness", the amount the brightness should be raised or lowered.
         :params mean: Involved when `adaptation` is "random_noise", the mean of the added noise.
         :params std: Involved when `adaptation` is "random_noise", the standard deviation of the added noise.
         """
@@ -135,6 +134,11 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
         return training_sets
 
     def create_shadow_classifier_from_training_set(self, ratio: int) -> list:
+        """
+        Creates and trains shadow classifiers from shadow training sets with specific ratio (= for one subattack).
+        :param ratio: distribution of property for shadow training sets
+        :return: list of shadow classifiers, accuracies for the classifiers
+        """
         # create training sets
         shadow_training_sets = self.create_shadow_training_sets(ratio)
 

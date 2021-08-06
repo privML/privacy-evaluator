@@ -68,7 +68,6 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
         :param amount_sets: count of shadow training sets, must be even
         :param size_shadow_training_set: ratio and size for unbalanced data sets
         :param ratios_for_attack: ratios for different properties in sub-attacks
-        with concatenation [test_features, test_labels]
         :param negative_ratio: ratio of negation of property (where in the case of two classes the ratio is applied to
         the second class and (1-ratio) to the first one)
         :param classes: classes the attack should be performed on
@@ -140,6 +139,13 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
     def create_shadow_classifier_from_training_set(
         self, num_elements_per_classes: Dict[int, int]
     ) -> list:
+        """
+        Creates and trains shadow classifiers from shadow training sets with specific ratio (= for one subattack).
+        Calls create_shadow_training_sets and train_shadow_classifiers.
+        :param num_elements_per_classes: number of elements per class
+        :return: list of shadow classifiers, accuracies for the classifiers
+        """
+
         # create training sets
         shadow_training_sets = self.create_shadow_training_sets(
             num_elements_per_classes
@@ -212,7 +218,7 @@ class PropertyInferenceClassDistributionAttack(PropertyInferenceAttack):
         """
         Perform prediction for a subattack (specific property)
         :param feature_extraction_target_model: extracted features of target model
-        :param shadow_classifiers_neg_property: balanced shadow classifiers negation property
+        :param shadow_classifiers_neg_property: balanced (= negation of property) shadow classifiers
         :param ratio: distribution for the property
         :return: Prediction of meta-classifier for property and negation property
         """
