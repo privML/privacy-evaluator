@@ -44,6 +44,9 @@ NUM_EPOCHS_META_CLASSIFIER = 20
 # The type of adaptation. ('mask', 'random_noise', 'brightness')
 ADAPTATION = "mask"
 
+# ratio of negation of property
+NEGATIVE_RATIO = 0.5
+
 
 class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
     def __init__(
@@ -53,6 +56,7 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
         amount_sets: int = AMOUNT_SETS,
         size_shadow_training_set: int = SIZE_SHADOW_TRAINING_SET,
         ratios_for_attack: List[int] = RATIOS_FOR_ATTACK,
+        negative_ratio: int = NEGATIVE_RATIO,
         verbose: int = 0,
         num_epochs_meta_classifier: int = NUM_EPOCHS_META_CLASSIFIER,
         adaptation: str = ADAPTATION,
@@ -77,6 +81,7 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
         :params std: Involved when `adaptation` is "random_noise", the standard deviation of the added noise.
         """
         self.adaptation = adaptation
+        self.negative_ratio = negative_ratio
         self.kwargs = kwargs
 
         super().__init__(
@@ -248,12 +253,9 @@ class PropertyInferenceDataAugmentationAttack(PropertyInferenceAttack):
             )
         )
 
-        # negation property ratio
-        negation_property_ratio = 0.5
-
         # create shadow classifiers negation property
         shadow_classifiers_neg_property = (
-            self.create_shadow_classifier_from_training_set(negation_property_ratio)
+            self.create_shadow_classifier_from_training_set(self.negative_ratio)
         )
 
         self.ratios_for_attack.sort()
