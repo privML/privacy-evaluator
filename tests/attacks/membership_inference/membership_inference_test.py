@@ -11,7 +11,7 @@ import torch.nn as nn
 
 
 def test_membership_inference_attack():
-    x_train, y_train, x_test, y_test = TorchCIFAR10.numpy()
+    x_train, y_train, x_test, y_test = TorchCIFAR10.numpy(take=10)
 
     target_model = Classifier(
         load_dcti(),

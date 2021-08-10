@@ -9,7 +9,7 @@ from privacy_evaluator.classifiers.classifier import Classifier
 
 
 def test_membership_inference_black_box_rule_based_attack():
-    x_train, y_train, x_test, y_test = TorchCIFAR10.numpy()
+    x_train, y_train, x_test, y_test = TorchCIFAR10.numpy(take=10)
 
     target_model = Classifier(
         load_dcti(device=torch.device("cpu")),

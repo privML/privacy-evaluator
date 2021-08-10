@@ -2,7 +2,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 install_requires = [
-    "adversarial-robustness-toolbox[pytorch,tensorflow]==1.6.2",
+    "adversarial-robustness-toolbox[pytorch,tensorflow]==1.7.0",
     "matplotlib",
     "numpy",
     "pandas",
@@ -11,6 +11,7 @@ install_requires = [
     "torchvision",
     "pillow==8.2.0",
     "tqdm==4.61.0",
+    "matplotlib==3.4.1",
 ]
 
 development_requires = ["black", "googledrivedownloader", "pytest"]

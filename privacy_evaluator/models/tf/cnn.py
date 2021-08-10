@@ -101,6 +101,18 @@ class ConvNetMNIST(keras.Model):
             ]
         )
 
+        self.conv3 = keras.Sequential(
+            [
+                Conv2D(
+                    filters=num_channels[3],
+                    kernel_size=3,
+                    activation="relu",
+                ),
+                BatchNormalization(),
+                MaxPool2D(pool_size=(2, 2)),
+            ]
+        )
+
         self.fc = keras.Sequential(
             [
                 Flatten(),
@@ -165,6 +177,18 @@ class ConvNetCIFAR10(keras.Model):
         self.conv3 = keras.Sequential(
             [
                 Conv2D(filters=num_channels[3], kernel_size=3, activation="relu"),
+                BatchNormalization(),
+                MaxPool2D(pool_size=(2, 2)),
+            ]
+        )
+
+        self.conv3 = keras.Sequential(
+            [
+                Conv2D(
+                    filters=num_channels[3],
+                    kernel_size=3,
+                    activation="relu",
+                ),
                 BatchNormalization(),
                 MaxPool2D(pool_size=(2, 2)),
             ]
