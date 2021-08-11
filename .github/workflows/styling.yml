@@ -2,11 +2,7 @@ name: Styling with black
 
 on:
   pull_request:
-<<<<<<< HEAD
     branches: [ main, team1sprint2, team1sprint3, team1sprint4, team2sprint6 ]
-=======
-    branches: [ main, team1sprint2, team1sprint3, team1sprint4, team1sprint5 ]
->>>>>>> main
     types:
       - opened
       - edited
