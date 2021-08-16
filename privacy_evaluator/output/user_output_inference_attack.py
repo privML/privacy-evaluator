@@ -1,15 +1,11 @@
-import numpy as np
-import pandas as pd
-from matplotlib import pyplot as plt
-
-from typing import Tuple
-
 from .user_output import UserOutput
 
 
 class UserOutputInferenceAttack(UserOutput):
+    """`UserOutputInferenceAttack` class
 
-    """User Output for Inference Attacks Class"""
+    Contains the result of a `MembershipInferenceAttack`.
+    """
 
     def __init__(
         self,
@@ -19,9 +15,7 @@ class UserOutputInferenceAttack(UserOutput):
         target_model_train_to_test_accuracy_ratio: float,
         attack_model_accuracy: float,
     ):
-        """
-        Initilaizes the Class with values
-        """
+        """Initializes a `UserOutputInferenceAttack` class."""
         self.target_model_train_accuracy = target_model_train_accuracy
         self.target_model_test_accuracy = target_model_test_accuracy
         self.target_model_train_to_test_accuracy_gap = (

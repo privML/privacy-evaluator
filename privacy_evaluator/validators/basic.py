@@ -61,5 +61,6 @@ def validate_one_hot_encoded(data: np.ndarray, label: str, number_of_classes: in
         validate_number_of_features(data, label, number_of_classes)
     except ValueError:
         raise ValueError(
-            f"Expected `{label}` to be one-hot encoded and of shape ({data.shape[0]}, {number_of_classes}), instead got ({data.shape})."
+            f"Expected `{label}` to be one-hot encoded and of shape ({data.shape[0]}, {number_of_classes}), instead got"
+            f" ({data.shape})."
         )

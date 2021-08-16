@@ -4,7 +4,7 @@ import numpy as np
 
 @dataclass
 class AttackInputData:
-    """Input data for running an attack analysis."""
+    """Input data for running `MembershipInferenceAttackAnalysis` or `MembershipInferencePointAnalysis`."""
 
     # Data samples from the training set.
     x_train: np.ndarray

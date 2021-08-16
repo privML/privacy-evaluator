@@ -1,5 +1,4 @@
 import os
-
 import torch
 import torch.nn as nn
 
@@ -14,7 +13,7 @@ class Block(nn.Module):
             nn.ReLU(inplace=True),
         )
 
-    def forward(self, x: torch.Tensor, **kwargs) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, **_) -> torch.Tensor:
         return self.model(x)
 
 
@@ -52,7 +51,7 @@ class DCTI(nn.Module):
             nn.Softmax(dim=1),
         )
 
-    def forward(self, x: torch.Tensor, **kwargs) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, **_) -> torch.Tensor:
         return self.model(x)
 
 
@@ -63,7 +62,7 @@ def load_dcti(
     """Loads a PyTorch DCTI model.
 
     :param pretrained: If True, returns a model pre-trained on CIFAR-10.
-    :param device: Device on which the model is loaded. Either cpu or gpu.
+    :param device: Device on which the model is loaded. Either CPU or GPU.
     :return: Loaded PyTorch DCTI model.
     """
     model = DCTI()

@@ -128,8 +128,7 @@ class PropertyInferenceAttack(Attack):
             )
 
         self.input_shape = self.dataset[0][0].shape  # [32, 32, 3] for CIFAR10
-
-        super().__init__(target_model, None, None, None, None)
+        super().__init__(target_model)
 
     def create_shadow_training_set(
         self,

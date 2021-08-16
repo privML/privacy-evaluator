@@ -4,7 +4,10 @@ from .tf import TFDataset
 
 
 class TFMNIST(TFDataset):
-    """TensorFlow MNIST dataset class."""
+    """`TFMNIST` class.
+
+    Represents a MNIST dataset class for TensorFlow.
+    """
 
     TF_MODULE = tf.keras.datasets.mnist
     DATASET_SIZE = {"train": 60000, "test": 10000}

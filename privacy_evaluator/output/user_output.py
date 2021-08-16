@@ -8,7 +8,7 @@ class UserOutput:
         """Serialize given object to JSON.
 
         :param obj: Object to serialize.
-        :param filter: If needed this filters the output for the given keys
+        :param filter: If needed, this filters the output for the given keys.
         """
         ret = {}
         if filter is not None:
@@ -21,24 +21,25 @@ class UserOutput:
 
     @staticmethod
     def _convert_to_list_if_needed(obj):
-        """
-        Use internally to convert ndarray to list in order to turn it to json
+        """Used internally to convert `np.ndarray` to `list` in order to turn it to JSON.
+
+        :param obj: Object to serialize.
         """
         if isinstance(obj, np.ndarray):
             return obj.tolist()
         return obj
 
     def to_json(self, filter: np.ndarray = None) -> str:
-        """
-        output function for JSON
-        :param filter: if needed this filters the output for the given keys
+        """Output function for JSON.
+
+        :param filter: If needed, this filters the output for the given keys.
         """
         return UserOutput._to_json(self, filter=filter)
 
     def to_dict(self, filter: np.ndarray = None) -> dict:
-        """
-        output function for dicts
-        :param filter: if needed this filters the output for the given keys
+        """Output function for `dict`s.
+
+        :param filter: If needed, this filters the output for the given keys.
         """
         if filter is not None:
             ret = {}
@@ -48,7 +49,5 @@ class UserOutput:
         return self.__dict__
 
     def __str__(self) -> str:
-        """
-        Overwrite the String method so the output looks nicer
-        """
+        """Overwrite the String method so the output looks nicer."""
         return self.to_json()

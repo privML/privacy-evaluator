@@ -1,12 +1,12 @@
 from art.estimators.classification import TensorFlowV2Classifier, PyTorchClassifier
-from typing import Union, Tuple
 import numpy as np
 import tensorflow as tf
 import torch
+from typing import Union, Tuple
 
 
 class Classifier:
-    """Classifier base class."""
+    """`Classifier` class."""
 
     def __init__(
         self,
@@ -15,7 +15,7 @@ class Classifier:
         nb_classes: int,
         input_shape: Tuple[int, ...],
     ):
-        """Initializes a Classifier class.
+        """Initializes a `Classifier` class.
 
         :param classifier: The classifier. Either a Pytorch or TensorFlow classifier.
         :param nb_classes: Number of classes that were used to train the classifier.
@@ -74,5 +74,6 @@ class Classifier:
             )
         else:
             raise TypeError(
-                f"Expected `classifier` to be an instance of {str(torch.nn.Module)} or {str(tf.Module)}, received {str(type(classifier))} instead."
+                f"Expected `classifier` to be an instance of {str(torch.nn.Module)} or {str(tf.Module)}, received "
+                f"{str(type(classifier))} instead. "
             )
