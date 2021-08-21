@@ -1,63 +1,70 @@
-from .membership_inference import MembershipInferenceAttack
-from ...classifiers.classifier import Classifier
+import logging
 import numpy as np
 from typing import Tuple
 
+from .membership_inference import MembershipInferenceAttack
+from ...classifiers.classifier import Classifier
+
 
 class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
-    """MembershipInferenceBlackBoxAttack class."""
+    """`MembershipInferenceAttackOnPointBasis` class."""
 
     def __init__(
         self,
         target_model: Classifier,
+    ):
+        """Initializes a `MembershipInferenceAttackOnPointBasis` class.
+
+        :param target_model: Target model to be attacked.
+        """
+        super().__init__(target_model, init_art_attack=False)
+
+    @MembershipInferenceAttack._fit_decorator
+    def fit(self, *args, **kwargs):
+        """Fits the attack model.
+
+        :param args: Arguments for the fitting. Currently, there are no additional arguments provided.
+        :param kwargs: Keyword arguments for fitting the attack model. Currently, there are no additional keyword
+            arguments provided.
+        """
+        logger = logging.getLogger(__name__)
+        logger.debug(
+            "Trying to fit MembershipInferenceAttackOnPointBasis, nothing to fit."
+        )
+
+    def attack(
+        self,
         x_train: np.ndarray,
         y_train: np.ndarray,
         x_test: np.ndarray,
         y_test: np.ndarray,
-    ):
-        """Initializes a MembershipInferenceOnPointBasis class.
+        num_bins: int = 15,
+        **kwargs
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """Computes each individual point's likelihood of being a member (denoted as privacy risk score in
+        https://arxiv.org/abs/2003.10595).
 
-        :param target_model: Target model to be attacked.
-        :param x_train: Data which was used to train the target model.
-        :param y_train: One-hot encoded labels for `x_train`.
-        :param x_test: Data that was not used to train the target model.
-        :param y_test: One-hot encoded labels for `x_test`.
-        :raises TypeError: If `attack_model_type` is of invalid type.
-        :raises ValueError: If `attack_model_type` is none of `rf`, `gb`, `nn`.
-        """
-        super().__init__(
-            target_model, x_train, y_train, x_test, y_test, init_art_attack=False
-        )
-
-    @MembershipInferenceAttack._fit_decorator
-    def fit(self, **kwargs):
-        """Fits the attack model.
-
-        :param kwargs: Keyword arguments for the fitting.
-        """
-        pass
-
-    def attack(self, num_bins=15, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        Computes each individual point's likelihood of being a member
-        (denoted as privacy risk score in https://arxiv.org/abs/2003.10595).
-
-        For an individual sample, its privacy risk score is computed as the posterior
-        probability of being in the training set
-        after observing its prediction output by the target machine learning model.
+        For an individual sample, its privacy risk score is computed as the posterior probability of being in the
+        training set after observing its prediction output by the target machine learning model.
 
         (Helper method and description taken from
         https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/membership_inference_attack/membership_inference_attack.py#L217)
 
-
-        :param num_bins: the number of bins used to compute the training/test histogram
-        :return: membership probability results
+        :param x_train: Data which was used to train the target model.
+        :param y_train: One-hot encoded labels for `x_train`.
+        :param x_test: Data that was not used to train the target model.
+        :param y_test: One-hot encoded labels for `x_test`.
+        :param num_bins: The number of bins used to compute the training/test histogram.
+        :return: Membership probability results.
         """
-        loss_train = self.target_model.art_classifier.compute_loss(
-            self.x_train, self.y_train
-        )
-        loss_test = self.target_model.art_classifier.compute_loss(
-            self.x_test, self.y_test
+        logger = logging.getLogger(__name__)
+        logger.info("Running MembershipInferenceAttackOnPointBasis")
+        logger.debug("Computing Loss for target Model")
+        loss_train = self.target_model.art_classifier.compute_loss(x_train, y_train)
+        loss_test = self.target_model.art_classifier.compute_loss(x_test, y_test)
+
+        logger.debug(
+            "Computing membership probability per point with %d bins" % num_bins
         )
         return self._compute_membership_probability(loss_train, loss_test, num_bins)
 
@@ -65,13 +72,14 @@ class MembershipInferenceAttackOnPointBasis(MembershipInferenceAttack):
     def _compute_membership_probability(
         loss_train, loss_test, num_bins: int = 15
     ) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        Has been taken from https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/membership_inference_attack/membership_inference_attack.py#L217
-        Helper function to compute_privacy_risk_score
-        :param loss_train: the loss of the target classifier on train data
-        :param loss_test: the loss of the target classifier on test data
-        :param num_bins: the number of bins used to compute the training/test histogram
-        :return: membership probability results
+        """Has been taken from https://github.com/tensorflow/privacy/blob/master/tensorflow_privacy/privacy/membership_inference_attack/membership_inference_attack.py#L217
+
+        Helper function to compute_privacy_risk_score.
+
+        :param loss_train: The loss of the target classifier on train data.
+        :param loss_test: The loss of the target classifier on test data.
+        :param num_bins: The number of bins used to compute the training/test histogram.
+        :return: Membership probability results.
         """
 
         train_values = loss_train

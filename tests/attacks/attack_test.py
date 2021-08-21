@@ -1,11 +1,10 @@
 import pytest
+import torch.nn as nn
 
 from privacy_evaluator.attacks.attack import Attack
-from privacy_evaluator.models.torch.dcti.dcti import load_dcti
-from privacy_evaluator.datasets.torch.cifar10 import TorchCIFAR10
 from privacy_evaluator.classifiers.classifier import Classifier
-
-import torch.nn as nn
+from privacy_evaluator.datasets.torch.cifar10 import TorchCIFAR10
+from privacy_evaluator.models.torch.dcti.dcti import load_dcti
 
 
 def test_attack():
@@ -16,6 +15,6 @@ def test_attack():
         input_shape=TorchCIFAR10.INPUT_SHAPE,
         loss=nn.CrossEntropyLoss(reduction="none"),
     )
-    attack = Attack(target_model, x_train, y_train, x_test, y_test)
+    attack = Attack(target_model)
     with pytest.raises(NotImplementedError):
         attack.attack(x_train, y_train)

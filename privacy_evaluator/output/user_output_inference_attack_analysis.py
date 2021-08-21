@@ -1,16 +1,22 @@
 from textwrap import indent
-from typing import Tuple
 
-import numpy as np
-
-from ..attacks.membership_inference.data_structures.slicing import Slice
 from .user_output import UserOutput
+from ..attacks.membership_inference.data_structures.slicing import Slice
 
 
 class UserOutputInferenceAttackAnalysis(UserOutput):
-    """Result of the membership inference attack analysis for a single slice."""
+    """`UserOutputInferenceAttackAnalysis`
 
-    def __init__(self, slice: Slice, advantage: float, accuracy: float):
+    Contains the result of a `MembershipInferenceAttackAnalysis` for a single slice.
+    """
+
+    def __init__(
+        self,
+        slice: Slice,
+        advantage: float,
+        accuracy: float,
+    ):
+        """Initializes a `UserOutputInferenceAttackAnalysis` class."""
         self.slice = slice
         self.advantage = advantage
         self.accuracy = accuracy

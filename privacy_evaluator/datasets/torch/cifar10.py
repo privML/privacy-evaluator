@@ -5,7 +5,10 @@ from .torch import TorchDataset
 
 
 class TorchCIFAR10(TorchDataset):
-    """PyTorch CIFAR10 dataset class."""
+    """`TorchCIFAR10` class.
+
+    Represents a CIFAR10 dataset class for PyTorch.
+    """
 
     TORCH_MODULE = torchvision.datasets.CIFAR10
     DATASET_SIZE = {"train": 50000, "test": 10000}

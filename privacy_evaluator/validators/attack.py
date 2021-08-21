@@ -4,23 +4,25 @@ from .basic import *
 from ..classifiers import Classifier
 
 
-def validate_parameters(method: str, **kwargs):
+def validate_parameters(method: str, *args, **kwargs):
     """Validates parameters for given method.
 
     :param method: Method for which parameters are validated.
-    :param kwargs: Parameters to be validated as keyword arguments.
+    :param args: Arguments to be validated.
+    :param kwargs: Keyword arguments to be validated.
     """
-    getattr(sys.modules[__name__], f"_validate_{method}_parameters")(**kwargs)
+    getattr(sys.modules[__name__], f"_validate_{method}_parameters")(*args, **kwargs)
 
 
-def _validate_init_parameters(
+def _validate_fit_parameters(
     target_model: Classifier,
     x_train: np.ndarray,
     y_train: np.ndarray,
     x_test: np.ndarray,
     y_test: np.ndarray,
+    **_,
 ):
-    """Validates parameters for `init` method.
+    """Validates parameters for `fit` method.
 
     :param target_model: Target model to be validated.
     :param x_train: Data which was used to train the target model to be validated.

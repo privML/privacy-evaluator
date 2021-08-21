@@ -1,7 +1,7 @@
-import pytest
-import os
-import shutil
 from google_drive_downloader import GoogleDriveDownloader
+import os
+import pytest
+import shutil
 
 TESTS_TMP_PATH = "./tests/tmp"
 GOOGLE_DRIVE_MODELS_FILE_ID = "1w8xiZINqCzVlwfzXqMfFC3-NDNDr2kvu"
