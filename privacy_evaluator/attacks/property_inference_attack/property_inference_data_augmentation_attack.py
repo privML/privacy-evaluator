@@ -42,6 +42,12 @@ RATIOS_FOR_ATTACK = [
 NUM_EPOCHS_META_CLASSIFIER = 20
 
 # The type of adaptation. ('mask', 'random_noise', 'brightness')
+#   1. 'mask'-adaptation: A white-colored box is added at a random location for each image. The side length of the masking 
+#      box can be further specified by parameter `box_len`.
+#   2. 'random_noise'-adaptation: Normal-distributed noise is added to each image. The mean and deviation of the noise
+#      can be further specified by `mean` and `std` respectively.
+#   3. 'brightness'-adaptation: A fixed value given by parameter `brightness` is added to each pixel of each image. If 
+#      `brightness > 0` then brighter; if `brightness < 0`, then darker.
 ADAPTATION = "mask"
 
 # ratio of negation of property
