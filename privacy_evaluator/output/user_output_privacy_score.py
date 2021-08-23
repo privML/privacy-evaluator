@@ -110,11 +110,7 @@ class UserOutputPrivacyScore(UserOutput):
         sorting = np.argsort(self.privacy_risk)
         sorting = np.flip(sorting)
         sorted_attack_data_labels = self.attack_data_y[sorting][:k]
-        df = pd.DataFrame(
-            {
-                "labels": sorted_attack_data_labels,
-            }
-        )
+        df = pd.DataFrame({"labels": sorted_attack_data_labels})
         df = df.groupby("labels")["labels"].agg(["count"])
         labels = df.index.to_numpy()
         count = df["count"].to_numpy()

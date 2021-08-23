@@ -11,7 +11,7 @@ STD = (
 )
 
 
-def adapt_images(images: np.ndarray, adaptation: str, **kwargs) -> np.ndarray:
+def images_adaptation(images: np.ndarray, adaptation: str, **kwargs) -> np.ndarray:
     """
     Apply a specific adaptation on each image in `images`.
 
@@ -27,7 +27,7 @@ def adapt_images(images: np.ndarray, adaptation: str, **kwargs) -> np.ndarray:
     :params std: Involved when `adaptation` is "random_noise", the standard deviation of the added noise.
 
     Examples:
-        `adapt_images(images, 'mask', box_len=5)`: Apply mask-adaptation with box \
+        `images_adaptation(images, 'mask', box_len=5)`: Apply mask-adaptation with box \
             of side length 5.
     """
     supported_adaptations = ["mask", "random_noise", "brightness"]
@@ -57,7 +57,7 @@ def _mask_images(images: np.ndarray, box_len: int = BOX_LEN, **kwargs) -> np.nda
     :params images: The original images of shape [N, H, W, D].
     :params box_len: The side length of the masking box, to be `min(H, W)` top.
     :params kwargs: Optional params to make the function run also when unexpected \
-        params are passed from `adapt_images()`
+        params are passed from `images_adaptation()`
     :return: The masked images.
     """
     # give warning if there are still unexpected parameters
@@ -133,7 +133,7 @@ def _random_noise_images(
     :params mean: mean for the distribution from which noise is computed
     :params std: standard deviation for the distribution from which noise is computed
     :params kwargs: optional params to make the function run also when unexpected \
-        params are passed from `adapt_images()`
+        params are passed from `images_adaptation()`
     """
     # give warning if there are still unexpected parameters
     if kwargs:
