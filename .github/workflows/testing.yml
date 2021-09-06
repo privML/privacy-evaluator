@@ -2,6 +2,7 @@ name: Testing with pytest
 
 on:
   pull_request:
+    branches: [ main, team2sprint6 ]
     types:
       - opened
       - edited

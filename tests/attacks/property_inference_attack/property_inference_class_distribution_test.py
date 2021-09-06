@@ -1,4 +1,6 @@
-from privacy_evaluator.attacks.property_inference_attack import PropertyInferenceAttack
+from privacy_evaluator.attacks.property_inference_attack.property_inference_class_distribution_attack import (
+    PropertyInferenceClassDistributionAttack,
+)
 from privacy_evaluator.classifiers.classifier import Classifier
 from privacy_evaluator.utils.data_utils import (
     dataset_downloader,
@@ -23,13 +25,17 @@ NUM_EPOCHS = 2
 # count of shadow training sets, must be even
 AMOUNT_SETS = 2
 # ratio and size for unbalanced data sets
-SIZE_SET = 100
+SIZE_SHADOW_TRAINING_SET = 100
 # ratios for different properties in sub-attacks
 RATIOS_FOR_ATTACK = [0.9, 0.3]
 # classes the attack should be performed on
 CLASSES = [4, 5]
 # 0: no information; 1: backbone (most important) information; 2: utterly detailed
 VERBOSE = 1
+# number of epochs for training the meta classifier
+NUM_EPOCHS_META_CLASSIFIER = 2
+# ratio of negation of property
+NEGATIVE_RATIO = 0.5
 
 
 def test_property_inference_class_distribution_attack(
@@ -38,10 +44,12 @@ def test_property_inference_class_distribution_attack(
     num_channels: int = NUM_CHANNELS,
     num_epochs: int = NUM_EPOCHS,
     amount_sets: int = AMOUNT_SETS,
-    size_set: int = SIZE_SET,
+    size_shadow_training_set: int = SIZE_SHADOW_TRAINING_SET,
     ratios_for_attack: List[float] = RATIOS_FOR_ATTACK,
+    negative_ratio: int = NEGATIVE_RATIO,
     classes: List[int] = CLASSES,
     verbose: int = VERBOSE,
+    num_epochs_meta_classifier: int = NUM_EPOCHS_META_CLASSIFIER,
 ):
     logger = logging.getLogger(__name__)
     if verbose == 2:
@@ -70,14 +78,16 @@ def test_property_inference_class_distribution_attack(
     )
     logger.info("Start attack ...")
 
-    attack = PropertyInferenceAttack(
+    attack = PropertyInferenceClassDistributionAttack(
         target_model,
         train_dataset,
-        verbose=verbose,
-        size_set=size_set,
-        ratios_for_attack=ratios_for_attack,
-        classes=classes,
         amount_sets=amount_sets,
+        size_shadow_training_set=size_shadow_training_set,
+        ratios_for_attack=ratios_for_attack,
+        negative_ratio=negative_ratio,
+        classes=classes,
+        verbose=verbose,
+        num_epochs_meta_classifier=num_epochs_meta_classifier,
     )
     assert (
         attack.input_shape == input_shape
@@ -98,7 +108,9 @@ def test_property_inference_class_distribution_attack(
     assert (
         attack.amount_sets == amount_sets
     ), "Number of shadow classifiers are not equal to input."
-    assert attack.size_set == size_set, "Number of samples is not equal to input."
+    assert (
+        attack.size_shadow_training_set == size_shadow_training_set
+    ), "Number of samples is not equal to input."
     assert attack.classes == classes, "Classes are not equal to input classes."
     assert len(output.output) == len(
         ratios_for_attack
